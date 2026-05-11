@@ -3,6 +3,7 @@ venv/
 env/
 __pycache__/
 *.py[cod]
+*$py.class
 .env
 .env.local
 .pytest_cache/
@@ -11,3 +12,6 @@ uploads/
 dist/
 build/
 .DS_Store
+*.sqlite3
+.idea/
+.vscode/
