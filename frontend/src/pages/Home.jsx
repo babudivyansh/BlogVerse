@@ -202,22 +202,49 @@ export default function Home() {
         )}
       </section>
 
-      {/* ── Newsletter ───────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="relative overflow-hidden rounded-3xl gradient-bg p-10 sm:p-16 text-center">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="relative">
-            <h2 className="text-3xl font-bold text-white mb-3">Stay in the Loop</h2>
-            <p className="text-white/80 mb-8 max-w-md mx-auto">Get the latest articles and insights delivered to your inbox.</p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-              <input type="email" placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} required
-                className="flex-1 px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm" />
-              <button type="submit" disabled={subscribing} className="px-8 py-3 bg-white text-primary-600 font-semibold rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                {subscribing ? 'Subscribing...' : 'Subscribe'}
+      {/* ── Newsletter (Premium Glass Design) ──────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-[3rem] glass p-12 sm:p-20 text-center border border-white/10"
+        >
+          {/* Animated Glow Background */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] -translate-y-1/2" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] translate-y-1/2" />
+          
+          <div className="relative z-10">
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 uppercase tracking-tighter">
+              Stay in the <span className="text-blue-500">Loop</span>
+            </h2>
+            <p className="text-xl text-white/50 mb-10 max-w-md mx-auto font-medium">
+              Join 5,000+ writers and get the best AI insights delivered to your inbox weekly.
+            </p>
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+              <div className="flex-1 relative group">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email address" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  required
+                  className="w-full px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 backdrop-blur-xl transition-all group-hover:bg-white/10" 
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={subscribing} 
+                className="px-10 py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-500 hover:shadow-2xl hover:shadow-blue-500/40 transition-all hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-sm"
+              >
+                {subscribing ? 'Joining...' : 'Subscribe Now'}
               </button>
             </form>
+            <p className="mt-6 text-xs text-white/30 font-medium uppercase tracking-[0.2em]">
+              No Spam. Just Pure Creativity.
+            </p>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
