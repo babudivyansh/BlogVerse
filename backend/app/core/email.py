@@ -49,11 +49,18 @@ def send_verification_email(to_email: str, token: str) -> None:
     if settings.SMTP_HOST and settings.SMTP_USERNAME:
         msg = _build_verification_email(to_email, token)
         try:
-            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-                if settings.SMTP_USE_TLS:
-                    server.starttls()
-                server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-                server.send_message(msg)
+            if settings.SMTP_PORT == 465:
+                # Use SSL for port 465
+                with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                    server.send_message(msg)
+            else:
+                # Standard SMTP (usually port 587 with TLS)
+                with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+                    if settings.SMTP_USE_TLS:
+                        server.starttls()
+                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                    server.send_message(msg)
             print(f"[EMAIL] Verification email sent to {to_email}")
         except Exception as exc:
             print(f"[EMAIL] Failed to send email: {exc}")
