@@ -46,6 +46,13 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
+    
+    if not user.is_verified:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, 
+            "Please verify your email address before logging in. Check your inbox for a verification link."
+        )
+
     access_token = create_access_token(data={"sub": str(user.id)})
     return Token(access_token=access_token)
 

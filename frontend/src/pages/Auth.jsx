@@ -41,21 +41,6 @@ export default function Auth() {
     setLoading(false);
   };
 
-  const handleVerify = async (token) => {
-    try {
-      await api.post('/auth/verify-email', { token });
-      toast.success('Email verified! You can now login.');
-    } catch {
-      toast.error('Invalid verification token');
-    }
-  };
-
-  // Check for verification token in URL
-  const verifyToken = searchParams.get('token');
-  if (verifyToken) {
-    handleVerify(verifyToken);
-  }
-
   const inputClass = "w-full px-4 py-3 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-900 dark:text-white placeholder:text-surface-400 text-sm transition-all";
 
   return (

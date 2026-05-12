@@ -13,6 +13,7 @@ import CreateBlog from './pages/CreateBlog';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Admin from './pages/Admin';
+import VerifyEmail from './pages/VerifyEmail';
 import Chatbot from './components/common/Chatbot';
 
 export default function App() {
@@ -35,7 +36,7 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/verify-email" element={<Auth />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/create" element={<CreateBlog />} />
                   <Route path="/profile/:username" element={<Profile />} />

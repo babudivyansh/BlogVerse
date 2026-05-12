@@ -22,7 +22,7 @@ class User(Base):
     # e.g. {"twitter": "", "github": "", "linkedin": "", "website": ""}
 
     is_admin = Column(Boolean, default=False)
-    is_verified = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)
     is_blocked = Column(Boolean, default=False)
     verification_token = Column(String(64), nullable=True)
 
