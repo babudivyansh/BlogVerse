@@ -80,39 +80,76 @@ export default function BlogPost() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-20">
-      {/* Cover */}
-      {blog.cover_image && (
-        <div className="w-full max-h-[500px] overflow-hidden">
+      {/* Immersive Cover Section */}
+      <section className="relative h-[60vh] sm:h-[80vh] w-full overflow-hidden">
+        {blog.cover_image ? (
           <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full gradient-bg opacity-30" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-950 via-surface-950/40 to-transparent" />
+        
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 px-4">
+          <div className="max-w-4xl w-full">
+            {blog.category && (
+              <span className="px-4 py-1.5 rounded-full bg-blue-600 text-white text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                {blog.category}
+              </span>
+            )}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] mb-8 drop-shadow-2xl">
+              {blog.title}
+            </h1>
+            <div className="flex items-center gap-6 text-white/80 font-medium">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                  {blog.author?.username?.[0].toUpperCase()}
+                </div>
+                <span>{blog.author?.full_name || blog.author?.username}</span>
+              </div>
+              <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+              <span>{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-white/20 hidden sm:block" />
+              <span className="hidden sm:block">{blog.read_time} min read</span>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Meta */}
-        <div className="mb-8">
-          {blog.category && (
-            <Link to={`/search?category=${blog.category}`}
-              className="inline-block px-3 py-1 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 rounded-full mb-4">
-              {blog.category}
-            </Link>
-          )}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-surface-900 dark:text-white leading-tight mb-4">{blog.title}</h1>
-
-          {/* Author bar */}
-          <div className="flex items-center justify-between flex-wrap gap-4 py-6 border-y border-surface-200 dark:border-surface-800">
-            <Link to={`/profile/${blog.author?.username}`} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-white font-semibold">
-                {blog.author?.username?.[0]?.toUpperCase()}
+        {/* Meta Bar */}
+        <div className="flex items-center justify-between py-8 border-b border-white/10 mb-12">
+          <div className="flex items-center gap-6">
+            <button onClick={handleLike} className="flex items-center gap-2 group">
+              <div className={`p-3 rounded-full transition-all ${liked ? 'bg-red-500 text-white' : 'bg-white/5 text-white/40 group-hover:bg-white/10'}`}>
+                {liked ? <HiHeart className="w-6 h-6" /> : <HiOutlineHeart className="w-6 h-6" />}
               </div>
-              <div>
-                <p className="font-semibold text-surface-900 dark:text-white">{blog.author?.full_name || blog.author?.username}</p>
-                <p className="text-xs text-surface-500">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
-              </div>
-            </Link>
-            <div className="flex items-center gap-4 text-sm text-surface-500">
-              <span className="flex items-center gap-1"><HiOutlineClock className="w-4 h-4" /> {blog.read_time} min read</span>
-              <span className="flex items-center gap-1"><HiOutlineEye className="w-4 h-4" /> {blog.views} views</span>
+              <span className="text-lg font-bold text-white">{likesCount}</span>
+            </button>
+            <div className="flex items-center gap-2 text-white/40">
+              <HiOutlineEye className="w-6 h-6" />
+              <span className="text-lg font-bold">{blog.views}</span>
             </div>
+          </div>
+          
+          <div className="relative">
+            <button onClick={() => setShareOpen(!shareOpen)} className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
+              <HiOutlineShare className="w-5 h-5" /> Share
+            </button>
+            <AnimatePresence>
+              {shareOpen && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                  className="absolute right-0 bottom-full mb-4 flex gap-3 p-4 glass rounded-3xl shadow-2xl border border-white/10">
+                  <a href={`https://twitter.com/intent/tweet?url=${url}&text=${title}`} target="_blank" rel="noreferrer"
+                    className="p-3 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-all"><FaTwitter /></a>
+                  <a href={`https://facebook.com/sharer/sharer.php?u=${url}`} target="_blank" rel="noreferrer"
+                    className="p-3 rounded-xl bg-blue-600/10 text-blue-500 hover:bg-blue-600 hover:text-white transition-all"><FaFacebook /></a>
+                  <a href={`https://linkedin.com/sharing/share-offsite/?url=${url}`} target="_blank" rel="noreferrer"
+                    className="p-3 rounded-xl bg-blue-700/10 text-blue-600 hover:bg-blue-700 hover:text-white transition-all"><FaLinkedin /></a>
+                  <button onClick={copyLink}
+                    className="p-3 rounded-xl bg-white/5 text-white hover:bg-white/10 transition-all"><FaLink /></button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 

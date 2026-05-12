@@ -72,57 +72,90 @@ export default function Home() {
         <motion.div animate={{ y: [0, 20, 0] }} transition={{ duration: 8, repeat: Infinity }}
           className="absolute bottom-20 right-[10%] w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-            className="text-center max-w-3xl mx-auto z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/90 text-sm font-medium mb-6">
-              <HiOutlineSparkles className="w-4 h-4 text-yellow-400" /> AI-Powered Writing Platform
-            </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
-              Where Ideas<br />Come to <span className="text-primary-400">Life</span>
-            </h1>
-            <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-xl mx-auto">
-              Write, share, and discover stories that matter. Powered by AI tools to help you create your best content.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/create"
-                className="px-8 py-3.5 bg-white text-primary-600 font-semibold rounded-2xl hover:shadow-2xl hover:shadow-white/20 transition-all hover:-translate-y-0.5 flex items-center gap-2">
-                Start Writing <HiOutlineArrowRight className="w-5 h-5" />
-              </Link>
-              <Link to="/search"
-                className="px-8 py-3.5 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all backdrop-blur-sm">
-                Explore Blogs
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Feature pills */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4 mt-16">
-            {[
-              { icon: HiOutlineSparkles, text: 'AI Writing Assistant' },
-              { icon: HiOutlineLightningBolt, text: 'Markdown Editor' },
-              { icon: HiOutlineGlobe, text: 'Share Globally' },
-            ].map((f, i) => (
-              <div key={i} className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 text-white/80 text-sm">
-                <f.icon className="w-4 h-4 text-yellow-300" /> {f.text}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}
+              className="text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-500/20 text-blue-400 text-sm font-semibold mb-8 uppercase tracking-widest">
+                <HiOutlineSparkles className="w-4 h-4" /> Discover the Future
               </div>
-            ))}
-          </motion.div>
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] mb-8 drop-shadow-2xl">
+                STORY<br />
+                <span className="text-blue-500">TELLING</span><br />
+                EVOLVED
+              </h1>
+              <p className="text-xl text-white/60 leading-relaxed mb-10 max-w-md">
+                Experience the next generation of blogging. AI-enhanced, 3D immersive, and purely beautiful.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <Link to="/create"
+                  className="w-full sm:w-auto px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 hover:shadow-2xl hover:shadow-blue-500/40 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                  Start Writing <HiOutlineArrowRight className="w-5 h-5" />
+                </Link>
+                <Link to="/search"
+                  className="w-full sm:w-auto px-10 py-4 bg-white/5 text-white font-bold rounded-2xl border border-white/10 hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center">
+                  Explore
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Right 3D Scene */}
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }}
+              className="relative hidden lg:block h-[500px]">
+              <div className="absolute inset-0 z-10">
+                <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+                  <ambientLight intensity={0.6} />
+                  <pointLight position={[10, 10, 10]} intensity={1.5} />
+                  <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} />
+                  <FloatingLogo />
+                </Canvas>
+              </div>
+              {/* Decorative status card */}
+              <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity }}
+                className="absolute top-10 right-0 z-20 glass p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-xs font-bold text-white/80 uppercase tracking-tighter">1,240 Readers Online</span>
+              </motion.div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── Featured Blogs ───────────────────────────────── */}
+      {/* ── Featured Blog (TREK Style) ────────────────────── */}
       {featured.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-surface-900 dark:text-white">Featured Stories</h2>
-              <p className="text-surface-500 dark:text-surface-400 text-sm mt-1">Handpicked by our editors</p>
-            </div>
+          <div className="mb-12">
+            <h2 className="text-4xl font-black text-white uppercase tracking-tighter">Featured <span className="text-blue-500">Stories</span></h2>
+            <div className="w-20 h-1.5 bg-blue-600 mt-2" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i} />)}
+          
+          <Link to={`/blog/${featured[0].slug}`} className="group block mb-12">
+            <div className="relative aspect-[21/9] rounded-3xl overflow-hidden glass border border-white/10">
+              <img src={featured[0].cover_image} alt={featured[0].title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-60 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface-950 via-surface-950/40 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-8 sm:p-12 max-w-3xl">
+                <span className="px-4 py-1.5 rounded-full bg-blue-600 text-white text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                  {featured[0].category || 'Featured'}
+                </span>
+                <h3 className="text-3xl sm:text-5xl font-black text-white mb-6 leading-tight group-hover:text-blue-400 transition-colors">
+                  {featured[0].title}
+                </h3>
+                <div className="flex items-center gap-4 text-white/60 font-medium">
+                  <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                    {featured[0].author?.username?.[0].toUpperCase()}
+                  </div>
+                  <span>{featured[0].author?.full_name || featured[0].author?.username}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                  <span>{featured[0].read_time} min read</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featured.slice(1).map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i} />)}
           </div>
         </section>
       )}
