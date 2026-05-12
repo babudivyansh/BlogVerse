@@ -1,0 +1,42 @@
+services:
+  # ── Backend Web Service (FastAPI) ──────────────────────────────
+  - type: web
+    name: blogverse-api
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free # Change to starter for no-sleep
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blogverse-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        fromContext: frontend_url
+      - key: OPENAI_API_KEY
+        sync: false # Set this in the Render Dashboard
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  # ── Frontend Static Site (React/Vite) ──────────────────────────
+  - type: static
+    name: blogverse-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromStack:
+          service: blogverse-api
+          property: url
+
+# ── Database (PostgreSQL) ────────────────────────────────────────
+databases:
+  - name: blogverse-db
+    plan: free # Free for 90 days
