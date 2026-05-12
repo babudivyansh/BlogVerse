@@ -6,11 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "jsdom": "^29.1.1",
     "typescript": "~6.0.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "vitest": "^4.1.6"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
@@ -19,6 +25,8 @@
     "axios": "^1.16.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.6.0",
     "react-markdown": "^10.1.0",

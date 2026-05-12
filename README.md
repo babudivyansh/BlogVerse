@@ -54,6 +54,21 @@ A modern, full-stack blog platform built with **React + Tailwind CSS v4** fronte
 - **Python** 3.10+
 - **PostgreSQL** (create a database named `blogverse`)
 
+### 🚀 Quick Start (One Command)
+
+If you have Node.js installed, you can run both the frontend and backend simultaneously from the root directory:
+
+```bash
+# Install root management dependencies
+npm install
+
+# Run both services
+npm run dev
+
+# Run all tests (frontend & backend)
+npm run test
+```
+
 ### 1. Clone & Configure
 
 ```bash
@@ -99,7 +114,33 @@ npm run dev
 
 The app will be available at `http://localhost:5173`.
 
-### 4. Create Admin User
+### 4. Testing the Backend
+
+The backend includes a comprehensive Pytest suite that covers all core functionality with an isolated in-memory database.
+
+```bash
+cd backend
+
+# Activate virtual environment if not already activated
+venv\Scripts\activate   # Windows
+source venv/bin/activate # Mac/Linux
+
+# Run the test suite with coverage report
+python -m pytest tests/ -v --cov=app
+```
+
+### 5. Testing the Frontend
+
+The frontend uses Vitest and React Testing Library for component and integration testing.
+
+```bash
+cd frontend
+
+# Run tests
+npm run test
+```
+
+### 6. Create Admin User
 
 After starting the backend, sign up through the frontend. Then use a database tool to set `is_admin = true` and `is_verified = true` for your user in the `users` table.
 

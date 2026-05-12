@@ -10,4 +10,10 @@ export default defineConfig({
       '/uploads': 'http://localhost:8000',
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js',
+    css: true,
+  },
 })

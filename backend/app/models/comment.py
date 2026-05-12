@@ -2,9 +2,8 @@
 
 from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from app.core.database import Base
-
 
 class Comment(Base):
     __tablename__ = "comments"
@@ -23,5 +22,9 @@ class Comment(Base):
     )
 
     # Relationships
-    author = relationship("User", backref="comments", lazy="joined")
-    replies = relationship("Comment", backref="parent", remote_side=[id], lazy="joined")
+    author = relationship("User", back_populates="comments", lazy="joined")
+    replies = relationship(
+        "Comment", 
+        backref=backref("parent", remote_side=[id]), 
+        lazy="joined"
+    )

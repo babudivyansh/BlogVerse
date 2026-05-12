@@ -1,6 +1,6 @@
 """SQLAlchemy engine, session factory, and declarative base."""
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
 
@@ -19,6 +19,13 @@ engine = create_engine(
     connect_args=connect_args,
     **engine_kwargs,
 )
+
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    if settings.DATABASE_URL.startswith("sqlite"):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

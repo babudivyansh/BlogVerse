@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean, Column, DateTime, Integer, String, Text, JSON,
 )
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
@@ -31,3 +32,8 @@ class User(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+
+    # Relationships
+    blogs = relationship("Blog", back_populates="author", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="author", cascade="all, delete-orphan")
+    likes = relationship("BlogLike", backref="user", cascade="all, delete-orphan")

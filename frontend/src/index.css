@@ -6,22 +6,22 @@
 
 /* ── Custom Theme ──────────────────────────────────────────────── */
 @theme {
-  /* Primary – Indigo-Violet */
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
+  /* Primary – Deep Indigo */
+  --color-primary-50: #f5f7ff;
+  --color-primary-100: #ebf0fe;
+  --color-primary-200: #dce4fd;
+  --color-primary-300: #c2cffc;
+  --color-primary-400: #9baefa;
+  --color-primary-500: #7084f7;
+  --color-primary-600: #5661f1;
+  --color-primary-700: #464be1;
+  --color-primary-800: #3b3db6;
+  --color-primary-900: #343791;
 
-  /* Accent – Emerald */
-  --color-accent-400: #34d399;
-  --color-accent-500: #10b981;
-  --color-accent-600: #059669;
+  /* Accent – Electric Violet */
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
 
   /* Surface (dark mode backgrounds) */
   --color-surface-50: #f8fafc;
@@ -70,14 +70,28 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #fcfcfd;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--color-surface-900);
+}
+
+.dark body {
+  background-color: var(--color-surface-950);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+  color: #fff;
 }
 
 /* ── Glassmorphism utility ─────────────────────────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .dark .glass {
   background: rgba(15, 23, 42, 0.6);
@@ -86,13 +100,15 @@ body {
 
 .glass-card {
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
 }
 .dark .glass-card {
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* ── Gradient text ─────────────────────────────────────────────── */

@@ -56,6 +56,9 @@ def create_comment(
     db.add(comment)
     db.commit()
     db.refresh(comment)
+    
+    # Explicitly populate author relationship for Pydantic serialization
+    comment.author = current_user
     return comment
 
 

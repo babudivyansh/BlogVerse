@@ -51,7 +51,7 @@ class Blog(Base):
     )
 
     # Relationships
-    author = relationship("User", backref="blogs", lazy="joined")
+    author = relationship("User", back_populates="blogs", lazy="joined")
     tags = relationship("Tag", secondary=blog_tags, back_populates="blogs", lazy="joined")
     comments = relationship("Comment", backref="blog", cascade="all, delete-orphan", lazy="dynamic")
     likes = relationship("BlogLike", backref="blog", cascade="all, delete-orphan", lazy="dynamic")

@@ -4,7 +4,7 @@ import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950">
+    <footer className="border-t border-surface-200 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-950/50 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
