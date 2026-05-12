@@ -1,0 +1,40 @@
+# Implementation Plan: BlogVerse Android Application
+
+This plan outlines the steps to convert the existing React frontend into a native Android application using Capacitor. This allows for a single codebase to serve both web and mobile users while utilizing the existing FastAPI backend on Render.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Android Studio Requirement:** The user must have Android Studio installed on their local machine to perform the final compilation and APK generation.
+
+> [!NOTE]
+> **API URL:** The mobile app must be configured to use the production backend URL (`https://blogverse-api-ssvc.onrender.com/api`) instead of `localhost`.
+
+## Proposed Changes
+
+### 1. Frontend Configuration
+Add Capacitor dependencies and initialize the mobile project structure.
+
+#### [MODIFY] [package.json](file:///c:/Users/user/Desktop/Blog%20Website/frontend/package.json)
+- Add `@capacitor/core`, `@capacitor/cli`, and `@capacitor/android` to dependencies.
+
+#### [NEW] [capacitor.config.ts](file:///c:/Users/user/Desktop/Blog%20Website/frontend/capacitor.config.ts)
+- Configure the App ID (`com.blogverse.app`), App Name (`BlogVerse`), and web directory (`dist`).
+
+### 2. Build Process Updates
+Ensure the build process correctly prepares assets for the mobile wrapper.
+
+#### [MODIFY] [api.js](file:///c:/Users/user/Desktop/Blog%20Website/frontend/src/services/api.js)
+- Verify `VITE_API_URL` handling to ensure mobile builds use the production URL by default if no environment variable is present.
+
+## Verification Plan
+
+### Automated Steps
+1.  Run `npm run build` to generate the web production bundle.
+2.  Run `npx cap sync android` to copy assets into the Android project.
+
+### Manual Verification
+1.  Open the project in Android Studio using `npx cap open android`.
+2.  Deploy to a physical Android device or Emulator.
+3.  Test Sign Up / Login flow to ensure connection to the Render backend is stable.
+4.  Verify that images and blog content load correctly.

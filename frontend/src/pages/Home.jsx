@@ -5,6 +5,8 @@ import { HiOutlineArrowRight, HiOutlineSparkles, HiOutlineLightningBolt, HiOutli
 import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
 import toast from 'react-hot-toast';
+import { Canvas } from '@react-three/fiber';
+import FloatingLogo from '../components/3d/FloatingLogo';
 import { getBlogs, getFeaturedBlogs, getCategories, subscribeNewsletter } from '../services/api';
 
 export default function Home() {
@@ -50,11 +52,19 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 gradient-bg opacity-90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.15),transparent_50%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-surface-950 to-transparent" />
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* 3D Scene Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} intensity={1} />
+            <spotLight position={[-10, 10, 10]} angle={0.15} penumbra={1} />
+            <FloatingLogo />
+          </Canvas>
+        </div>
+
+        {/* Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface-950/20 to-white dark:to-surface-950 pointer-events-none" />
 
         {/* Floating shapes */}
         <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 6, repeat: Infinity }}
@@ -64,12 +74,12 @@ export default function Home() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
-            className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6">
-              <HiOutlineSparkles className="w-4 h-4" /> AI-Powered Writing Platform
+            className="text-center max-w-3xl mx-auto z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white/90 text-sm font-medium mb-6">
+              <HiOutlineSparkles className="w-4 h-4 text-yellow-400" /> AI-Powered Writing Platform
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
-              Where Ideas<br />Come to <span className="text-yellow-300">Life</span>
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 drop-shadow-2xl">
+              Where Ideas<br />Come to <span className="text-primary-400">Life</span>
             </h1>
             <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-xl mx-auto">
               Write, share, and discover stories that matter. Powered by AI tools to help you create your best content.

@@ -15,13 +15,15 @@ import Search from './pages/Search';
 import Admin from './pages/Admin';
 import VerifyEmail from './pages/VerifyEmail';
 import Chatbot from './components/common/Chatbot';
+import ThreeBackground from './components/3d/ThreeBackground';
 
 export default function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <div className="min-h-screen bg-white dark:bg-surface-950 text-surface-900 dark:text-white transition-colors">
+          <ThreeBackground />
+          <div className="min-h-screen text-surface-900 dark:text-white transition-colors">
             <Navbar />
             <Toaster
               position="top-right"

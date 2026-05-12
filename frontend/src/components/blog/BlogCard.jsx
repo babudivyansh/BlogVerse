@@ -11,7 +11,7 @@ export default function BlogCard({ blog, index = 0 }) {
       transition={{ duration: 0.4, delay: index * 0.08 }}
     >
       <Link to={`/blog/${blog.slug}`} className="group block">
-        <div className="glass-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/5 transition-all duration-300 hover:-translate-y-1">
+        <div className="glass rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-primary-500/10 transition-all duration-500 hover:-translate-y-2">
           {/* Cover image */}
           <div className="relative aspect-[16/9] overflow-hidden bg-surface-100 dark:bg-surface-800">
             {blog.cover_image ? (
