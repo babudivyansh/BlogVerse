@@ -5,7 +5,7 @@ services:
     env: docker
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
-    plan: free # Change to starter for no-sleep
+    plan: free
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -13,10 +13,8 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
-      - key: FRONTEND_URL
-        fromContext: frontend_url
       - key: OPENAI_API_KEY
-        sync: false # Set this in the Render Dashboard
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
@@ -32,11 +30,7 @@ services:
     staticPublishPath: frontend/dist
     envVars:
       - key: VITE_API_URL
-        fromStack:
-          service: blogverse-api
-          property: url
-
-# ── Database (PostgreSQL) ────────────────────────────────────────
-databases:
-  - name: blogverse-db
-    plan: free # Free for 90 days
+        fromService:
+          type: web
+          name: blogverse-api
+          property: host
