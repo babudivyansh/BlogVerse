@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     SMTP_FROM_EMAIL: str = "noreply@blogverse.com"
     SMTP_USE_TLS: bool = True
 
+    # ── Resend (API-based email) ──────────────────────────────────
+    RESEND_API_KEY: Optional[str] = None
+
     # ── File Upload ──────────────────────────────────────────────
     UPLOAD_DIR: str = "uploads"
     MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5 MB
