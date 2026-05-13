@@ -33,8 +33,8 @@ export default function Navbar() {
       <div className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center gap-12">
           {/* Logo */}
-          <Link to="/" className="text-3xl font-black text-primary-500 font-heading tracking-tight hover:scale-105 transition-transform">
-            Blogverse
+          <Link to="/" className="hover:scale-105 transition-transform mb-2">
+            <img src="/logo.png" alt="Blogverse" className="h-12 w-auto object-contain" />
           </Link>
 
           {/* Desktop nav */}
@@ -146,6 +146,9 @@ export default function Navbar() {
             className="md:hidden overflow-hidden glassium-card rounded-b-[2rem] shadow-2xl border-t border-white/10"
           >
             <div className="p-8 space-y-4">
+              <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
+                <img src="/logo.png" alt="Blogverse" className="h-10 w-auto object-contain" />
+              </Link>
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
                   className="block text-xl font-black text-surface-800 dark:text-white hover:text-primary-500 transition-all">
