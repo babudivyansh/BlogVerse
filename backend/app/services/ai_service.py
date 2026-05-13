@@ -1,39 +1,41 @@
-"""AI service wrapping OpenAI API calls with graceful fallback."""
+"""AI service wrapping Gemini API calls with graceful fallback."""
 
-from app.core.config import settings
 import json
+from app.core.config import settings
 
 
 class AIService:
-    """Wrapper around OpenAI chat completions for blog-related AI features."""
+    """Wrapper around Gemini for blog-related AI features."""
 
     def __init__(self):
-        self.client = None
-        if settings.OPENAI_API_KEY:
+        self.is_configured = False
+        if settings.GEMINI_API_KEY:
             try:
-                print(f"DEBUG: Found API Key starting with {settings.OPENAI_API_KEY[:10]}")
-                from openai import AsyncOpenAI
-                self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+                import google.generativeai as genai
+                genai.configure(api_key=settings.GEMINI_API_KEY)
+                self.genai = genai
+                self.is_configured = True
             except Exception as e:
-                print(f"DEBUG: Failed to init OpenAI: {e}")
+                print(f"DEBUG: Failed to init Gemini: {e}")
 
-    async def _chat(self, system: str, user: str) -> str:
-        if not self.client:
-            raise Exception("OpenAI API key not configured")
-        response = await self.client.chat.completions.create(
-            model=settings.OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            temperature=0.7,
-            max_tokens=1024,
+    async def _chat(self, system: str, user: str, response_mime_type: str = "text/plain") -> str:
+        if not self.is_configured:
+            raise Exception("Gemini API key not configured")
+        
+        # We pass system instructions when initializing the model instance
+        model = self.genai.GenerativeModel(
+            model_name=settings.GEMINI_MODEL,
+            system_instruction=system,
+            generation_config=self.genai.GenerationConfig(
+                response_mime_type=response_mime_type,
+            )
         )
-        return response.choices[0].message.content.strip()
+        response = await model.generate_content_async(user)
+        return response.text.strip()
 
     async def generate_titles(self, topic: str) -> list[str]:
         """Generate 5 creative blog title suggestions."""
-        if not self.client:
+        if not self.is_configured:
             return [
                 f"The Ultimate Guide to {topic}",
                 f"Understanding {topic}: A Deep Dive",
@@ -49,7 +51,7 @@ class AIService:
 
     async def generate_summary(self, content: str) -> str:
         """Generate a concise 2-3 sentence summary."""
-        if not self.client:
+        if not self.is_configured:
             words = content.split()
             return " ".join(words[:50]) + "..." if len(words) > 50 else content
         return await self._chat(
@@ -59,7 +61,7 @@ class AIService:
 
     async def suggest_tags(self, content: str) -> list[str]:
         """Suggest 5-8 relevant tags."""
-        if not self.client:
+        if not self.is_configured:
             return ["technology", "programming", "tutorial", "guide", "tips"]
         text = await self._chat(
             "Suggest 5-8 relevant tags for this blog post. Return only lowercase tags separated by commas.",
@@ -69,17 +71,16 @@ class AIService:
 
     async def improve_content(self, content: str) -> str:
         """Improve writing quality, grammar, and clarity."""
-        if not self.client:
+        if not self.is_configured:
             return content
         return await self._chat(
             "Improve the following blog content for better clarity, grammar, and engagement. Keep the same markdown formatting. Return only the improved content.",
             content[:6000],
         )
 
-
     async def generate_full_blog(self, topic: str, tone: str = "professional") -> dict:
         """Generate a full blog post including title, content, summary, and tags."""
-        if not self.client:
+        if not self.is_configured:
             return {
                 "title": f"The Ultimate Guide to {topic}",
                 "content": f"# {topic}\n\nThis is a generated blog post about {topic}.",
@@ -88,8 +89,8 @@ class AIService:
             }
         
         system_prompt = (
-            "You are an expert blog writer. You must respond ONLY with a valid JSON object. "
-            "Do not include markdown code blocks around the JSON. "
+            "You are an expert blog writer. "
+            "You must respond ONLY with a valid JSON object. "
             "The JSON object must have exactly these keys: "
             "'title' (string), "
             "'content' (string, containing the full blog post in Markdown format), "
@@ -98,16 +99,11 @@ class AIService:
         )
         user_prompt = f"Write a comprehensive and engaging blog post about '{topic}'. The tone should be {tone}."
         
-        text = await self._chat(system_prompt, user_prompt)
+        # Requesting "application/json" forces Gemini to output valid JSON
+        text = await self._chat(system_prompt, user_prompt, response_mime_type="application/json")
         try:
-            # Clean up potential markdown blocks if the model ignored instructions
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return json.loads(text.strip())
+            return json.loads(text)
         except Exception:
-            # Fallback if parsing fails
             return {
                 "title": f"Error parsing AI output for {topic}",
                 "content": text,
@@ -117,19 +113,34 @@ class AIService:
 
     async def conversational_chat(self, messages: list[dict]) -> str:
         """Handle multi-turn conversational chat."""
-        if not self.client:
-            return "Hi there! I am currently running in offline mode. Please configure an OpenAI API key to chat with me!"
+        if not self.is_configured:
+            return "Hi there! I am currently running in offline mode. Please configure a Gemini API key to chat with me!"
         
-        sys_msg = {"role": "system", "content": "You are BlogVerse AI, a friendly, helpful, and creative writing assistant built into the BlogVerse platform. You help users brainstorm, write, edit, and navigate the site. Keep your responses friendly and relatively concise."}
+        sys_instr = "You are BlogVerse AI, a friendly, helpful, and creative writing assistant built into the BlogVerse platform. You help users brainstorm, write, edit, and navigate the site. Keep your responses friendly and relatively concise."
         
         try:
-            response = await self.client.chat.completions.create(
-                model=settings.OPENAI_MODEL,
-                messages=[sys_msg] + messages,
-                temperature=0.7,
-                max_tokens=500,
+            model = self.genai.GenerativeModel(
+                model_name=settings.GEMINI_MODEL,
+                system_instruction=sys_instr,
             )
-            return response.choices[0].message.content.strip()
+            
+            # Convert OpenAI message format to Gemini format
+            gemini_history = []
+            for msg in messages:
+                role = "user" if msg["role"] == "user" else "model"
+                gemini_history.append({"role": role, "parts": [msg["content"]]})
+                
+            # If the last message is from the user, we separate it out to pass to generate_content_async
+            # Actually, we can just start a chat session
+            if not gemini_history:
+                return "How can I help you today?"
+                
+            latest_message = gemini_history.pop()["parts"][0]
+            
+            chat_session = model.start_chat(history=gemini_history)
+            response = await chat_session.send_message_async(latest_message)
+            return response.text.strip()
+            
         except Exception as e:
             return f"I'm sorry, I encountered an error: {str(e)}"
 
