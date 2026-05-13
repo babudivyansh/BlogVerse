@@ -14,6 +14,10 @@ import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Admin from './pages/Admin';
 import VerifyEmail from './pages/VerifyEmail';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy';
+import Terms from './pages/legal/Terms';
+import HelpCenter from './pages/legal/HelpCenter';
+import ContactUs from './pages/legal/ContactUs';
 import Chatbot from './components/common/Chatbot';
 
 export default function App() {
@@ -49,6 +53,10 @@ export default function App() {
                   <Route path="/profile/:username" element={<Profile />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/help" element={<HelpCenter />} />
+                  <Route path="/contact" element={<ContactUs />} />
                 </Routes>
               </AnimatePresence>
             </main>

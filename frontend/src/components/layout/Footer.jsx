@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { HiOutlineHeart, HiOutlineGlobeAlt, HiOutlineMail, HiOutlineRss } from 'react-icons/hi';
+import { HiOutlineHeart, HiOutlineGlobeAlt, HiOutlineMail } from 'react-icons/hi';
 
 export default function Footer() {
   return (
@@ -16,10 +16,10 @@ export default function Footer() {
 
         <div className="flex flex-wrap justify-center gap-10">
           {[
-            { label: 'Privacy Policy', to: '#' },
-            { label: 'Terms of Service', to: '#' },
-            { label: 'Help Center', to: '#' },
-            { label: 'RSS Feed', to: '#' },
+            { label: 'Privacy Policy', to: '/privacy' },
+            { label: 'Terms of Service', to: '/terms' },
+            { label: 'Help Center', to: '/help' },
+            { label: 'Contact Us', to: '/contact' },
           ].map(link => (
             <Link key={link.label} to={link.to} className="text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 transition-all uppercase tracking-widest">
               {link.label}
@@ -31,7 +31,7 @@ export default function Footer() {
           {[
             { Icon: HiOutlineGlobeAlt, label: 'Globe' },
             { Icon: HiOutlineMail, label: 'Email' },
-            { Icon: HiOutlineRss, label: 'RSS' },
+            { Icon: HiOutlineHeart, label: 'Love' },
           ].map(item => (
             <div key={item.label} className="w-12 h-12 rounded-2xl glassium glint-border flex items-center justify-center cursor-pointer text-surface-500 hover:text-primary-500 hover:scale-110 transition-all shadow-sm">
               <item.Icon className="w-5 h-5" />
