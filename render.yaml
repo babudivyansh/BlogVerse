@@ -21,6 +21,16 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USERNAME
+        value: blogversebusiness@gmail.com
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        value: blogversebusiness@gmail.com
 
   # ── Frontend Static Site (React/Vite) ──────────────────────────
   - type: web
