@@ -6,7 +6,7 @@ if (baseURL && !baseURL.startsWith('http') && !baseURL.startsWith('/')) {
   if (!baseURL.includes('.')) {
     baseURL = `${baseURL}.onrender.com`;
   }
-  baseURL = `https://${baseURL}`;
+  baseURL = `https://${baseURL}/api`;
 }
 
 const api = axios.create({
