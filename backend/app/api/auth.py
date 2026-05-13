@@ -30,13 +30,14 @@ def signup(data: UserCreate, background_tasks: BackgroundTasks, db: Session = De
         hashed_password=hash_password(data.password),
         full_name=data.full_name,
         verification_token=token,
+        is_verified=True,  # TEMPORARY: Auto-verify user to bypass SMTP block
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # Send verification email in background
-    background_tasks.add_task(send_verification_email, user.email, token)
+    # TEMPORARY: Disabled email verification
+    # background_tasks.add_task(send_verification_email, user.email, token)
     return user
 
 
@@ -47,11 +48,12 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
     
-    if not user.is_verified:
-        raise HTTPException(
-            status.HTTP_403_FORBIDDEN, 
-            "Please verify your email address before logging in. Check your inbox for a verification link."
-        )
+    # TEMPORARY: Disabled email verification check
+    # if not user.is_verified:
+    #     raise HTTPException(
+    #         status.HTTP_403_FORBIDDEN, 
+    #         "Please verify your email address before logging in. Check your inbox for a verification link."
+    #     )
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return Token(access_token=access_token)
