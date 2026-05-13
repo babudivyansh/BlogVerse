@@ -25,7 +25,7 @@ A modern, full-stack blog platform built with **React + Tailwind CSS v4** fronte
 - **Search & Pagination** — Filter by category, tag, author
 - **Admin APIs** — Stats, user management, blog management
 
-### AI Features (OpenAI)
+### AI Features (Google Gemini)
 - 🎯 Title generation
 - 📝 Summary generation
 - 🏷️ Tag suggestions
@@ -42,7 +42,7 @@ A modern, full-stack blog platform built with **React + Tailwind CSS v4** fronte
 | Backend | Python FastAPI, Uvicorn |
 | Database | PostgreSQL, SQLAlchemy ORM |
 | Auth | JWT (python-jose), bcrypt |
-| AI | OpenAI API |
+| AI | Google Gemini API |
 | Images | Local storage + Cloudinary |
 
 ---
@@ -183,7 +183,7 @@ Blog Website/
 | `DATABASE_URL` | ✅ | PostgreSQL connection string |
 | `SECRET_KEY` | ✅ | JWT signing key |
 | `FRONTEND_URL` | ✅ | Frontend URL for CORS & emails |
-| `OPENAI_API_KEY` | ❌ | Enables AI features |
+| `GEMINI_API_KEY` | ❌ | Enables AI features |
 | `CLOUDINARY_*` | ❌ | Enables cloud image storage |
 | `SMTP_*` | ❌ | Enables real verification emails |
 
