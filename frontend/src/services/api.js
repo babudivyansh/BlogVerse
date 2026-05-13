@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 let baseURL = import.meta.env.VITE_API_URL || '/api';
-// Fix for Render host variable missing the protocol
+// Fix for Render host variable missing the protocol and public domain
 if (baseURL && !baseURL.startsWith('http') && !baseURL.startsWith('/')) {
+  if (!baseURL.includes('.')) {
+    baseURL = `${baseURL}.onrender.com`;
+  }
   baseURL = `https://${baseURL}`;
 }
 
