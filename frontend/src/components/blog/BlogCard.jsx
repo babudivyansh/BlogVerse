@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineHeart, HiOutlineEye, HiOutlineClock } from 'react-icons/hi';
 import { format } from 'date-fns';
+import { formatImageUrl } from '../../services/api';
 
 export default function BlogCard({ blog, index = 0 }) {
   return (
@@ -15,7 +16,7 @@ export default function BlogCard({ blog, index = 0 }) {
           {/* Cover image */}
           <div className="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800 rounded-t-[1.5rem]">
             {blog.cover_image ? (
-              <img src={blog.cover_image} alt={blog.title}
+              <img src={formatImageUrl(blog.cover_image)} alt={blog.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 opacity-80" />

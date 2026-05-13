@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import MDEditor from '@uiw/react-md-editor';
 import { HiOutlineSparkles, HiOutlinePhotograph, HiOutlineTag, HiOutlineLightningBolt, HiOutlineArrowLeft, HiOutlineDocumentText, HiOutlineDotsHorizontal, HiOutlineHashtag } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { createBlog, updateBlog, getBlog, uploadImage, aiGenerateTitle, aiGenerateSummary, aiSuggestTags, aiImproveContent, aiGenerateBlog } from '../services/api';
+import { createBlog, updateBlog, getBlog, uploadImage, aiGenerateTitle, aiGenerateSummary, aiSuggestTags, aiImproveContent, aiGenerateBlog, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -161,7 +161,7 @@ export default function CreateBlog() {
                 <div className="mb-12">
                   {coverImage ? (
                     <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl glint-border group">
-                      <img src={coverImage} alt="Cover" className="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-[3s]" />
+                      <img src={formatImageUrl(coverImage)} alt="Cover" className="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-[3s]" />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button onClick={() => setCoverImage('')}
                           className="px-6 py-3 glassium text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-500 transition-all">Change Cover</button>

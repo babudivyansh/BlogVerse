@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { HiOutlineHeart, HiHeart, HiOutlineShare, HiOutlineClock, HiOutlineEye } from 'react-icons/hi';
 import { FaTwitter, FaFacebook, FaLinkedin, FaLink } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import { getBlog, toggleLike, getComments, createComment, getBlogs } from '../services/api';
+import { getBlog, toggleLike, getComments, createComment, getBlogs, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import BlogCard from '../components/blog/BlogCard';
@@ -85,7 +85,7 @@ export default function BlogPost() {
           {/* Header Image */}
           {blog.cover_image && (
             <div className="w-full h-[300px] sm:h-[450px] lg:h-[600px] overflow-hidden">
-              <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[2s] ease-out" />
+              <img src={formatImageUrl(blog.cover_image)} alt={blog.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[2s] ease-out" />
             </div>
           )}
 

@@ -39,7 +39,7 @@ app.add_middleware(
 )
 
 # ── Static files (uploaded images) ───────────────────────────────
-uploads_dir = Path(settings.UPLOAD_DIR)
+uploads_dir = Path(settings.UPLOAD_DIR).resolve()
 uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 

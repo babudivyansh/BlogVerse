@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus, HiOutlineEye, HiOutlineHeart, HiOutlineDocumentText } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { getBlogs, deleteBlog } from '../services/api';
+import { getBlogs, deleteBlog, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 
@@ -97,7 +97,7 @@ export default function Dashboard() {
               className="glassium-card glint-border p-5 flex items-center gap-6 group hover:scale-[1.01] transition-all">
               {/* Thumbnail */}
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-surface-100 dark:bg-white/5 shrink-0 shadow-inner">
-                {blog.cover_image ? <img src={blog.cover_image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 opacity-20" />}
+                {blog.cover_image ? <img src={formatImageUrl(blog.cover_image)} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 opacity-20" />}
               </div>
               {/* Info */}
               <div className="flex-1 min-w-0">

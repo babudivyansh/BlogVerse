@@ -14,6 +14,20 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Helper to format image URLs (Cloudinary vs Local)
+export const formatImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  
+  // For local uploads, prepend the server URL
+  const serverURL = baseURL.replace('/api', '');
+  // Remove duplicate slashes if any
+  const cleanBase = serverURL.endsWith('/') ? serverURL.slice(0, -1) : serverURL;
+  const cleanPath = url.startsWith('/') ? url : `/${url}`;
+  
+  return `${cleanBase}${cleanPath}`;
+};
+
 // Attach token from localStorage on init
 const token = localStorage.getItem('token');
 if (token) {
