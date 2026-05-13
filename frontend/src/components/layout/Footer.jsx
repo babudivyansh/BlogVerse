@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 py-12 gap-8">
         <div className="flex flex-col items-center md:items-start gap-3">
           <Link to="/" className="hover:scale-105 transition-transform mb-2">
-            <img src="/logo.png" alt="Blogverse" className="h-12 w-auto object-contain" />
+            <img src="/logo.png" alt="Blogverse" className="h-64 w-auto object-contain -my-20" />
           </Link>
           <p className="text-sm font-bold text-surface-500 dark:text-surface-400">
             © {new Date().getFullYear()} Blogverse. Crystalline Clarity for Writers.

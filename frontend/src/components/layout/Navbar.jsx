@@ -33,8 +33,8 @@ export default function Navbar() {
       <div className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center gap-12">
           {/* Logo */}
-          <Link to="/" className="hover:scale-105 transition-transform mb-2">
-            <img src="/logo.png" alt="Blogverse" className="h-12 w-auto object-contain" />
+          <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
+            <img src="/logo.png" alt="Blogverse" className="h-48 w-auto object-contain -my-16" />
           </Link>
 
           {/* Desktop nav */}
@@ -52,13 +52,13 @@ export default function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-4">
           {/* Search bar inside nav */}
-          <div className="hidden lg:flex items-center glass-input rounded-full px-5 py-2 mr-2 border-white/30">
-            <HiOutlineSearch className="w-5 h-5 text-surface-400 mr-2" />
+          <div className="hidden lg:flex items-center glass-input rounded-2xl px-6 py-2.5 mr-4 group focus-within:ring-2 focus-within:ring-primary-400/50 focus-within:bg-white/60 dark:focus-within:bg-white/10 transition-all duration-300">
+            <HiOutlineSearch className="w-5 h-5 text-surface-500 dark:text-surface-400 group-focus-within:text-primary-500 transition-colors" />
             <form onSubmit={handleSearch}>
               <input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none focus:ring-0 text-sm font-bold w-44 text-surface-800 dark:text-white placeholder:text-surface-400" 
+                className="bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-sm font-bold w-56 text-surface-800 dark:text-white placeholder:text-surface-500 dark:placeholder:text-surface-400 ml-2" 
                 placeholder="Search insights..." 
               />
             </form>
@@ -147,7 +147,7 @@ export default function Navbar() {
           >
             <div className="p-8 space-y-4">
               <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
-                <img src="/logo.png" alt="Blogverse" className="h-10 w-auto object-contain" />
+                <img src="/logo.png" alt="Blogverse" className="h-32 w-auto object-contain -my-10" />
               </Link>
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
