@@ -78,10 +78,14 @@ def send_verification_email(to_email: str, token: str) -> None:
     if settings.SMTP_HOST and settings.SMTP_USERNAME:
         msg = _build_verification_email(to_email, token)
         try:
-            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+            print(f"[DEBUG] Attempting SMTP connection to {settings.SMTP_HOST}:{settings.SMTP_PORT} for {settings.SMTP_USERNAME}...")
+            with smtplib.SMTP(settings.SMTP_HOST, int(settings.SMTP_PORT), timeout=10) as server:
+                print("[DEBUG] Connected. Starting TLS...")
                 if settings.SMTP_USE_TLS:
                     server.starttls()
+                print("[DEBUG] TLS started. Logging in...")
                 server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                print("[DEBUG] Logged in. Sending message...")
                 server.send_message(msg)
             print(f"[EMAIL] Verification email sent via SMTP to {to_email}")
         except Exception as exc:
