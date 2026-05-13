@@ -22,7 +22,7 @@ services:
       DATABASE_URL: postgresql://user:password@db:5432/blogverse
       SECRET_KEY: change-this-to-a-random-secret-in-production
       FRONTEND_URL: http://localhost
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     ports:
       - "8000:8000"
     volumes:

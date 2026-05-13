@@ -41,36 +41,29 @@ export default function Auth() {
     setLoading(false);
   };
 
-  const inputClass = "w-full px-4 py-3 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-900 dark:text-white placeholder:text-surface-400 text-sm transition-all";
+  const inputClass = "w-full px-6 py-4 rounded-2xl glassium glint-border focus:ring-2 focus:ring-primary-500/30 text-surface-800 dark:text-white placeholder:text-surface-400 text-sm font-bold transition-all outline-none";
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-10">
-      {/* Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl" />
-      </div>
-
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md">
-        <div className="glass-card rounded-3xl p-8 shadow-2xl shadow-primary-500/5">
+    <div className="min-h-screen flex items-center justify-center px-4 pt-32 pb-20">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-lg">
+        <div className="glassium-card glint-border p-10 sm:p-14 shadow-2xl">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 rounded-2xl gradient-bg flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-lg shadow-primary-500/25">B</div>
-            <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-              {tab === 'login' ? 'Welcome Back' : 'Create Account'}
+          <div className="text-center mb-12">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-black text-3xl mx-auto mb-6 shadow-xl">B</div>
+            <h1 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">
+              {tab === 'login' ? 'Welcome Back' : 'Join the Verse'}
             </h1>
-            <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
-              {tab === 'login' ? 'Sign in to continue' : 'Join the community'}
+            <p className="text-surface-500 font-bold mt-2">
+              {tab === 'login' ? 'Enter the digital reflection' : 'Start your high-end journey'}
             </p>
           </div>
 
           {/* Tab toggle */}
-          <div className="flex rounded-xl bg-surface-100 dark:bg-surface-800 p-1 mb-6">
+          <div className="flex rounded-2xl glassium glint-border p-1.5 mb-10">
             {['login', 'signup'].map(t => (
               <button key={t} onClick={() => setTab(t)}
-                className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${tab === t ? 'bg-white dark:bg-surface-700 shadow-sm text-surface-900 dark:text-white' : 'text-surface-500'}`}>
+                className={`flex-1 py-3 text-sm font-black rounded-[1.25rem] transition-all uppercase tracking-widest ${tab === t ? 'bg-white dark:bg-white/10 shadow-lg text-primary-600 dark:text-primary-400' : 'text-surface-400 hover:text-surface-600'}`}>
                 {t === 'login' ? 'Login' : 'Sign Up'}
               </button>
             ))}
@@ -78,41 +71,43 @@ export default function Auth() {
 
           {/* Login form */}
           {tab === 'login' ? (
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Email</label>
+                <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Email Address</label>
                 <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className={inputClass} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Password</label>
+                <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Password</label>
                 <input type="password" name="password" required value={form.password} onChange={handleChange} placeholder="••••••••" className={inputClass} />
               </div>
               <button type="submit" disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 transition-all disabled:opacity-60 text-sm">
-                {loading ? 'Signing in...' : 'Sign In'}
+                className="btn-glassium-primary w-full py-4 text-lg">
+                {loading ? 'Entering...' : 'Enter Now'}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleSignup} className="space-y-4">
+            <form onSubmit={handleSignup} className="space-y-6">
               <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Full Name</label>
+                <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Full Name</label>
                 <input type="text" name="full_name" value={form.full_name} onChange={handleChange} placeholder="John Doe" className={inputClass} />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Username</label>
-                <input type="text" name="username" required value={form.username} onChange={handleChange} placeholder="johndoe" className={inputClass} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Username</label>
+                  <input type="text" name="username" required value={form.username} onChange={handleChange} placeholder="johndoe" className={inputClass} />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Email</label>
+                  <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className={inputClass} />
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Email</label>
-                <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className={inputClass} />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-surface-600 dark:text-surface-400 mb-1.5">Password</label>
+                <label className="block text-xs font-black text-surface-500 uppercase tracking-widest mb-2 px-2">Secure Password</label>
                 <input type="password" name="password" required minLength={6} value={form.password} onChange={handleChange} placeholder="Min. 6 characters" className={inputClass} />
               </div>
               <button type="submit" disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 transition-all disabled:opacity-60 text-sm">
-                {loading ? 'Creating account...' : 'Create Account'}
+                className="btn-glassium-primary w-full py-4 text-lg">
+                {loading ? 'Creating...' : 'Create Account'}
               </button>
             </form>
           )}

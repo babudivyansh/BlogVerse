@@ -66,31 +66,31 @@ export default function Search() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-24 pb-12">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search bar */}
-        <div className="max-w-2xl mx-auto mb-10">
-          <h1 className="text-3xl font-bold text-center text-surface-900 dark:text-white mb-6">Explore Blogs</h1>
+        <div className="max-w-3xl mx-auto mb-16">
+          <h1 className="text-5xl font-black text-center text-surface-800 dark:text-white mb-10 font-heading tracking-tight">Discover Stories</h1>
           <form onSubmit={handleSearch} className="relative">
-            <HiOutlineSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-400" />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search articles..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-900 dark:text-white text-sm" />
+            <HiOutlineSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary-500" />
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="What are you curious about?"
+              className="w-full pl-16 pr-6 py-5 rounded-[2rem] glassium glint-border focus:ring-2 focus:ring-primary-500/30 text-surface-800 dark:text-white font-bold text-lg outline-none" />
           </form>
         </div>
 
         {/* Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="glassium-card glint-border p-8 mb-12 space-y-8">
           {categories.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2">Categories</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="text-xs font-black text-surface-500 uppercase tracking-[0.2em] mb-4 px-2">Categories</h3>
+              <div className="flex flex-wrap gap-3">
                 <button onClick={() => setFilter('category', '')}
-                  className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${!activeCategory ? 'bg-primary-500 text-white' : 'glass-card text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5'}`}>
+                  className={`px-5 py-2.5 rounded-2xl text-sm font-black transition-all ${!activeCategory ? 'bg-primary-500 text-white shadow-lg' : 'glassium hover:bg-white/10 dark:hover:bg-white/5 text-surface-600 dark:text-surface-300'}`}>
                   All
                 </button>
                 {categories.map(cat => (
                   <button key={cat.name} onClick={() => setFilter('category', cat.name)}
-                    className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${activeCategory === cat.name ? 'bg-primary-500 text-white' : 'glass-card text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5'}`}>
+                    className={`px-5 py-2.5 rounded-2xl text-sm font-black transition-all ${activeCategory === cat.name ? 'bg-primary-500 text-white shadow-lg' : 'glassium hover:bg-white/10 dark:hover:bg-white/5 text-surface-600 dark:text-surface-300'}`}>
                     {cat.name}
                   </button>
                 ))}
@@ -99,11 +99,11 @@ export default function Search() {
           )}
           {allTags.length > 0 && (
             <div>
-              <h3 className="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2">Tags</h3>
+              <h3 className="text-xs font-black text-surface-500 uppercase tracking-[0.2em] mb-4 px-2">Trending Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {allTags.slice(0, 15).map(tag => (
                   <button key={tag.id} onClick={() => setFilter('tag', activeTag === tag.name ? '' : tag.name)}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${activeTag === tag.name ? 'bg-primary-500 text-white' : 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'}`}>
+                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${activeTag === tag.name ? 'bg-primary-500 text-white shadow-md' : 'glassium text-primary-600 dark:text-primary-400'}`}>
                     #{tag.name}
                   </button>
                 ))}
@@ -115,14 +115,14 @@ export default function Search() {
         {/* Results */}
         {loading ? <Loading /> : blogs.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {blogs.map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i} />)}
             </div>
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10">
+              <div className="flex justify-center gap-3 mt-16">
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button key={i + 1} onClick={() => setPage(i + 1)}
-                    className={`w-10 h-10 rounded-xl text-sm font-medium transition-all ${page === i + 1 ? 'bg-primary-500 text-white' : 'glass-card text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5'}`}>
+                    className={`w-12 h-12 rounded-2xl text-sm font-black transition-all ${page === i + 1 ? 'bg-primary-500 text-white shadow-lg' : 'glassium hover:bg-white/10 dark:hover:bg-white/5 text-surface-600 dark:text-surface-300'}`}>
                     {i + 1}
                   </button>
                 ))}
@@ -130,9 +130,9 @@ export default function Search() {
             )}
           </>
         ) : (
-          <div className="text-center py-20">
-            <p className="text-surface-400 text-lg">No blogs found</p>
-            <p className="text-surface-400 text-sm mt-1">Try a different search or filter</p>
+          <div className="text-center py-24 glassium-card glint-border border-dashed border-2">
+            <p className="text-surface-400 font-black text-2xl">The verse is silent.</p>
+            <p className="text-surface-400 font-bold mt-2">Try adjusting your filters or search query.</p>
           </div>
         )}
       </div>

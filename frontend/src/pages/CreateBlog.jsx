@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import MDEditor from '@uiw/react-md-editor';
-import { HiOutlineSparkles, HiOutlinePhotograph, HiOutlineTag, HiOutlineLightningBolt } from 'react-icons/hi';
+import { HiOutlineSparkles, HiOutlinePhotograph, HiOutlineTag, HiOutlineLightningBolt, HiOutlineArrowLeft, HiOutlineDocumentText, HiOutlineDotsHorizontal, HiOutlineHashtag } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import { createBlog, updateBlog, getBlog, uploadImage, aiGenerateTitle, aiGenerateSummary, aiSuggestTags, aiImproveContent, aiGenerateBlog } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -119,113 +119,169 @@ export default function CreateBlog() {
   const categories = ['Technology', 'Design', 'Programming', 'AI & ML', 'Web Dev', 'DevOps', 'Mobile', 'Data Science', 'Career', 'Other'];
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-20 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main editor */}
-          <div className="flex-1">
-            <div className="glass-card rounded-2xl p-6 mb-4">
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Blog title..."
-                className="w-full text-3xl font-bold bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder:text-surface-300 dark:placeholder:text-surface-600 mb-4" />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-32">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+        {/* Header Section */}
+        <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-8">
+          <div>
+            <Link to="/dashboard" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-surface-400 hover:text-primary-500 transition-colors mb-6 group">
+              <HiOutlineArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
+              Back to Studio
+            </Link>
+            <h1 className="text-5xl sm:text-6xl font-black text-surface-800 dark:text-white font-heading tracking-tight leading-[1.1]">
+              Craft Your <span className="text-primary-500">Narrative.</span>
+            </h1>
+          </div>
+          
+          <div className="flex gap-4">
+            <button onClick={() => handleSubmit(false)} disabled={saving}
+              className="px-8 py-4 rounded-2xl glassium text-surface-600 dark:text-surface-300 font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 border-white/20">
+              {saving ? 'Preserving...' : 'Save Draft'}
+            </button>
+            <button onClick={() => handleSubmit(true)} disabled={saving}
+              className="btn-glassium-primary px-10 py-4 text-xs">
+              {saving ? 'Broadcasting...' : 'Publish Story'}
+            </button>
+          </div>
+        </div>
 
-              {/* Cover image */}
-              <div className="mb-4">
-                {coverImage ? (
-                  <div className="relative rounded-xl overflow-hidden mb-2">
-                    <img src={coverImage} alt="Cover" className="w-full h-48 object-cover" />
-                    <button onClick={() => setCoverImage('')}
-                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg text-xs">Remove</button>
+        <div className="flex flex-col xl:flex-row gap-12">
+          {/* Main Writing Canvas */}
+          <div className="flex-1 space-y-10">
+            <div className="glassium-card glint-border p-1 shadow-2xl">
+              <div className="p-8 sm:p-12">
+                <div className="group mb-12">
+                  <div className="glass-input rounded-[2rem] p-6 group-hover:border-primary-500/30 transition-all cursor-text">
+                    <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title of your next masterpiece..."
+                      className="w-full text-4xl sm:text-6xl font-black bg-transparent border-none outline-none text-surface-900 dark:text-white placeholder:text-surface-200 dark:placeholder:text-surface-800 font-heading tracking-tight cursor-text" />
                   </div>
-                ) : (
-                  <label className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-surface-200 dark:border-surface-700 cursor-pointer hover:border-primary-400 transition-colors">
-                    <HiOutlinePhotograph className="w-5 h-5 text-surface-400" />
-                    <span className="text-sm text-surface-500">Add cover image</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                  </label>
-                )}
-              </div>
+                </div>
 
-              {/* Markdown editor */}
-              <div data-color-mode={dark ? 'dark' : 'light'}>
-                <MDEditor value={content} onChange={setContent} height={500}
-                  preview="live" hideToolbar={false}
-                  textareaProps={{ placeholder: 'Write your blog in markdown...' }} />
+                {/* Cover Image Slot */}
+                <div className="mb-12">
+                  {coverImage ? (
+                    <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl glint-border group">
+                      <img src={coverImage} alt="Cover" className="w-full h-[400px] object-cover transform group-hover:scale-105 transition-transform duration-[3s]" />
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onClick={() => setCoverImage('')}
+                          className="px-6 py-3 glassium text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-500 transition-all">Change Cover</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center gap-6 p-20 rounded-[2.5rem] border-2 border-dashed border-surface-200 dark:border-white/5 glassium cursor-pointer hover:border-primary-500/50 hover:bg-primary-500/[0.02] transition-all group">
+                      <div className="w-20 h-20 rounded-3xl bg-primary-500/10 flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-inner">
+                        <HiOutlinePhotograph className="w-10 h-10 text-primary-500" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-black text-surface-800 dark:text-white font-heading mb-2">Visual Aura</p>
+                        <p className="text-sm font-bold text-surface-400">Add a stunning cover image to captivate readers</p>
+                      </div>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                    </label>
+                  )}
+                </div>
+
+                {/* Editor Container */}
+                <div className="group">
+                  <div className="glass-input rounded-[2.5rem] overflow-hidden border-white/20 group-hover:border-primary-500/30 transition-all" data-color-mode={dark ? 'dark' : 'light'}>
+                    <MDEditor value={content} onChange={setContent} height={700}
+                      preview="live" hideToolbar={false}
+                      textareaProps={{ placeholder: 'The canvas is yours. Write something profound...' }} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="w-full lg:w-80 space-y-4">
-            {/* Publish */}
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="font-semibold text-surface-900 dark:text-white mb-4">Publish</h3>
-              <div className="space-y-3">
-                <button onClick={() => handleSubmit(false)} disabled={saving}
-                  className="w-full py-2.5 rounded-xl border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300 font-medium text-sm hover:bg-surface-50 dark:hover:bg-white/5 transition-all disabled:opacity-60">
-                  {saving ? 'Saving...' : 'Save Draft'}
-                </button>
-                <button onClick={() => handleSubmit(true)} disabled={saving}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold text-sm hover:shadow-lg hover:shadow-primary-500/25 transition-all disabled:opacity-60">
-                  {saving ? 'Publishing...' : 'Publish'}
-                </button>
+          {/* Intelligence & Metadata Sidebar */}
+          <div className="w-full xl:w-[400px] space-y-10">
+            {/* AI Magic Box */}
+            <div className="glassium-card glint-border p-8 bg-gradient-to-br from-primary-500/[0.08] to-transparent border-primary-500/20 shadow-2xl">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-xl font-black text-primary-600 dark:text-primary-400 flex items-center gap-3 font-heading">
+                  <HiOutlineLightningBolt className="w-6 h-6 animate-pulse" /> AI Muse
+                </h3>
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary-500/60">Powered by Gemini</span>
+              </div>
+
+              <button onClick={() => handleAI('full-blog')} disabled={!!aiLoading}
+                className="btn-glassium-primary w-full py-5 text-sm mb-8 flex items-center justify-center gap-3 group">
+                <HiOutlineSparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                {aiLoading === 'full-blog' ? 'Manifesting Story...' : 'Generate Full Draft'}
+              </button>
+              
+              <div className="grid grid-cols-2 gap-3 pt-6 border-t border-primary-500/10">
+                {[
+                  { key: 'title', label: 'Headline', Icon: HiOutlineDocumentText },
+                  { key: 'summary', label: 'Summary', Icon: HiOutlineDotsHorizontal },
+                  { key: 'tags', label: 'Tags', Icon: HiOutlineHashtag },
+                  { key: 'improve', label: 'Refine', Icon: HiOutlineSparkles },
+                ].map(tool => (
+                  <button key={tool.key} onClick={() => handleAI(tool.key)} disabled={!!aiLoading}
+                    className="flex flex-col items-center gap-3 p-4 rounded-2xl glassium hover:bg-primary-500/[0.05] hover:text-primary-500 transition-all group disabled:opacity-50">
+                    <tool.Icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{tool.label}</span>
+                    {aiLoading === tool.key && <div className="w-full h-0.5 bg-primary-500 animate-pulse mt-1" />}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Category */}
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="font-semibold text-surface-900 dark:text-white mb-3">Category</h3>
-              <select value={category} onChange={e => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50">
-                <option value="">Select category</option>
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+            {/* Context & Taxonomy */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="text-xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Context</h3>
+                <span className="text-[10px] font-black uppercase tracking-widest text-surface-400">Metadata</span>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Domain Card */}
+                <div className="glassium-card glint-border p-6 shadow-xl group hover:bg-white/50 dark:hover:bg-white/[0.02] transition-all cursor-pointer">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 rounded-xl glassium flex items-center justify-center text-primary-500 shadow-inner group-hover:scale-110 transition-transform">
+                      <HiOutlineDocumentText className="w-5 h-5" />
+                    </div>
+                    <label className="text-[10px] font-black text-surface-500 dark:text-surface-400 uppercase tracking-[0.2em] cursor-pointer">Story Domain</label>
+                  </div>
+                  <div className="relative glass-input rounded-xl p-1 group-hover:border-primary-500/30 transition-all">
+                    <select value={category} onChange={e => setCategory(e.target.value)}
+                      className="w-full px-4 py-3 bg-transparent border-none text-lg font-black text-surface-800 dark:text-white outline-none appearance-none cursor-pointer">
+                      <option value="" className="dark:bg-surface-900">Choose Category</option>
+                      {categories.map(c => <option key={c} value={c} className="dark:bg-surface-900">{c}</option>)}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-surface-400">
+                      <HiOutlineDotsHorizontal className="w-4 h-4 rotate-90" />
+                    </div>
+                  </div>
+                </div>
 
-            {/* Tags */}
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="font-semibold text-surface-900 dark:text-white mb-3 flex items-center gap-2">
-                <HiOutlineTag className="w-4 h-4" /> Tags
-              </h3>
-              <input value={tags} onChange={e => setTags(e.target.value)} placeholder="react, javascript, web"
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50" />
-              <p className="text-xs text-surface-400 mt-1">Separate with commas</p>
-            </div>
+                {/* Essences Card */}
+                <div className="glassium-card glint-border p-6 shadow-xl group hover:bg-white/50 dark:hover:bg-white/[0.02] transition-all cursor-text">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 rounded-xl glassium flex items-center justify-center text-primary-500 shadow-inner group-hover:scale-110 transition-transform">
+                      <HiOutlineHashtag className="w-5 h-5" />
+                    </div>
+                    <label className="text-[10px] font-black text-surface-500 dark:text-surface-400 uppercase tracking-[0.2em] cursor-text">The Essences</label>
+                  </div>
+                  <div className="glass-input rounded-xl p-1 group-hover:border-primary-500/30 transition-all">
+                    <input value={tags} onChange={e => setTags(e.target.value)} placeholder="tech, mind, future..."
+                      className="w-full px-4 py-3 bg-transparent border-none text-lg font-black text-surface-800 dark:text-white outline-none placeholder:text-surface-300 dark:placeholder:text-surface-700 cursor-text" />
+                  </div>
+                </div>
 
-            {/* Summary */}
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="font-semibold text-surface-900 dark:text-white mb-3">Summary</h3>
-              <textarea value={summary} onChange={e => setSummary(e.target.value)} placeholder="Brief description..."
-                className="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-none h-24" />
-            </div>
-
-            {/* AI Tools */}
-            <div className="glass-card rounded-2xl p-5 mb-4 bg-gradient-to-br from-primary-500/10 to-transparent border-primary-500/20">
-              <h3 className="font-semibold text-primary-600 dark:text-primary-400 mb-3 flex items-center gap-2">
-                <HiOutlineLightningBolt className="w-5 h-5" /> Auto-Generate
-              </h3>
-              <button onClick={() => handleAI('full-blog')} disabled={!!aiLoading}
-                className="w-full py-3 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium shadow-lg hover:shadow-primary-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-                {aiLoading === 'full-blog' ? 'Generating Magic...' : 'Generate Full Blog Post'}
-              </button>
-            </div>
-
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="font-semibold text-surface-900 dark:text-white mb-3 flex items-center gap-2">
-                <HiOutlineSparkles className="w-4 h-4 text-primary-500" /> AI Helpers
-              </h3>
-              <div className="space-y-2">
-                {[
-                  { key: 'title', label: 'Generate Title' },
-                  { key: 'summary', label: 'Generate Summary' },
-                  { key: 'tags', label: 'Suggest Tags' },
-                  { key: 'improve', label: 'Improve Content' },
-                ].map(tool => (
-                  <button key={tool.key} onClick={() => handleAI(tool.key)} disabled={!!aiLoading}
-                    className="w-full py-2 px-3 rounded-xl text-sm text-left text-surface-700 dark:text-surface-300 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 transition-all disabled:opacity-50 flex items-center justify-between">
-                    {tool.label}
-                    {aiLoading === tool.key && <span className="text-xs text-primary-500">Loading...</span>}
-                  </button>
-                ))}
+                {/* Summary Card */}
+                <div className="glassium-card glint-border p-6 shadow-xl group hover:bg-white/50 dark:hover:bg-white/[0.02] transition-all cursor-text">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 rounded-xl glassium flex items-center justify-center text-primary-500 shadow-inner group-hover:scale-110 transition-transform">
+                      <HiOutlineDotsHorizontal className="w-5 h-5" />
+                    </div>
+                    <label className="text-[10px] font-black text-surface-500 dark:text-surface-400 uppercase tracking-[0.2em] cursor-text">Narrative Aura</label>
+                  </div>
+                  <div className="glass-input rounded-xl p-1 group-hover:border-primary-500/30 transition-all">
+                    <textarea value={summary} onChange={e => setSummary(e.target.value)} placeholder="A brief reflection of your story..."
+                      className="w-full px-4 py-3 bg-transparent border-none text-lg font-black text-surface-800 dark:text-white outline-none placeholder:text-surface-300 dark:placeholder:text-surface-700 resize-none h-32 leading-relaxed cursor-text" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

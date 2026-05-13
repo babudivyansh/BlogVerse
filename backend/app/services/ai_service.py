@@ -16,7 +16,8 @@ class AIService:
                 self.genai = genai
                 self.is_configured = True
             except Exception as e:
-                print(f"DEBUG: Failed to init Gemini: {e}")
+                pass
+
 
     async def _chat(self, system: str, user: str, response_mime_type: str = "text/plain") -> str:
         if not self.is_configured:

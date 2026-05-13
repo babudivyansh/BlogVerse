@@ -29,128 +29,110 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <nav className="fixed top-0 w-full z-50 bg-white/60 dark:bg-surface-950/60 backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(124,93,250,0.08)] border-b border-white/20 dark:border-white/5 transition-all">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+        <div className="flex items-center gap-12">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary-500/25">
-              B
-            </div>
-            <span className="text-xl font-bold gradient-text hidden sm:block">BlogVerse</span>
+          <Link to="/" className="text-3xl font-black text-primary-500 font-heading tracking-tight hover:scale-105 transition-transform">
+            Blogverse
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-10">
             {navLinks.map(link => (
               <Link key={link.to} to={link.to}
-                className="px-4 py-2 rounded-xl text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 transition-all">
+                className="text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 transition-colors duration-300 uppercase tracking-[0.2em]">
                 {link.label}
               </Link>
             ))}
+            <Link to="/search?category=Technology" className="text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 transition-colors duration-300 uppercase tracking-[0.2em]">Trending</Link>
+          </div>
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-4">
+          {/* Search bar inside nav */}
+          <div className="hidden lg:flex items-center glass-input rounded-full px-5 py-2 mr-2 border-white/30">
+            <HiOutlineSearch className="w-5 h-5 text-surface-400 mr-2" />
+            <form onSubmit={handleSearch}>
+              <input 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none focus:ring-0 text-sm font-bold w-44 text-surface-800 dark:text-white placeholder:text-surface-400" 
+                placeholder="Search insights..." 
+              />
+            </form>
           </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-2">
-            {/* Search */}
-            <AnimatePresence>
-              {searchOpen && (
-                <motion.form
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 240, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  onSubmit={handleSearch}
-                  className="hidden md:flex overflow-hidden"
-                >
-                  <input
-                    autoFocus
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="Search blogs..."
-                    className="w-full px-4 py-2 text-sm rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-900 dark:text-white"
-                  />
-                </motion.form>
-              )}
-            </AnimatePresence>
-            <button onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5 transition-colors">
-              <HiOutlineSearch className="w-5 h-5" />
-            </button>
+          {/* Theme toggle */}
+          <button onClick={toggle}
+            className="p-2.5 rounded-full glassium text-surface-500 dark:text-surface-400 hover:scale-110 transition-all active:scale-95 shadow-sm">
+            {dark ? <HiOutlineSun className="w-5 h-5 text-amber-400" /> : <HiOutlineMoon className="w-5 h-5" />}
+          </button>
 
-            {/* Theme toggle */}
-            <button onClick={toggle}
-              className="p-2 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5 transition-colors">
-              {dark ? <HiOutlineSun className="w-5 h-5" /> : <HiOutlineMoon className="w-5 h-5" />}
-            </button>
-
-            {/* Auth */}
-            {user ? (
-              <div className="relative">
-                <button onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-surface-100 dark:hover:bg-white/5 transition-colors">
-                  <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-semibold">
-                    {user.username?.[0]?.toUpperCase()}
-                  </div>
-                </button>
-                <AnimatePresence>
-                  {profileOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-56 py-2 rounded-2xl glass-card shadow-xl shadow-black/10"
-                    >
-                      <div className="px-4 py-3 border-b border-surface-200/50 dark:border-white/5">
-                        <p className="text-sm font-semibold text-surface-900 dark:text-white">{user.full_name || user.username}</p>
-                        <p className="text-xs text-surface-500 dark:text-surface-400">{user.email}</p>
-                      </div>
+          {/* Auth */}
+          {user ? (
+            <div className="relative">
+              <button onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-3 p-1 rounded-2xl hover:bg-white dark:hover:bg-white/10 transition-all group">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-black shadow-md group-hover:scale-105 transition-transform">
+                  {user.username?.[0]?.toUpperCase()}
+                </div>
+              </button>
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-64 py-3 glassium glint-border rounded-3xl shadow-2xl"
+                  >
+                    <div className="px-5 py-4 border-b border-surface-100 dark:border-white/5">
+                      <p className="text-sm font-black text-surface-800 dark:text-white leading-none mb-1">{user.full_name || user.username}</p>
+                      <p className="text-xs font-medium text-surface-500 dark:text-surface-400 truncate">{user.email}</p>
+                    </div>
+                    <div className="p-2 space-y-1">
                       <Link to="/dashboard" onClick={() => setProfileOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-surface-700 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 transition-colors">
+                        className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
                         Dashboard
                       </Link>
                       <Link to="/create" onClick={() => setProfileOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-surface-700 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 transition-colors">
+                        className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
                         Write Blog
-                      </Link>
-                      <Link to={`/profile/${user.username}`} onClick={() => setProfileOpen(false)}
-                        className="block px-4 py-2.5 text-sm text-surface-700 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 transition-colors">
-                        Profile
                       </Link>
                       {user.is_admin && (
                         <Link to="/admin" onClick={() => setProfileOpen(false)}
-                          className="block px-4 py-2.5 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-white/5 transition-colors">
+                          className="flex items-center px-4 py-3 text-sm font-black text-primary-500 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
                           Admin Panel
                         </Link>
                       )}
-                      <div className="border-t border-surface-200/50 dark:border-white/5 mt-1 pt-1">
+                      <div className="pt-2">
                         <button onClick={() => { logout(); setProfileOpen(false); navigate('/'); }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                          className="w-full flex items-center px-4 py-3 text-sm font-black text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all">
                           Logout
                         </button>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Link to="/auth?tab=login"
-                  className="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                  Login
-                </Link>
-                <Link to="/auth?tab=signup"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl hover:shadow-lg hover:shadow-primary-500/25 transition-all hover:-translate-y-0.5">
-                  Sign Up
-                </Link>
-              </div>
-            )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/auth?tab=login" className="text-sm font-black text-surface-600 dark:text-surface-200 hover:text-primary-500 transition-all uppercase tracking-widest">
+                Log In
+              </Link>
+              <Link to="/auth?tab=signup" className="bg-primary-500 text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-3 rounded-full shadow-lg shadow-primary-500/20 active:scale-95 hover:shadow-primary-500/40 transition-all">
+                Get Started
+              </Link>
+            </div>
+          )}
 
-            {/* Mobile menu button */}
-            <button onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-white/5 transition-colors">
-              {mobileOpen ? <HiOutlineX className="w-5 h-5" /> : <HiOutlineMenu className="w-5 h-5" />}
-            </button>
-          </div>
+          {/* Mobile menu button */}
+          <button onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2.5 rounded-xl glassium text-surface-500 dark:text-surface-400 hover:scale-110 transition-all">
+            {mobileOpen ? <HiOutlineX className="w-6 h-6" /> : <HiOutlineMenu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
 
@@ -161,30 +143,24 @@ export default function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-white/10"
+            className="md:hidden overflow-hidden glassium-card rounded-b-[2rem] shadow-2xl border-t border-white/10"
           >
-            <div className="px-4 py-4 space-y-2">
-              <form onSubmit={handleSearch} className="mb-3">
-                <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search blogs..."
-                  className="w-full px-4 py-2.5 text-sm rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-900 dark:text-white"
-                />
-              </form>
+            <div className="p-8 space-y-4">
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-2.5 rounded-xl text-sm font-medium text-surface-700 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 transition-colors">
+                  className="block text-xl font-black text-surface-800 dark:text-white hover:text-primary-500 transition-all">
                   {link.label}
                 </Link>
               ))}
               {!user && (
-                <div className="flex gap-2 pt-2">
+                <div className="grid grid-cols-2 gap-4 pt-6">
                   <Link to="/auth?tab=login" onClick={() => setMobileOpen(false)}
-                    className="flex-1 text-center px-4 py-2.5 text-sm font-medium rounded-xl border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-200">
+                    className="text-center py-4 text-xs font-black uppercase tracking-widest rounded-2xl glassium text-surface-700 dark:text-surface-200">
                     Login
                   </Link>
                   <Link to="/auth?tab=signup" onClick={() => setMobileOpen(false)}
-                    className="flex-1 text-center px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl">
-                    Sign Up
+                    className="bg-primary-500 text-white py-4 text-xs font-black uppercase tracking-widest rounded-2xl text-center shadow-lg shadow-primary-500/20">
+                    Join
                   </Link>
                 </div>
               )}

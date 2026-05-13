@@ -79,60 +79,60 @@ export default function BlogPost() {
   const title = encodeURIComponent(blog.title);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-20">
-      <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
-        <div className="glass-card rounded-3xl overflow-hidden shadow-2xl">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="glassium-card glint-border overflow-hidden shadow-2xl">
           {/* Header Image */}
           {blog.cover_image && (
-            <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] overflow-hidden">
-              <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700" />
+            <div className="w-full h-[300px] sm:h-[450px] lg:h-[600px] overflow-hidden">
+              <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-[2s] ease-out" />
             </div>
           )}
 
-          <div className="p-6 sm:p-10 lg:p-12">
+          <div className="p-8 sm:p-12 lg:p-20">
             {/* Meta */}
-            <div className="mb-10 text-center">
+            <div className="mb-12 text-center">
               {blog.category && (
                 <Link to={`/search?category=${blog.category}`}
-                  className="inline-block px-4 py-1.5 text-xs font-bold tracking-wider uppercase text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 rounded-full mb-6">
+                  className="inline-block px-5 py-2 text-[10px] font-black tracking-[0.2em] uppercase text-primary-600 dark:text-primary-400 glassium rounded-full mb-8">
                   {blog.category}
                 </Link>
               )}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-surface-900 dark:text-white leading-[1.1] mb-8">{blog.title}</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-surface-800 dark:text-white leading-[1] mb-10 font-heading tracking-tight">{blog.title}</h1>
 
-              <div className="flex items-center justify-center flex-wrap gap-6 text-sm">
-                <Link to={`/profile/${blog.author?.username}`} className="flex items-center gap-3 group">
-                  <div className="w-12 h-12 rounded-full gradient-bg flex items-center justify-center text-white font-bold ring-4 ring-white dark:ring-surface-900 shadow-lg">
+              <div className="flex items-center justify-center flex-wrap gap-8 text-sm">
+                <Link to={`/profile/${blog.author?.username}`} className="flex items-center gap-4 group">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-black shadow-xl group-hover:scale-110 transition-transform">
                     {blog.author?.username?.[0]?.toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <p className="font-bold text-surface-900 dark:text-white group-hover:text-primary-500 transition-colors">{blog.author?.full_name || blog.author?.username}</p>
-                    <p className="text-xs text-surface-500 dark:text-surface-400">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
+                    <p className="font-black text-surface-800 dark:text-white text-lg leading-none mb-1">{blog.author?.full_name || blog.author?.username}</p>
+                    <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
                   </div>
                 </Link>
-                <div className="h-8 w-[1px] bg-surface-200 dark:bg-surface-800 hidden sm:block"></div>
-                <div className="flex items-center gap-6 text-surface-500 dark:text-surface-400 font-medium">
+                <div className="h-10 w-[1px] bg-surface-200 dark:bg-white/10 hidden sm:block"></div>
+                <div className="flex items-center gap-8 text-surface-500 font-bold uppercase tracking-widest text-[10px]">
                   <span className="flex items-center gap-2"><HiOutlineClock className="w-5 h-5 text-primary-500" /> {blog.read_time} min read</span>
                   <span className="flex items-center gap-2"><HiOutlineEye className="w-5 h-5 text-primary-500" /> {blog.views} views</span>
                 </div>
               </div>
             </div>
 
-            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-surface-200 dark:via-surface-800 to-transparent mb-12"></div>
+            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-surface-100 dark:via-white/5 to-transparent mb-16"></div>
 
             {/* Content */}
-            <div className="prose-blog text-surface-700 dark:text-surface-200 mb-16 max-w-none">
+            <div className="prose-glassium max-w-none mb-20">
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}
                 components={{
                   code({ inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '');
                     return !inline && match ? (
                       <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div"
-                        customStyle={{ borderRadius: '16px', padding: '1.5rem', fontSize: '14px', border: '1px solid rgba(255,255,255,0.05)' }} {...props}>
+                        customStyle={{ borderRadius: '24px', padding: '2rem', fontSize: '15px', border: '1px solid rgba(255,255,255,0.05)', backgroundColor: 'rgba(15,23,42,0.9)' }} {...props}>
                         {String(children).replace(/\n$/, '')}
                       </SyntaxHighlighter>
                     ) : (
-                      <code className="bg-primary-500/10 text-primary-600 dark:text-primary-400 px-1.5 py-0.5 rounded-md font-mono text-sm" {...props}>{children}</code>
+                      <code className="glassium text-primary-600 dark:text-primary-400 px-2 py-1 rounded-lg font-black text-sm" {...props}>{children}</code>
                     );
                   }
                 }}>
@@ -142,10 +142,10 @@ export default function BlogPost() {
 
             {/* Tags */}
             {blog.tags?.length > 0 && (
-              <div className="flex flex-wrap gap-3 mb-12">
+              <div className="flex flex-wrap gap-3 mb-16">
                 {blog.tags.map(tag => (
                   <Link key={tag.id} to={`/search?tag=${tag.name}`}
-                    className="px-4 py-2 text-sm font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10 rounded-2xl hover:scale-105 transition-all">
+                    className="px-5 py-2.5 text-xs font-black uppercase tracking-wider text-primary-600 dark:text-primary-400 glassium rounded-[1.25rem] hover:bg-primary-500 hover:text-white transition-all transform hover:-translate-y-1">
                     #{tag.name}
                   </Link>
                 ))}
@@ -153,26 +153,26 @@ export default function BlogPost() {
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between py-8 border-t border-surface-200 dark:border-surface-800">
-              <button onClick={handleLike} className="flex items-center gap-3 px-6 py-3 rounded-2xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all active:scale-95">
-                {liked ? <HiHeart className="w-7 h-7 text-red-500" /> : <HiOutlineHeart className="w-7 h-7 text-surface-400 dark:text-surface-500" />}
-                <span className="text-lg font-bold text-surface-700 dark:text-surface-200">{likesCount}</span>
+            <div className="flex items-center justify-between py-10 border-t border-surface-100 dark:border-white/5">
+              <button onClick={handleLike} className="flex items-center gap-4 px-8 py-4 rounded-[1.5rem] glassium hover:bg-red-50 dark:hover:bg-red-500/10 transition-all active:scale-95 group">
+                {liked ? <HiHeart className="w-8 h-8 text-red-500" /> : <HiOutlineHeart className="w-8 h-8 text-surface-400 group-hover:text-red-400" />}
+                <span className="text-xl font-black text-surface-800 dark:text-white">{likesCount}</span>
               </button>
               <div className="relative">
-                <button onClick={() => setShareOpen(!shareOpen)} className="flex items-center gap-3 px-6 py-3 rounded-2xl hover:bg-surface-100 dark:hover:bg-white/5 transition-all active:scale-95">
-                  <HiOutlineShare className="w-6 h-6 text-surface-500" />
-                  <span className="text-lg font-bold text-surface-700 dark:text-surface-200">Share</span>
+                <button onClick={() => setShareOpen(!shareOpen)} className="flex items-center gap-4 px-8 py-4 rounded-[1.5rem] glassium hover:bg-primary-50 dark:hover:bg-white/5 transition-all active:scale-95">
+                  <HiOutlineShare className="w-7 h-7 text-primary-500" />
+                  <span className="text-xl font-black text-surface-800 dark:text-white">Share</span>
                 </button>
                 {shareOpen && (
-                  <div className="absolute right-0 bottom-full mb-4 flex gap-3 p-4 glass-card rounded-3xl shadow-2xl animate-fade-in">
+                  <div className="absolute right-0 bottom-full mb-6 flex gap-4 p-5 glassium-card glint-border shadow-2xl animate-fade-in">
                     <a href={`https://twitter.com/intent/tweet?url=${url}&text=${title}`} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-500 transition-colors"><FaTwitter className="w-5 h-5" /></a>
+                      className="p-4 rounded-2xl glassium text-blue-500 hover:scale-110 transition-all"><FaTwitter className="w-6 h-6" /></a>
                     <a href={`https://facebook.com/sharer/sharer.php?u=${url}`} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-600 transition-colors"><FaFacebook className="w-5 h-5" /></a>
+                      className="p-4 rounded-2xl glassium text-blue-600 hover:scale-110 transition-all"><FaFacebook className="w-6 h-6" /></a>
                     <a href={`https://linkedin.com/sharing/share-offsite/?url=${url}`} target="_blank" rel="noreferrer"
-                      className="p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-700 transition-colors"><FaLinkedin className="w-5 h-5" /></a>
+                      className="p-4 rounded-2xl glassium text-blue-700 hover:scale-110 transition-all"><FaLinkedin className="w-6 h-6" /></a>
                     <button onClick={copyLink}
-                      className="p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-white/5 text-surface-500 transition-colors"><FaLink className="w-5 h-5" /></button>
+                      className="p-4 rounded-2xl glassium text-surface-500 hover:scale-110 transition-all"><FaLink className="w-6 h-6" /></button>
                   </div>
                 )}
               </div>
@@ -181,45 +181,44 @@ export default function BlogPost() {
         </div>
 
         {/* Comments Section */}
-        <section className="mt-16 mb-20">
-          <div className="flex items-center gap-4 mb-8">
-            <h3 className="text-2xl font-black text-surface-900 dark:text-white">Community Comments</h3>
-            <span className="px-3 py-1 bg-surface-200 dark:bg-surface-800 rounded-full text-sm font-bold text-surface-600 dark:text-surface-400">{comments.length}</span>
+        <section className="mt-24 mb-32">
+          <div className="flex items-center gap-6 mb-12">
+            <h3 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Voices of the Community</h3>
+            <span className="px-5 py-2 glassium rounded-full text-sm font-black text-primary-500">{comments.length}</span>
           </div>
           
           {user && (
-            <form onSubmit={handleComment} className="mb-12">
+            <form onSubmit={handleComment} className="mb-16">
               <textarea value={commentText} onChange={e => setCommentText(e.target.value)}
-                placeholder="Join the conversation..."
-                className="w-full p-6 rounded-3xl bg-white/50 dark:bg-surface-900/50 backdrop-blur-xl border-2 border-surface-200 dark:border-surface-800 focus:border-primary-500 transition-all text-surface-900 dark:text-white resize-none min-h-[120px] shadow-sm" />
-              <div className="flex justify-end mt-4">
-                <button type="submit"
-                  className="px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold rounded-2xl hover:shadow-xl hover:shadow-primary-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0">
-                  Post Comment
+                placeholder="What are your thoughts?"
+                className="w-full p-8 rounded-[2.5rem] glassium glint-border focus:ring-2 focus:ring-primary-500/30 transition-all text-surface-800 dark:text-white font-bold text-lg resize-none min-h-[160px] shadow-sm" />
+              <div className="flex justify-end mt-6">
+                <button type="submit" className="btn-glassium-primary text-lg px-12">
+                  Post Reflection
                 </button>
               </div>
             </form>
           )}
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             {comments.map(c => (
-              <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                key={c.id} className="p-6 rounded-3xl glass-card flex gap-4">
-                <div className="w-10 h-10 rounded-full gradient-bg flex-shrink-0 flex items-center justify-center text-white text-sm font-bold shadow-md">
+              <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+                key={c.id} className="p-8 rounded-[2rem] glassium-card glint-border flex gap-6">
+                <div className="w-12 h-12 rounded-[1.25rem] bg-gradient-to-br from-primary-400 to-primary-600 flex-shrink-0 flex items-center justify-center text-white text-sm font-black shadow-lg">
                   {c.author?.username?.[0]?.toUpperCase()}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-surface-900 dark:text-white">{c.author?.username}</span>
-                    <span className="text-xs font-medium text-surface-400">{c.created_at ? format(new Date(c.created_at), 'MMM d, yyyy') : ''}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-black text-surface-800 dark:text-white text-lg">{c.author?.username}</span>
+                    <span className="text-xs font-bold text-surface-400 uppercase tracking-widest">{c.created_at ? format(new Date(c.created_at), 'MMM d, yyyy') : ''}</span>
                   </div>
-                  <p className="text-surface-600 dark:text-surface-300 leading-relaxed">{c.content}</p>
+                  <p className="text-surface-600 dark:text-surface-300 font-medium leading-relaxed text-lg">{c.content}</p>
                 </div>
               </motion.div>
             ))}
             {comments.length === 0 && (
-              <div className="text-center py-16 glass-card rounded-3xl border-dashed border-2 border-surface-200 dark:border-surface-800">
-                <p className="text-surface-400 font-medium">No comments yet. Be the first to share your thoughts!</p>
+              <div className="text-center py-24 glassium-card glint-border border-dashed border-2">
+                <p className="text-surface-400 font-black text-xl">The conversation is just beginning.</p>
               </div>
             )}
           </div>
@@ -227,12 +226,12 @@ export default function BlogPost() {
 
         {/* Related Posts */}
         {related.length > 0 && (
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-2xl font-black text-surface-900 dark:text-white">More from BlogVerse</h3>
-              <Link to="/search" className="text-sm font-bold text-primary-500 hover:underline">View all</Link>
+          <section className="mb-32">
+            <div className="flex items-center justify-between mb-12">
+              <h3 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Continue Your Journey</h3>
+              <Link to="/search" className="btn-glassium-secondary py-2 px-6 text-xs font-black">View All</Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {related.map((b, i) => <BlogCard key={b.id} blog={b} index={i} />)}
             </div>
           </section>

@@ -3,7 +3,6 @@
 from typing import Optional
 from pydantic_settings import BaseSettings
 
-
 class Settings(BaseSettings):
     """Central configuration for the BlogVerse application."""
 
@@ -22,9 +21,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
 
-    # ── OpenAI ───────────────────────────────────────────────────
-    OPENAI_API_KEY: Optional[str] = None
-    OPENAI_MODEL: str = "gpt-3.5-turbo"
+    # ── Gemini ───────────────────────────────────────────────────
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-2.0-flash"
 
     # ── Cloudinary (optional cloud image storage) ────────────────
     CLOUDINARY_CLOUD_NAME: Optional[str] = None

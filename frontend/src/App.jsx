@@ -21,16 +21,23 @@ export default function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <div className="min-h-screen bg-white dark:bg-surface-950 text-surface-900 dark:text-white transition-colors">
+          <div className="min-h-screen flex flex-col relative transition-colors duration-500">
+            {/* Mesh Gradient Background */}
+            <div className="mesh-canvas">
+              <div className="mesh-blob mesh-blob-1"></div>
+              <div className="mesh-blob mesh-blob-2"></div>
+              <div className="mesh-blob mesh-blob-3"></div>
+            </div>
+
             <Navbar />
             <Toaster
               position="top-right"
               toastOptions={{
-                className: 'text-sm font-medium',
-                style: { borderRadius: '12px', padding: '12px 16px' },
+                className: 'text-sm font-bold glassium rounded-2xl border-none shadow-xl',
+                style: { backdropFilter: 'blur(16px)' },
               }}
             />
-            <main>
+            <main className="relative z-10 flex-grow">
               <AnimatePresence mode="wait">
                 <Routes>
                   <Route path="/" element={<Home />} />

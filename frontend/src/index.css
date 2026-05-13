@@ -1,51 +1,46 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 /* ── Dark mode via class strategy ──────────────────────────────── */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Custom Theme ──────────────────────────────────────────────── */
+/* ── Glassium Theme ────────────────────────────────────────────── */
 @theme {
-  /* Primary – Deep Indigo */
-  --color-primary-50: #f5f7ff;
-  --color-primary-100: #ebf0fe;
-  --color-primary-200: #dce4fd;
-  --color-primary-300: #c2cffc;
-  --color-primary-400: #9baefa;
-  --color-primary-500: #7084f7;
-  --color-primary-600: #5661f1;
-  --color-primary-700: #464be1;
-  --color-primary-800: #3b3db6;
-  --color-primary-900: #343791;
+  /* Primary – Glassium Violet */
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #5e3bdb;
+  --color-primary-600: #4c31b3;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
 
-  /* Accent – Electric Violet */
-  --color-accent-400: #a78bfa;
-  --color-accent-500: #8b5cf6;
-  --color-accent-600: #7c3aed;
-
-  /* Surface (dark mode backgrounds) */
-  --color-surface-50: #f8fafc;
-  --color-surface-100: #f1f5f9;
-  --color-surface-200: #e2e8f0;
-  --color-surface-300: #cbd5e1;
-  --color-surface-400: #94a3b8;
-  --color-surface-500: #64748b;
-  --color-surface-600: #475569;
-  --color-surface-700: #334155;
-  --color-surface-800: #1e293b;
+  /* Surface – High Clarity Light Mode */
+  --color-surface-50: #f9f9fc;
+  --color-surface-100: #f3f3f6;
+  --color-surface-200: #eeeef0;
+  --color-surface-300: #e8e8ea;
+  --color-surface-400: #dadadc;
+  --color-surface-500: #797586;
+  --color-surface-600: #484555;
+  --color-surface-700: #2f3133;
+  --color-surface-800: #1a1c1e;
   --color-surface-900: #0f172a;
   --color-surface-950: #020617;
 
   /* Fonts */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Outfit", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Animations */
-  --animate-fade-in: fade-in 0.5s ease-out;
-  --animate-slide-up: slide-up 0.5s ease-out;
+  --animate-fade-in: fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-up: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-float: float 6s ease-in-out infinite;
 }
-
 
 /* ── Keyframes ─────────────────────────────────────────────────── */
 @keyframes fade-in {
@@ -53,16 +48,16 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-20px); }
+  50%      { transform: translateY(-15px); }
 }
-@keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
+@keyframes mesh-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50%      { transform: scale(1.2); opacity: 0.8; }
 }
 
 /* ── Base styles ───────────────────────────────────────────────── */
@@ -73,101 +68,232 @@ html {
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fcfcfd;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
-  background-attachment: fixed;
-  color: var(--color-surface-900);
+  background-color: var(--color-surface-50);
+  color: var(--color-surface-800);
+  overflow-x: hidden;
 }
 
 .dark body {
   background-color: var(--color-surface-950);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
   color: #fff;
 }
 
-/* ── Glassmorphism utility ─────────────────────────────────────── */
-.glass {
-  background: rgba(255, 255, 255, 0.4);
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ── Mesh Gradient Canvas ──────────────────────────────────────── */
+.mesh-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--color-surface-50);
+}
+
+.dark .mesh-canvas {
+  background: var(--color-surface-950);
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: mesh-pulse 10s ease-in-out infinite;
+}
+
+.mesh-blob-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #7858f5, transparent 70%);
+  top: -10%;
+  left: -10%;
+}
+
+.mesh-blob-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #909bfd, transparent 70%);
+  bottom: -5%;
+  right: -5%;
+  animation-delay: -2s;
+}
+
+.mesh-blob-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #a78bfa, transparent 70%);
+  top: 40%;
+  left: 30%;
+  animation-delay: -5s;
+}
+
+/* ── Glassium Components ────────────────────────────────────────── */
+@utility glassium {
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-.dark .glass {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-}
-.dark .glass-card {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(124, 93, 250, 0.08);
+
+  &:where(.dark, .dark *) {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
 }
 
-/* ── Gradient text ─────────────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@utility glass-input {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  &:where(.dark, .dark *) {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
-/* ── Animated gradient background ──────────────────────────────── */
-.gradient-bg {
-  background: linear-gradient(-45deg, #6366f1, #8b5cf6, #3b82f6, #06b6d4);
-  background-size: 400% 400%;
-  animation: gradient-shift 15s ease infinite;
+@utility glassium-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px) saturate(190%);
+  border-radius: 1.5rem;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:where(.dark, .dark *) {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 20px 40px -10px rgba(124, 93, 250, 0.15);
+
+    &:where(.dark, .dark *) {
+      background: rgba(30, 41, 59, 0.6);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+/* The Glint Border Effect */
+.glint-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dark .glint-border::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.05) 100%);
+}
+
+.glassium-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 40px -10px rgba(94, 59, 219, 0.12);
+}
+
+.dark .glassium-card:hover {
+  background: rgba(30, 41, 59, 0.6);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Typography & Content ───────────────────────────────────────── */
+@utility text-headline-xl { font-size: 3rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; font-family: var(--font-heading); }
+@utility text-headline-lg { font-size: 2rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; font-family: var(--font-heading); }
+@utility text-label-md { font-size: 14px; line-height: 20px; letter-spacing: 0.02em; font-weight: 600; }
+@utility text-body-lg { font-size: 1.125rem; font-weight: 400; line-height: 1.6; }
+
+.prose-glassium h1 { @apply text-headline-xl mb-6 text-surface-900 dark:text-white; }
+.prose-glassium h2 { @apply text-headline-lg mt-12 mb-6 text-surface-800 dark:text-surface-100; }
+.prose-glassium h3 { @apply text-2xl font-black mt-10 mb-4 text-surface-800 dark:text-surface-200; }
+.prose-glassium p { @apply text-body-lg mb-8 text-surface-600 dark:text-surface-200 leading-[1.8]; }
+.prose-glassium a { color: var(--color-primary-500); @apply font-black underline decoration-primary-500/30 hover:decoration-primary-500 transition-all; }
+.prose-glassium blockquote {
+  @apply pl-8 border-l-4 border-primary-500 italic text-surface-500 dark:text-surface-300 my-10 text-xl font-medium;
+}
+.prose-glassium ul { @apply list-disc list-inside mb-8 space-y-3 text-surface-600 dark:text-surface-200; }
+.prose-glassium ol { @apply list-decimal list-inside mb-8 space-y-3 text-surface-600 dark:text-surface-200; }
+
+/* ── Button Glassium ────────────────────────────────────────────── */
+.btn-glassium-primary {
+  @apply relative px-8 py-3.5 bg-gradient-to-br from-primary-500 to-primary-600 text-white font-bold rounded-2xl shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 active:translate-y-0 transition-all;
+}
+
+.btn-glassium-secondary {
+  @apply px-8 py-3.5 glassium rounded-2xl text-surface-800 dark:text-white font-bold hover:bg-white/80 dark:hover:bg-white/10 transition-all;
 }
 
 /* ── Custom scrollbar ──────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: var(--color-surface-400);
   border-radius: 9999px;
+  border: 2px solid var(--color-surface-50);
 }
-.dark ::-webkit-scrollbar-thumb { background: #475569; }
+.dark ::-webkit-scrollbar-thumb { background: var(--color-surface-600); border-color: var(--color-surface-950); }
 
-/* ── Markdown content styles ───────────────────────────────────── */
-.prose-blog h1 { font-size: 2rem; font-weight: 800; margin: 1.5rem 0 0.75rem; }
-.prose-blog h2 { font-size: 1.5rem; font-weight: 700; margin: 1.25rem 0 0.5rem; }
-.prose-blog h3 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
-.prose-blog p  { margin: 0.75rem 0; line-height: 1.8; }
-.prose-blog ul, .prose-blog ol { margin: 0.75rem 0; padding-left: 1.5rem; }
-.prose-blog li { margin: 0.25rem 0; line-height: 1.7; }
-.prose-blog blockquote {
-  border-left: 4px solid #6366f1;
-  padding: 0.5rem 1rem;
-  margin: 1rem 0;
-  background: rgba(99, 102, 241, 0.05);
-  border-radius: 0 8px 8px 0;
+/* ── MDEditor Glassium Overrides ────────────────────────────────── */
+.w-md-editor {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
-.prose-blog a { color: #6366f1; text-decoration: underline; }
-.prose-blog img { border-radius: 12px; margin: 1rem 0; max-width: 100%; }
-.prose-blog code {
-  background: rgba(99, 102, 241, 0.1);
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.875em;
+.w-md-editor-toolbar {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 0.75rem 1.5rem !important;
 }
-.prose-blog pre {
-  border-radius: 12px;
-  margin: 1rem 0;
-  overflow-x: auto;
+.dark .w-md-editor-toolbar {
+  background-color: rgba(0, 0, 0, 0.2) !important;
 }
-.prose-blog pre code {
-  background: transparent;
-  padding: 0;
+.w-md-editor-content {
+  background-color: transparent !important;
 }
+.w-md-editor-text {
+  background-color: transparent !important;
+}
+.w-md-editor-preview {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05) !important;
+}
+.dark .w-md-editor-preview {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+.w-md-editor-input {
+  color: inherit !important;
+  font-family: var(--font-mono) !important;
+  padding: 2rem !important;
+}
+.w-md-editor-toolbar li > button {
+  color: var(--color-surface-600) !important;
+}
+.dark .w-md-editor-toolbar li > button {
+  color: var(--color-surface-400) !important;
+}
+.w-md-editor-toolbar li > button:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-primary-500) !important;
+}
+.dark .w-md-editor-toolbar li > button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+
