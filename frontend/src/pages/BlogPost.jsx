@@ -16,6 +16,7 @@ import { getBlog, toggleLike, getComments, createComment, getBlogs, formatImageU
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import BlogCard from '../components/blog/BlogCard';
+import SEO from '../components/common/SEO';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -82,23 +83,15 @@ export default function BlogPost() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
-      <Helmet>
-        <title>{`${blog.title} | BlogVerse`}</title>
-        <meta name="description" content={blog.summary || blog.content.substring(0, 160)} />
-        <meta name="keywords" content={blog.tags?.map(t => t.name).join(', ')} />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.summary || blog.content.substring(0, 160)} />
-        {blog.cover_image && <meta property="og:image" content={formatImageUrl(blog.cover_image)} />}
-        
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.summary || blog.content.substring(0, 160)} />
-        {blog.cover_image && <meta name="twitter:image" content={formatImageUrl(blog.cover_image)} />}
-      </Helmet>
+      <SEO 
+        title={blog.title}
+        description={blog.summary || blog.content.substring(0, 160)}
+        image={formatImageUrl(blog.cover_image)}
+        article={true}
+        author={blog.author?.full_name || blog.author?.username}
+        publishDate={blog.created_at}
+        slug={blog.slug}
+      />
       <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="glassium-card glint-border overflow-hidden shadow-2xl">
           {/* Header Image */}
