@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineSearch, HiOutlineMenu, HiOutlineX, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { formatImageUrl } from '../../services/api';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -89,7 +90,7 @@ export default function Navbar() {
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-black shadow-md group-hover:scale-105 transition-transform overflow-hidden">
                   {user.avatar_url ? (
                     <img 
-                      src={user.avatar_url} 
+                      src={formatImageUrl(user.avatar_url)} 
                       alt={user.username} 
                       className="w-full h-full object-cover"
                       onError={(e) => {

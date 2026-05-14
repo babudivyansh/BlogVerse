@@ -57,8 +57,20 @@ export default function BlogCard({ blog, index = 0 }) {
             {/* Author + Meta */}
             <div className="flex items-center justify-between pt-4 border-t border-surface-100 dark:border-white/5">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-[10px] font-black shadow-md">
-                  {blog.author?.username?.[0]?.toUpperCase()}
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-[10px] font-black shadow-md overflow-hidden">
+                  {blog.author?.avatar_url ? (
+                    <img 
+                      src={formatImageUrl(blog.author.avatar_url)} 
+                      alt={blog.author.username} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerText = blog.author?.username?.[0]?.toUpperCase();
+                      }}
+                    />
+                  ) : (
+                    blog.author?.username?.[0]?.toUpperCase()
+                  )}
                 </div>
                 <div>
                   <p className="text-xs font-bold text-surface-800 dark:text-white leading-none mb-0.5">{blog.author?.username}</p>

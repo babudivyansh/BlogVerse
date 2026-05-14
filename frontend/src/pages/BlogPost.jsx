@@ -103,8 +103,20 @@ export default function BlogPost() {
 
               <div className="flex items-center justify-center flex-wrap gap-8 text-sm">
                 <Link to={`/profile/${blog.author?.username}`} className="flex items-center gap-4 group">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-black shadow-xl group-hover:scale-110 transition-transform">
-                    {blog.author?.username?.[0]?.toUpperCase()}
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-black shadow-xl group-hover:scale-110 transition-transform overflow-hidden">
+                    {blog.author?.avatar_url ? (
+                      <img 
+                        src={formatImageUrl(blog.author.avatar_url)} 
+                        alt={blog.author.username} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerText = blog.author?.username?.[0]?.toUpperCase();
+                        }}
+                      />
+                    ) : (
+                      blog.author?.username?.[0]?.toUpperCase()
+                    )}
                   </div>
                   <div className="text-left">
                     <p className="font-black text-surface-800 dark:text-white text-lg leading-none mb-1">{blog.author?.full_name || blog.author?.username}</p>
@@ -222,8 +234,20 @@ export default function BlogPost() {
             {comments.map(c => (
               <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
                 key={c.id} className="p-8 rounded-[2rem] glassium-card glint-border flex gap-6">
-                <div className="w-12 h-12 rounded-[1.25rem] bg-gradient-to-br from-primary-400 to-primary-600 flex-shrink-0 flex items-center justify-center text-white text-sm font-black shadow-lg">
-                  {c.author?.username?.[0]?.toUpperCase()}
+                <div className="w-12 h-12 rounded-[1.25rem] bg-gradient-to-br from-primary-400 to-primary-600 flex-shrink-0 flex items-center justify-center text-white text-sm font-black shadow-lg overflow-hidden">
+                  {c.author?.avatar_url ? (
+                    <img 
+                      src={formatImageUrl(c.author.avatar_url)} 
+                      alt={c.author.username} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerText = c.author?.username?.[0]?.toUpperCase();
+                      }}
+                    />
+                  ) : (
+                    c.author?.username?.[0]?.toUpperCase()
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-3">

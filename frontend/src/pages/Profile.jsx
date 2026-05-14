@@ -5,7 +5,7 @@ import { FaInstagram, FaFacebook, FaLinkedin, FaGithub, FaGlobe } from 'react-ic
 import { FaXTwitter, FaThreads } from 'react-icons/fa6';
 import { HiOutlinePencil, HiOutlineLocationMarker, HiOutlineUserCircle, HiOutlineBriefcase, HiOutlineLink, HiOutlineX } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { getUserProfile, getUserBlogs, updateProfile } from '../services/api';
+import { getUserProfile, getUserBlogs, updateProfile, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
@@ -83,7 +83,7 @@ export default function Profile() {
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-4xl font-black shadow-2xl mb-8 relative group overflow-hidden mx-auto">
               {profile.avatar_url ? (
                 <img 
-                  src={profile.avatar_url} 
+                  src={formatImageUrl(profile.avatar_url)} 
                   alt={profile.full_name} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
