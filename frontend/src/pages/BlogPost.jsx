@@ -8,7 +8,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { format } from 'date-fns';
 import { HiOutlineHeart, HiHeart, HiOutlineShare, HiOutlineClock, HiOutlineEye } from 'react-icons/hi';
-import { FaTwitter, FaFacebook, FaLinkedin, FaLink } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaLinkedin, FaLink, FaGithub, FaGlobe } from 'react-icons/fa';
+import { FaXTwitter, FaThreads } from 'react-icons/fa6';
 import toast from 'react-hot-toast';
 import { getBlog, toggleLike, getComments, createComment, getBlogs, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -107,7 +108,24 @@ export default function BlogPost() {
                   </div>
                   <div className="text-left">
                     <p className="font-black text-surface-800 dark:text-white text-lg leading-none mb-1">{blog.author?.full_name || blog.author?.username}</p>
-                    <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
+                    <p className="text-xs font-bold text-surface-400 uppercase tracking-widest mb-2">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
+                    
+                    {/* Author Socials */}
+                    {blog.author?.social_links && (
+                      <div className="flex gap-2">
+                        {Object.entries(blog.author.social_links).map(([key, url]) => {
+                          if (!url) return null;
+                          const icons = { instagram: FaInstagram, twitter: FaXTwitter, facebook: FaFacebook, threads: FaThreads, github: FaGithub, linkedin: FaLinkedin, website: FaGlobe };
+                          const Icon = icons[key] || FaGlobe;
+                          return (
+                            <a key={key} href={url} target="_blank" rel="noreferrer" 
+                              className="text-surface-400 hover:text-primary-500 transition-colors">
+                              <Icon className="w-3.5 h-3.5" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </Link>
                 <div className="h-10 w-[1px] bg-surface-200 dark:bg-white/10 hidden sm:block"></div>
@@ -166,7 +184,7 @@ export default function BlogPost() {
                 {shareOpen && (
                   <div className="absolute right-0 bottom-full mb-6 flex gap-4 p-5 glassium-card glint-border shadow-2xl animate-fade-in">
                     <a href={`https://twitter.com/intent/tweet?url=${url}&text=${title}`} target="_blank" rel="noreferrer"
-                      className="p-4 rounded-2xl glassium text-blue-500 hover:scale-110 transition-all"><FaTwitter className="w-6 h-6" /></a>
+                      className="p-4 rounded-2xl glassium text-surface-900 dark:text-white hover:text-[#000000] dark:hover:text-white hover:scale-110 transition-all"><FaXTwitter className="w-6 h-6" /></a>
                     <a href={`https://facebook.com/sharer/sharer.php?u=${url}`} target="_blank" rel="noreferrer"
                       className="p-4 rounded-2xl glassium text-blue-600 hover:scale-110 transition-all"><FaFacebook className="w-6 h-6" /></a>
                     <a href={`https://linkedin.com/sharing/share-offsite/?url=${url}`} target="_blank" rel="noreferrer"

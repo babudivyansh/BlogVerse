@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { HiOutlineHeart, HiOutlineGlobeAlt, HiOutlineMail } from 'react-icons/hi';
+import { FaInstagram, FaXTwitter, FaFacebook, FaThreads } from 'react-icons/fa6';
 
 export default function Footer() {
   return (
@@ -29,13 +29,15 @@ export default function Footer() {
 
         <div className="flex gap-4">
           {[
-            { Icon: HiOutlineGlobeAlt, label: 'Globe' },
-            { Icon: HiOutlineMail, label: 'Email' },
-            { Icon: HiOutlineHeart, label: 'Love' },
+            { Icon: FaInstagram, label: 'Instagram', color: 'hover:text-[#E4405F]', url: 'https://instagram.com/blogverse' },
+            { Icon: FaXTwitter, label: 'X', color: 'hover:text-[#000000] dark:hover:text-white', url: 'https://x.com/blogverse' },
+            { Icon: FaFacebook, label: 'Facebook', color: 'hover:text-[#1877F2]', url: 'https://facebook.com/blogverse' },
+            { Icon: FaThreads, label: 'Threads', color: 'hover:text-[#000000] dark:hover:text-white', url: 'https://threads.net/blogverse' },
           ].map(item => (
-            <div key={item.label} className="w-12 h-12 rounded-2xl glassium glint-border flex items-center justify-center cursor-pointer text-surface-500 hover:text-primary-500 hover:scale-110 transition-all shadow-sm">
+            <a key={item.label} href={item.url} target="_blank" rel="noreferrer" 
+              className={`w-12 h-12 rounded-2xl glassium glint-border flex items-center justify-center cursor-pointer text-surface-500 ${item.color} hover:scale-110 transition-all shadow-sm`}>
               <item.Icon className="w-5 h-5" />
-            </div>
+            </a>
           ))}
         </div>
       </div>

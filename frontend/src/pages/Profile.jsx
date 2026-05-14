@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaTwitter, FaGithub, FaLinkedin, FaGlobe } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaLinkedin, FaGithub, FaGlobe } from 'react-icons/fa';
+import { FaXTwitter, FaThreads } from 'react-icons/fa6';
 import { HiOutlinePencil } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import { getUserProfile, getUserBlogs, updateProfile } from '../services/api';
@@ -46,7 +47,15 @@ export default function Profile() {
   if (loading) return <Loading />;
   if (!profile) return <div className="min-h-screen flex items-center justify-center"><p className="text-surface-500">User not found</p></div>;
 
-  const socialIcons = { twitter: FaTwitter, github: FaGithub, linkedin: FaLinkedin, website: FaGlobe };
+  const socialIcons = { 
+    instagram: FaInstagram,
+    twitter: FaXTwitter,
+    facebook: FaFacebook,
+    threads: FaThreads,
+    github: FaGithub, 
+    linkedin: FaLinkedin, 
+    website: FaGlobe 
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-24 pb-12">
@@ -65,7 +74,17 @@ export default function Profile() {
                   className="w-full px-4 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-center text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50" />
                 <textarea value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Bio"
                   className="w-full px-4 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-center text-surface-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 resize-none h-20" />
-                <div className="flex gap-2">
+                
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {['instagram', 'twitter', 'facebook', 'threads'].map(key => (
+                    <input key={key} value={form.social_links[key] || ''} 
+                      onChange={e => setForm({ ...form, social_links: { ...form.social_links, [key]: e.target.value } })}
+                      placeholder={`${key.charAt(0).toUpperCase() + key.slice(1)} URL`}
+                      className="px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-[10px] text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-1 focus:ring-primary-500/50" />
+                  ))}
+                </div>
+
+                <div className="flex gap-2 mt-4">
                   <button onClick={handleSave} className="flex-1 py-2 bg-primary-500 text-white rounded-xl text-sm font-medium">Save</button>
                   <button onClick={() => setEditing(false)} className="flex-1 py-2 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-600 dark:text-surface-300">Cancel</button>
                 </div>
