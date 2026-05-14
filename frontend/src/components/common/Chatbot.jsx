@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineChatAlt2, HiX, HiOutlinePaperAirplane, HiOutlineTrash } from 'react-icons/hi';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { aiChat } from '../../services/api';
 
 export default function Chatbot() {
@@ -128,7 +130,18 @@ export default function Chatbot() {
                         : 'bg-white dark:bg-surface-800 text-surface-900 dark:text-white rounded-bl-sm border border-surface-200 dark:border-surface-700'
                     }`}
                   >
-                    {msg.content}
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                        ul: ({node, ...props}) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
+                        li: ({node, ...props}) => <li className="marker:text-primary-400" {...props} />,
+                        strong: ({node, ...props}) => <span className="font-black text-primary-500 dark:text-primary-400" {...props} />,
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
                   </div>
                 </motion.div>
               ))}
