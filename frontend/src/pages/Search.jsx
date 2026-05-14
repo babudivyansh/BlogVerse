@@ -67,7 +67,7 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
       <Helmet>
         <title>{query ? `Search: ${query} | BlogVerse` : activeCategory ? `${activeCategory} | BlogVerse` : 'Explore Insights | BlogVerse'}</title>
         <meta name="description" content="Discover the latest insights, tutorials, and stories on BlogVerse. Filter by category or search for specific topics." />
