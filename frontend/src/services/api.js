@@ -74,6 +74,7 @@ export const aiSuggestTags = (content) => api.post('/ai/suggest-tags', { content
 export const aiImproveContent = (content) => api.post('/ai/improve-content', { content });
 export const aiGenerateBlog = (data) => api.post('/ai/generate-blog', data);
 export const aiChat = (messages) => api.post('/ai/chat', { messages });
+export const aiGenerateCover = (data) => api.post('/blogs/generate-cover', data);
 
 // ── Upload API ─────────────────────────────────────────────────
 export const uploadImage = (file) => {

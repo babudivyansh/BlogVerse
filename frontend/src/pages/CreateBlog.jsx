@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import MDEditor from '@uiw/react-md-editor';
 import { HiOutlineSparkles, HiOutlinePhotograph, HiOutlineTag, HiOutlineLightningBolt, HiOutlineArrowLeft, HiOutlineDocumentText, HiOutlineDotsHorizontal, HiOutlineHashtag } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { createBlog, updateBlog, getBlog, uploadImage, aiGenerateTitle, aiGenerateSummary, aiSuggestTags, aiImproveContent, aiGenerateBlog, formatImageUrl } from '../services/api';
+import { createBlog, updateBlog, getBlog, uploadImage, aiGenerateTitle, aiGenerateSummary, aiSuggestTags, aiImproveContent, aiGenerateBlog, aiGenerateCover, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -112,6 +112,12 @@ export default function CreateBlog() {
         setCategory(data.category);
         setTags(data.tags.join(', '));
         toast.success('Blog generated successfully!', { id: 'aigen' });
+      } else if (action === 'cover') {
+        if (!title.trim()) return toast.error('Add a title first so AI knows what to paint');
+        toast.loading('Painting your cover image...', { id: 'aigen' });
+        const res = await aiGenerateCover({ title, content: content || 'Visual representation of ' + title });
+        setCoverImage(res.data.url);
+        toast.success('Cover image painted by AI!', { id: 'aigen' });
       }
     } catch { toast.error('AI feature failed. Check API key or quota.', { id: 'aigen' }); }
     setAiLoading('');
@@ -216,7 +222,7 @@ export default function CreateBlog() {
                   { key: 'title', label: 'Headline', Icon: HiOutlineDocumentText },
                   { key: 'summary', label: 'Summary', Icon: HiOutlineDotsHorizontal },
                   { key: 'tags', label: 'Tags', Icon: HiOutlineHashtag },
-                  { key: 'improve', label: 'Refine', Icon: HiOutlineSparkles },
+                  { key: 'cover', label: 'Visuals', Icon: HiOutlinePhotograph },
                 ].map(tool => (
                   <button key={tool.key} onClick={() => handleAI(tool.key)} disabled={!!aiLoading}
                     className="flex flex-col items-center gap-3 p-4 rounded-2xl glassium hover:bg-primary-500/[0.05] hover:text-primary-500 transition-all group disabled:opacity-50">

@@ -3,6 +3,7 @@
 import math
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 from slugify import slugify
@@ -14,8 +15,33 @@ from app.models.user import User
 from app.schemas.blog import (
     BlogCard, BlogCreate, BlogResponse, BlogUpdate, PaginatedBlogs,
 )
+from app.services.ai_service import ai_service
+from app.services.image_service import image_generation_service
 
 router = APIRouter(prefix="/blogs", tags=["Blogs"])
+
+
+class ImageGenRequest(BaseModel):
+    title: str
+    content: str
+
+
+@router.post("/generate-cover")
+async def generate_cover(
+    data: ImageGenRequest,
+    current_user: User = Depends(get_verified_user),
+):
+    """Generate an AI cover image for a blog post."""
+    # 1. Generate artistic prompt using Gemini
+    visual_prompt = await ai_service.generate_visual_prompt(data.title, data.content)
+    
+    # 2. Generate image and upload to Cloudinary
+    image_url = await image_generation_service.generate_and_upload(visual_prompt)
+    
+    if not image_url:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate image")
+        
+    return {"url": image_url, "prompt": visual_prompt}
 
 
 def _estimate_read_time(content: str) -> int:

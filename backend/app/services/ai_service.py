@@ -148,6 +148,23 @@ class AIService:
                 "tags": ["error"]
             }
 
+    async def generate_visual_prompt(self, title: str, content: str) -> str:
+        """Generate a detailed artistic prompt for image generation."""
+        if not self.is_configured:
+            return f"Digital art related to {title}, cinematic lighting, high detail."
+
+        system_prompt = (
+            "You are a professional art director. "
+            "Create a highly detailed, single-paragraph artistic prompt for an AI image generator (like Stable Diffusion or Midjourney). "
+            "The image should be a stunning, cinematic cover for a blog post. "
+            "Describe the composition, lighting, style, and color palette. "
+            "Do NOT include technical jargon about the generator, just descriptive art instructions. "
+            "Keep it under 100 words."
+        )
+        user_prompt = f"Blog Title: {title}\nBlog Content: {content[:1000]}"
+        
+        return await self._chat(system_prompt, user_prompt)
+
     async def conversational_chat(self, messages: list[dict]) -> str:
         """Handle multi-turn conversational chat."""
         print(f"DEBUG: conversational_chat called. is_configured: {self.is_configured}")

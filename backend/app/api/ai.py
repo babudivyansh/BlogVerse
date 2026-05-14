@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from app.core.security import get_verified_user
 from app.services.ai_service import ai_service
+from app.services.image_service import image_generation_service
 
 router = APIRouter(prefix="/ai", tags=["AI Tools"])
 
@@ -50,8 +51,17 @@ class BlogGenerationInput(BaseModel):
 
 @router.post("/generate-blog")
 async def generate_blog(data: BlogGenerationInput, _=Depends(get_verified_user)):
-    """Generate a complete blog post from a topic."""
+    """Generate a complete blog post from a topic including an AI cover image."""
     result = await ai_service.generate_full_blog(data.topic, data.tone)
+    
+    # Also generate a cover image
+    try:
+        visual_prompt = await ai_service.generate_visual_prompt(result['title'], result['content'])
+        image_url = await image_generation_service.generate_and_upload(visual_prompt)
+        result['cover_image'] = image_url
+    except Exception:
+        result['cover_image'] = None
+        
     return result
 
 class ChatMessage(BaseModel):
