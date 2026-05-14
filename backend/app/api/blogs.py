@@ -1,6 +1,7 @@
 """Blog CRUD endpoints with search, pagination, likes, and categories."""
 
 import logging
+import math
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
