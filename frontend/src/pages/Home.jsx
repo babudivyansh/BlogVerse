@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { HiOutlineArrowRight, HiOutlineSparkles, HiOutlineLightningBolt, HiOutlineGlobe } from 'react-icons/hi';
 import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
@@ -49,6 +50,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pt-32 pb-20">
+      <Helmet>
+        <title>BlogVerse | AI-Powered Digital Storytelling</title>
+        <meta name="description" content="Welcome to BlogVerse, the future of digital storytelling. Explore high-end, AI-enhanced blogs and join a community of elite creators." />
+        <meta name="keywords" content="blog, ai, storytelling, digital platform, tech, design, writing" />
+        <meta property="og:title" content="BlogVerse | AI-Powered Digital Storytelling" />
+        <meta property="og:description" content="Explore high-end, AI-enhanced blogs and join a community of elite creators." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative px-8 sm:px-12 lg:px-20 mb-32">
         <div className="max-w-[1600px] mx-auto text-center">

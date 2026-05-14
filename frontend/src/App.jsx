@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AnimatePresence } from 'framer-motion';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/layout/Navbar';
@@ -22,49 +23,51 @@ import Chatbot from './components/common/Chatbot';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <div className="min-h-screen flex flex-col relative transition-colors duration-500">
-            {/* Mesh Gradient Background */}
-            <div className="mesh-canvas">
-              <div className="mesh-blob mesh-blob-1"></div>
-              <div className="mesh-blob mesh-blob-2"></div>
-              <div className="mesh-blob mesh-blob-3"></div>
-            </div>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <AuthProvider>
+            <div className="min-h-screen flex flex-col relative transition-colors duration-500">
+              {/* Mesh Gradient Background */}
+              <div className="mesh-canvas">
+                <div className="mesh-blob mesh-blob-1"></div>
+                <div className="mesh-blob mesh-blob-2"></div>
+                <div className="mesh-blob mesh-blob-3"></div>
+              </div>
 
-            <Navbar />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                className: 'text-sm font-bold glassium rounded-2xl border-none shadow-xl',
-                style: { backdropFilter: 'blur(16px)' },
-              }}
-            />
-            <main className="relative z-10 flex-grow">
-              <AnimatePresence mode="wait">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/create" element={<CreateBlog />} />
-                  <Route path="/profile/:username" element={<Profile />} />
-                  <Route path="/search" element={<Search />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/help" element={<HelpCenter />} />
-                  <Route path="/contact" element={<ContactUs />} />
-                </Routes>
-              </AnimatePresence>
-            </main>
-            <Chatbot />
-            <Footer />
-          </div>
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+              <Navbar />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  className: 'text-sm font-bold glassium rounded-2xl border-none shadow-xl',
+                  style: { backdropFilter: 'blur(16px)' },
+                }}
+              />
+              <main className="relative z-10 flex-grow">
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/blog/:slug" element={<BlogPost />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/create" element={<CreateBlog />} />
+                    <Route path="/profile/:username" element={<Profile />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                  </Routes>
+                </AnimatePresence>
+              </main>
+              <Chatbot />
+              <Footer />
+            </div>
+          </AuthProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }

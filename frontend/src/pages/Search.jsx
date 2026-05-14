@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { HiOutlineSearch } from 'react-icons/hi';
 import { getBlogs, getCategories, getTags } from '../services/api';
 import BlogCard from '../components/blog/BlogCard';
@@ -66,8 +67,12 @@ export default function Search() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-32 pb-20">
+      <Helmet>
+        <title>{query ? `Search: ${query} | BlogVerse` : activeCategory ? `${activeCategory} | BlogVerse` : 'Explore Insights | BlogVerse'}</title>
+        <meta name="description" content="Discover the latest insights, tutorials, and stories on BlogVerse. Filter by category or search for specific topics." />
+      </Helmet>
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20">
         {/* Search bar */}
         <div className="max-w-3xl mx-auto mb-16">
           <h1 className="text-5xl font-black text-center text-surface-800 dark:text-white mb-10 font-heading tracking-tight">Discover Stories</h1>

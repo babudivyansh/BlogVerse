@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaFacebook, FaLinkedin, FaGithub, FaGlobe } from 'react-icons/fa';
 import { FaXTwitter, FaThreads } from 'react-icons/fa6';
 import { HiOutlinePencil, HiOutlineLocationMarker, HiOutlineUserCircle, HiOutlineBriefcase, HiOutlineLink, HiOutlineX } from 'react-icons/hi';
+import { Helmet } from 'react-helmet-async';
 import toast from 'react-hot-toast';
 import { getUserProfile, getUserBlogs, updateProfile, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -74,6 +75,13 @@ export default function Profile() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      <Helmet>
+        <title>{`${profile.full_name || profile.username} | BlogVerse Profile`}</title>
+        <meta name="description" content={profile.bio || `Explore the digital workspace of ${profile.username} on BlogVerse.`} />
+        <meta property="og:title" content={`${profile.full_name || profile.username} | BlogVerse Profile`} />
+        <meta property="og:description" content={profile.bio || `Explore the digital workspace of ${profile.username} on BlogVerse.`} />
+        {profile.avatar_url && <meta property="og:image" content={formatImageUrl(profile.avatar_url)} />}
+      </Helmet>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile card */}
         <div className="glassium-card glint-border rounded-[2.5rem] p-10 mb-16 text-center relative overflow-hidden shadow-2xl">
