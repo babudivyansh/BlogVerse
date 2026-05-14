@@ -1,22 +1,58 @@
 """AI service wrapping Gemini API calls with graceful fallback."""
 
 import json
+import logging
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
+
+try:
+    import google.generativeai as genai
+    GENAI_AVAILABLE = True
+except ImportError:
+    GENAI_AVAILABLE = False
+    logger.warning("google-generativeai package not installed. AI features will be limited.")
 
 
 class AIService:
     """Wrapper around Gemini for blog-related AI features."""
 
     def __init__(self):
-        self.is_configured = False
-        if settings.GEMINI_API_KEY:
-            try:
-                import google.generativeai as genai
-                genai.configure(api_key=settings.GEMINI_API_KEY)
-                self.genai = genai
-                self.is_configured = True
-            except Exception as e:
-                pass
+        self._is_configured = False
+        self.genai = None
+        self._configure()
+
+    def _configure(self) -> bool:
+        """Attempt to configure the Gemini API."""
+        if self._is_configured:
+            return True
+
+        if not GENAI_AVAILABLE:
+            logger.error("Cannot configure Gemini: google-generativeai not installed.")
+            return False
+
+        api_key = settings.GEMINI_API_KEY
+        if not api_key:
+            logger.debug("Gemini API Key is missing from settings.")
+            return False
+
+        try:
+            genai.configure(api_key=api_key)
+            self.genai = genai
+            self._is_configured = True
+            logger.info("Gemini successfully configured.")
+            return True
+        except Exception as e:
+            logger.error(f"Error initializing Gemini: {e}")
+            return False
+
+    @property
+    def is_configured(self) -> bool:
+        """Check if Gemini is configured, attempting to re-configure if not."""
+        if not self._is_configured:
+            return self._configure()
+        return True
+
 
 
     async def _chat(self, system: str, user: str, response_mime_type: str = "text/plain") -> str:
@@ -114,12 +150,14 @@ class AIService:
 
     async def conversational_chat(self, messages: list[dict]) -> str:
         """Handle multi-turn conversational chat."""
+        print(f"DEBUG: conversational_chat called. is_configured: {self.is_configured}")
         if not self.is_configured:
             return "Hi there! I am currently running in offline mode. Please configure a Gemini API key to chat with me!"
         
         sys_instr = "You are BlogVerse AI, a friendly, helpful, and creative writing assistant built into the BlogVerse platform. You help users brainstorm, write, edit, and navigate the site. Keep your responses friendly and relatively concise."
         
         try:
+            print(f"DEBUG: Using model {settings.GEMINI_MODEL}")
             model = self.genai.GenerativeModel(
                 model_name=settings.GEMINI_MODEL,
                 system_instruction=sys_instr,
@@ -138,11 +176,15 @@ class AIService:
                 
             latest_message = gemini_history.pop()["parts"][0]
             
+            print(f"DEBUG: Sending message to Gemini...")
             chat_session = model.start_chat(history=gemini_history)
             response = await chat_session.send_message_async(latest_message)
+            print("DEBUG: Success!")
             return response.text.strip()
             
         except Exception as e:
+            print(f"DEBUG: Chat Error: {e}")
             return f"I'm sorry, I encountered an error: {str(e)}"
+
 
 ai_service = AIService()

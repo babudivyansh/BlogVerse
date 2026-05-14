@@ -1,7 +1,11 @@
 """Application configuration loaded from environment variables."""
 
 from typing import Optional
+from pathlib import Path
 from pydantic_settings import BaseSettings
+
+# Base directory of the project
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 class Settings(BaseSettings):
     """Central configuration for the BlogVerse application."""
@@ -23,7 +27,7 @@ class Settings(BaseSettings):
 
     # ── Gemini ───────────────────────────────────────────────────
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-3.1-flash-lite"
 
     # ── Cloudinary (optional cloud image storage) ────────────────
     CLOUDINARY_CLOUD_NAME: Optional[str] = None
@@ -45,7 +49,10 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5 MB
 
-    model_config = {"env_file": ".env", "extra": "ignore"}
+    model_config = {
+        "env_file": str(BASE_DIR / ".env"),
+        "extra": "ignore"
+    }
 
 
 settings = Settings()

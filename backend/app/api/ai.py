@@ -62,7 +62,7 @@ class ChatInput(BaseModel):
     messages: list[ChatMessage]
 
 @router.post("/chat")
-async def chat_endpoint(data: ChatInput, _=Depends(get_verified_user)):
+async def chat_endpoint(data: ChatInput):
     """Conversational endpoint for the AI chatbot."""
     msgs = [{"role": m.role, "content": m.content} for m in data.messages]
     reply = await ai_service.conversational_chat(msgs)
