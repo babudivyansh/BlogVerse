@@ -9,23 +9,23 @@ import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [blogsLoading, setBlogsLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    if (!user) { navigate('/auth'); return; }
-    loadBlogs();
-  }, [user]);
+    if (!authLoading && !user) { navigate('/auth'); return; }
+    if (user) loadBlogs();
+  }, [user, authLoading]);
 
   const loadBlogs = async () => {
     try {
       const res = await getBlogs({ author: user.username, limit: 50 });
       setBlogs(res.data.items);
     } catch {}
-    setLoading(false);
+    setBlogsLoading(false);
   };
 
   const handleDelete = async (id) => {
@@ -37,24 +37,31 @@ export default function Dashboard() {
     } catch { toast.error('Failed to delete'); }
   };
 
-  const filtered = filter === 'all' ? blogs : blogs.filter(b => b.status === filter);
+  const filtered = filter === 'all' 
+    ? blogs 
+    : blogs.filter(b => b.status?.toLowerCase() === filter.toLowerCase());
   const totalViews = blogs.reduce((s, b) => s + b.views, 0);
   const totalLikes = blogs.reduce((s, b) => s + (b.likes_count || 0), 0);
 
-  if (loading) return <Loading />;
+  if (authLoading || blogsLoading) return <Loading />;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12">
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
           <div>
             <h1 className="text-5xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Your Atelier</h1>
             <p className="text-surface-500 font-bold uppercase tracking-widest text-xs mt-2">Manage your high-end content</p>
           </div>
-          <Link to="/create" className="btn-glassium-primary py-3 px-8 text-sm">
-            <HiOutlinePlus className="w-5 h-5 mr-2 inline" /> New Creation
-          </Link>
+          <div className="flex gap-3">
+            <Link to={`/profile/${user.username}`} className="btn-glassium-secondary py-3 px-8 text-sm hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-primary-500/10">
+              <HiOutlineEye className="w-5 h-5 mr-2 inline" /> View Profile
+            </Link>
+            <Link to="/create" className="btn-glassium-primary py-3 px-8 text-sm">
+              <HiOutlinePlus className="w-5 h-5 mr-2 inline" /> New Creation
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -101,7 +108,7 @@ export default function Dashboard() {
               </div>
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <Link to={`/blog/${blog.slug}`} className="text-lg font-black text-surface-800 dark:text-white hover:text-primary-500 transition-colors line-clamp-1 font-heading mb-2">{blog.title}</Link>
+                <Link to={`/blog/${blog.slug}`} className="text-lg font-extrabold text-surface-700 dark:text-white hover:text-primary-500 transition-colors line-clamp-1 font-heading mb-2">{blog.title}</Link>
                 <div className="flex items-center gap-4">
                   <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${blog.status === 'published' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
                     {blog.status}

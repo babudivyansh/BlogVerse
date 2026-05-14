@@ -32,6 +32,8 @@ class VerifyEmail(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
+    headline: Optional[str] = None
+    location: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
     social_links: Optional[dict] = None
@@ -42,6 +44,8 @@ class UserResponse(BaseModel):
     username: str
     email: str
     full_name: Optional[str] = None
+    headline: Optional[str] = None
+    location: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
     social_links: Optional[dict] = None
@@ -57,6 +61,8 @@ class UserPublic(BaseModel):
     id: int
     username: str
     full_name: Optional[str] = None
+    headline: Optional[str] = None
+    location: Optional[str] = None
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
     social_links: Optional[dict] = None

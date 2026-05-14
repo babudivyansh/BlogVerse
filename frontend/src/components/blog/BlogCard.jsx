@@ -8,11 +8,14 @@ export default function BlogCard({ blog, index = 0 }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -8 }}
+      className="h-full"
     >
-      <Link to={`/blog/${blog.slug}`} className="group block">
-        <div className="glassium-card glint-border overflow-hidden h-full">
+      <Link to={`/blog/${blog.slug}`} className="group block h-full">
+        <div className="glassium-card glint-border overflow-hidden h-full flex flex-col group-hover:shadow-[0_20px_50px_rgba(124,93,250,0.15)] group-hover:bg-white dark:group-hover:bg-white/5 transition-all duration-500">
           {/* Cover image */}
           <div className="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800 rounded-t-[1.5rem]">
             {blog.cover_image ? (

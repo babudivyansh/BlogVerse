@@ -4,7 +4,7 @@ import { FaInstagram, FaXTwitter, FaFacebook, FaThreads } from 'react-icons/fa6'
 export default function Footer() {
   return (
     <footer className="w-full mt-auto rounded-t-3xl bg-white/40 dark:bg-surface-950/40 backdrop-blur-[24px] border-t border-white/30 dark:border-white/5 shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-6 py-12 gap-8">
+      <div className="flex flex-col md:flex-row justify-between items-center max-w-[1600px] mx-auto px-6 py-12 gap-8">
         <div className="flex flex-col items-center md:items-start gap-3">
           <Link to="/" className="hover:scale-105 transition-transform mb-2">
             <img src="/logo.png" alt="Blogverse" className="h-64 w-auto object-contain -my-20" />
@@ -21,7 +21,7 @@ export default function Footer() {
             { label: 'Help Center', to: '/help' },
             { label: 'Contact Us', to: '/contact' },
           ].map(link => (
-            <Link key={link.label} to={link.to} className="text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 transition-all uppercase tracking-widest">
+            <Link key={link.label} to={link.to} className="text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 hover:scale-110 transition-all duration-300 uppercase tracking-[0.2em] inline-block">
               {link.label}
             </Link>
           ))}

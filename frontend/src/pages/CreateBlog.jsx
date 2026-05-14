@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
 export default function CreateBlog() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { dark } = useTheme();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -26,9 +26,9 @@ export default function CreateBlog() {
   const [aiLoading, setAiLoading] = useState('');
 
   useEffect(() => {
-    if (!user) { navigate('/auth'); return; }
-    if (editId) loadBlog();
-  }, [user, editId]);
+    if (!authLoading && !user) { navigate('/auth'); return; }
+    if (user && editId) loadBlog();
+  }, [user, authLoading, editId]);
 
   const loadBlog = async () => {
     try {
@@ -56,21 +56,22 @@ export default function CreateBlog() {
   };
 
   const handleSubmit = async (pub = false) => {
-    if (!title.trim() || !content.trim()) return toast.error('Title and content are required');
+    if (!title.trim()) return toast.error('A title is required to save');
+    if (pub && !content.trim()) return toast.error('Content is required to publish');
     setSaving(true);
     const data = {
       title, content, summary, category,
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
       cover_image: coverImage,
-      status: pub ? 'published' : status,
+      status: pub ? 'published' : 'draft',
     };
     try {
       if (editId) {
         await updateBlog(editId, data);
-        toast.success('Blog updated!');
+        toast.success(pub ? 'Story published!' : 'Draft updated!');
       } else {
         await createBlog(data);
-        toast.success(pub ? 'Blog published!' : 'Draft saved!');
+        toast.success(pub ? 'Story published!' : 'Draft saved!');
       }
       navigate('/dashboard');
     } catch (err) {
@@ -120,7 +121,7 @@ export default function CreateBlog() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-32">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12">
         {/* Header Section */}
         <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-8">
           <div>
@@ -135,11 +136,11 @@ export default function CreateBlog() {
           
           <div className="flex gap-4">
             <button onClick={() => handleSubmit(false)} disabled={saving}
-              className="px-8 py-4 rounded-2xl glassium text-surface-600 dark:text-surface-300 font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 border-white/20">
+              className="px-8 py-4 rounded-2xl glassium text-surface-600 dark:text-surface-300 font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all hover:scale-105 active:scale-95 shadow-lg hover:shadow-primary-500/10 border-white/20">
               {saving ? 'Preserving...' : 'Save Draft'}
             </button>
             <button onClick={() => handleSubmit(true)} disabled={saving}
-              className="btn-glassium-primary px-10 py-4 text-xs">
+              className="btn-glassium-primary px-10 py-4 text-xs hover:scale-105 active:scale-95 transition-all shadow-xl hover:shadow-primary-500/20">
               {saving ? 'Broadcasting...' : 'Publish Story'}
             </button>
           </div>

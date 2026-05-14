@@ -11,6 +11,7 @@ export default function Chatbot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const chatRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -19,6 +20,20 @@ export default function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Don't close if clicking the floating button itself
+      const button = document.getElementById('chatbot-toggle-btn');
+      if (chatRef.current && !chatRef.current.contains(event.target) && !button?.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
 
   const handleSend = async (e) => {
     e?.preventDefault();
@@ -50,6 +65,7 @@ export default function Chatbot() {
     <>
       {/* Floating Button */}
       <motion.button
+        id="chatbot-toggle-btn"
         className="fixed bottom-8 right-8 w-16 h-16 glassium text-primary-500 rounded-[1.5rem] shadow-2xl z-50 flex items-center justify-center glint-border hover:scale-110 active:scale-95 transition-all"
         whileHover={{ y: -5 }}
         onClick={() => setIsOpen(!isOpen)}
@@ -68,6 +84,7 @@ export default function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: 100, scale: 0.8, filter: 'blur(10px)' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            ref={chatRef}
             className="fixed bottom-28 right-6 w-[calc(100vw-3rem)] sm:w-[400px] glassium-card glint-border shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] z-50 flex flex-col overflow-hidden"
             style={{ height: '600px', maxHeight: 'calc(100vh - 160px)' }}
           >

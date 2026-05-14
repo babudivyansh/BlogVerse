@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineSearch, HiOutlineMenu, HiOutlineX, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi';
@@ -13,6 +13,17 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -30,7 +41,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/60 dark:bg-surface-950/60 backdrop-blur-[20px] shadow-[0_8px_32px_0_rgba(124,93,250,0.08)] border-b border-white/20 dark:border-white/5 transition-all">
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+      <div className="flex justify-between items-center max-w-[1600px] mx-auto px-8 sm:px-12 py-4">
         <div className="flex items-center gap-12">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
@@ -72,11 +83,23 @@ export default function Navbar() {
 
           {/* Auth */}
           {user ? (
-            <div className="relative">
+            <div className="relative" ref={profileRef}>
               <button onClick={() => setProfileOpen(!profileOpen)}
                 className="flex items-center gap-3 p-1 rounded-2xl hover:bg-white dark:hover:bg-white/10 transition-all group">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-black shadow-md group-hover:scale-105 transition-transform">
-                  {user.username?.[0]?.toUpperCase()}
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-black shadow-md group-hover:scale-105 transition-transform overflow-hidden">
+                  {user.avatar_url ? (
+                    <img 
+                      src={user.avatar_url} 
+                      alt={user.username} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerText = user.username?.[0]?.toUpperCase();
+                      }}
+                    />
+                  ) : (
+                    user.username?.[0]?.toUpperCase()
+                  )}
                 </div>
               </button>
               <AnimatePresence>
@@ -85,13 +108,17 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 15, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                    className="absolute right-0 mt-4 w-64 py-3 glassium glint-border rounded-3xl shadow-2xl"
+                    className="absolute right-0 mt-4 w-64 py-3 bg-white dark:bg-surface-900 border border-surface-100 dark:border-white/5 rounded-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)]"
                   >
                     <div className="px-5 py-4 border-b border-surface-100 dark:border-white/5">
                       <p className="text-sm font-black text-surface-800 dark:text-white leading-none mb-1">{user.full_name || user.username}</p>
                       <p className="text-xs font-medium text-surface-500 dark:text-surface-400 truncate">{user.email}</p>
                     </div>
                     <div className="p-2 space-y-1">
+                      <Link to={`/profile/${user.username}`} onClick={() => setProfileOpen(false)}
+                        className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
+                        My Profile
+                      </Link>
                       <Link to="/dashboard" onClick={() => setProfileOpen(false)}
                         className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
                         Dashboard

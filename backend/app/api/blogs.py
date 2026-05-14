@@ -1,13 +1,14 @@
 """Blog CRUD endpoints with search, pagination, likes, and categories."""
 
 import math
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 from slugify import slugify
 
 from app.core.database import get_db
-from app.core.security import get_current_user, get_verified_user
+from app.core.security import get_current_user, get_verified_user, get_optional_user
 from app.models.blog import Blog, BlogLike, Tag
 from app.models.user import User
 from app.schemas.blog import (
@@ -80,10 +81,27 @@ def list_blogs(
     category: str | None = None,
     tag: str | None = None,
     author: str | None = None,
+    status: str | None = None,
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """List published blogs with optional filtering and pagination."""
-    query = db.query(Blog).filter(Blog.status == "published")
+    """List blogs with optional filtering and pagination."""
+    query = db.query(Blog)
+
+    # Security: If status is not 'published', ensure requester is the author
+    if status and status != "published":
+        if not author or not current_user or (current_user.username != author and not current_user.is_admin):
+            # If trying to see someone else's drafts, force published
+            status = "published"
+    
+    if status:
+        query = query.filter(Blog.status == status)
+    elif author and current_user and current_user.username == author:
+        # On user's own dashboard/profile, show everything by default
+        pass
+    else:
+        # Public feed or guest: show only published
+        query = query.filter(Blog.status == "published")
 
     if search:
         query = query.filter(

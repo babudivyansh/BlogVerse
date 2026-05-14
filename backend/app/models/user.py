@@ -16,6 +16,8 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(100), nullable=True)
+    headline = Column(String(100), nullable=True)
+    location = Column(String(100), nullable=True)
     bio = Column(Text, nullable=True)
     avatar_url = Column(String(500), nullable=True)
     social_links = Column(JSON, nullable=True, default=dict)

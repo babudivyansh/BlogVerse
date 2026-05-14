@@ -70,6 +70,24 @@ def get_current_user(
     return user
 
 
+def get_optional_user(
+    token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/auth/login", auto_error=False)),
+    db: Session = Depends(get_db),
+):
+    """Return the user if authenticated, otherwise None."""
+    from app.models.user import User
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+        return db.query(User).filter(User.id == int(user_id)).first()
+    except JWTError:
+        return None
+
+
 def get_verified_user(current_user=Depends(get_current_user)):
     """Require the user to have verified their email."""
     if not current_user.is_verified:

@@ -27,7 +27,7 @@ class BlogAuthor(BaseModel):
 
 class BlogCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=300)
-    content: str = Field(..., min_length=1)
+    content: str = Field("", min_length=0)
     summary: Optional[str] = None
     cover_image: Optional[str] = None
     category: Optional[str] = None
@@ -77,6 +77,7 @@ class BlogCard(BaseModel):
     summary: Optional[str] = None
     cover_image: Optional[str] = None
     category: Optional[str] = None
+    status: str
     views: int = 0
     read_time: int = 1
     is_featured: bool = False
