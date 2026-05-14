@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HiOutlineMail, HiOutlineLocationMarker, HiOutlinePhone } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import SEO from '../../components/common/SEO';
 
 export default function ContactUs() {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ export default function ContactUs() {
       animate={{ opacity: 1 }} 
       className="min-h-screen pt-40 pb-20"
     >
+      <SEO title="Connect with Us" description="Reach out to the BlogVerse team for any inquiries, feedback, or collaboration opportunities." />
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
           <h1 className="text-5xl sm:text-7xl font-black text-surface-800 dark:text-white font-heading tracking-tight mb-6">

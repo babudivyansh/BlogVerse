@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import SEO from '../components/common/SEO';
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -45,6 +46,10 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 pt-32 pb-20">
+      <SEO 
+        title={tab === 'login' ? 'Login' : 'Sign Up'} 
+        description="Join the BlogVerse community to share your technology insights and creative stories with the world."
+      />
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-lg">
         <div className="glassium-card glint-border p-10 sm:p-14 shadow-2xl">

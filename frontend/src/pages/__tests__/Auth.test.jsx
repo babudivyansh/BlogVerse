@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Auth from '../Auth';
 import { useAuth } from '../../context/AuthContext';
 
@@ -17,7 +18,13 @@ vi.mock('framer-motion', () => ({
 }));
 
 const renderWithRouter = (ui) => {
-  return render(ui, { wrapper: BrowserRouter });
+  return render(
+    <HelmetProvider>
+      <BrowserRouter>
+        {ui}
+      </BrowserRouter>
+    </HelmetProvider>
+  );
 };
 
 describe('Auth Page', () => {
@@ -51,7 +58,7 @@ describe('Auth Page', () => {
     fireEvent.change(screen.getByPlaceholderText('you@example.com'), { target: { value: 'test@example.com' } });
     fireEvent.change(screen.getByPlaceholderText('••••••••'), { target: { value: 'password123' } });
     
-    fireEvent.click(screen.getByRole('button', { name: /Sign In/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Enter Now/i }));
     
     await waitFor(() => {
       expect(loginMock).toHaveBeenCalledWith('test@example.com', 'password123');

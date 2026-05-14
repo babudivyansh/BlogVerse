@@ -26,7 +26,7 @@ describe('Navbar Component', () => {
 
     renderWithRouter(<Navbar />);
     
-    expect(screen.getByText('BlogVerse')).toBeInTheDocument();
+    expect(screen.getByAltText('Blogverse')).toBeInTheDocument();
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Explore')).toBeInTheDocument();
   });
@@ -37,8 +37,8 @@ describe('Navbar Component', () => {
 
     renderWithRouter(<Navbar />);
     
-    expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByText('Sign Up')).toBeInTheDocument();
+    expect(screen.getByText(/Log In/i)).toBeInTheDocument();
+    expect(screen.getByText(/Get Started/i)).toBeInTheDocument();
   });
 
   it('shows user profile menu when logged in', () => {
@@ -60,13 +60,8 @@ describe('Navbar Component', () => {
 
     renderWithRouter(<Navbar />);
     
-    // Theme toggle button is identified by its interaction since icons are hard to find by text
-    const buttons = screen.getAllByRole('button');
-    // The theme toggle is usually the second button (search is first, theme is second)
-    // In our code: Search, Theme, Auth, Mobile Menu.
-    // Let's find it by icon name if possible or index.
-    // Actually, let's just click all buttons that don't have text.
-    fireEvent.click(buttons[1]); 
+    const themeBtn = screen.getByLabelText(/Toggle Theme/i);
+    fireEvent.click(themeBtn);
     expect(toggleMock).toHaveBeenCalled();
   });
 });

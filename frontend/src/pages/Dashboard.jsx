@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { getBlogs, deleteBlog, formatImageUrl } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
+import SEO from '../components/common/SEO';
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -47,6 +48,7 @@ export default function Dashboard() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
+      <SEO title="Dashboard" noindex={true} />
       <div className="max-w-[1600px] mx-auto px-8 sm:px-12">
         {/* Header */}
         <div className="flex items-center justify-between mb-12">

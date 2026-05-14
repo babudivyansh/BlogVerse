@@ -77,7 +77,7 @@ export default function Navbar() {
           </div>
 
           {/* Theme toggle */}
-          <button onClick={toggle}
+          <button onClick={toggle} aria-label="Toggle Theme"
             className="p-2.5 rounded-full glassium text-surface-500 dark:text-surface-400 hover:scale-110 transition-all active:scale-95 shadow-sm">
             {dark ? <HiOutlineSun className="w-5 h-5 text-amber-400" /> : <HiOutlineMoon className="w-5 h-5" />}
           </button>

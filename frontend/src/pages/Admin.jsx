@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { getAdminStats, getAdminUsers, getAdminBlogs, deleteUser, adminDeleteBlog, toggleFeatured, toggleBlockUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
+import SEO from '../components/common/SEO';
 
 export default function Admin() {
   const { user } = useAuth();
@@ -77,6 +78,7 @@ export default function Admin() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-24 pb-12">
+      <SEO title="Admin Panel" noindex={true} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-surface-900 dark:text-white mb-2">Admin Panel</h1>
         <p className="text-surface-500 dark:text-surface-400 text-sm mb-8">Manage your platform</p>

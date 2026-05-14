@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineCheckCircle, HiOutlineExclamationCircle, HiOutlineMailOpen } from 'react-icons/hi';
 import api from '../services/api';
+import SEO from '../components/common/SEO';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -35,6 +36,7 @@ export default function VerifyEmail() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 pt-20 pb-10">
+      <SEO title="Verify Email" description="Verify your BlogVerse account to start sharing your technology stories." />
       {/* Background decoration */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950" />

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HiOutlineDocumentText, HiOutlineUserGroup, HiOutlineLightBulb, HiOutlineScale } from 'react-icons/hi';
+import SEO from '../../components/common/SEO';
 
 export default function Terms() {
   const rules = [
@@ -27,6 +28,7 @@ export default function Terms() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      <SEO title="Terms of Resonance" description="Our guidelines for maintaining a high-end, creative, and respectful community in the BlogVerse." />
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
           <h1 className="text-5xl sm:text-7xl font-black text-surface-800 dark:text-white font-heading tracking-tight mb-6">

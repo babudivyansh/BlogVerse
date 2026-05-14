@@ -23,6 +23,10 @@ def get_sitemap(db: Session = Depends(get_db)):
         {"url": "/", "priority": "1.0", "changefreq": "daily"},
         {"url": "/search", "priority": "0.8", "changefreq": "daily"},
         {"url": "/auth", "priority": "0.5", "changefreq": "monthly"},
+        {"url": "/privacy", "priority": "0.4", "changefreq": "monthly"},
+        {"url": "/terms", "priority": "0.4", "changefreq": "monthly"},
+        {"url": "/help", "priority": "0.6", "changefreq": "weekly"},
+        {"url": "/contact", "priority": "0.6", "changefreq": "weekly"},
     ]
     
     for page in static_pages:

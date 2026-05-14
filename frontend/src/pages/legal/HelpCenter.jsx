@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HiOutlineQuestionMarkCircle, HiOutlineSparkles, HiOutlineColorSwatch, HiOutlineUserCircle } from 'react-icons/hi';
+import SEO from '../../components/common/SEO';
 
 export default function HelpCenter() {
   const faqs = [
@@ -31,6 +32,7 @@ export default function HelpCenter() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      <SEO title="Oracle Center" description="Find answers to common questions and learn how to master the BlogVerse platform." />
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-24">
           <h1 className="text-5xl sm:text-7xl font-black text-surface-800 dark:text-white font-heading tracking-tight mb-6">

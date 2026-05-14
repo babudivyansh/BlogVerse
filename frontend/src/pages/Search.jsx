@@ -6,6 +6,7 @@ import { HiOutlineSearch } from 'react-icons/hi';
 import { getBlogs, getCategories, getTags } from '../services/api';
 import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
+import SEO from '../components/common/SEO';
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,10 +69,10 @@ export default function Search() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-32 pb-20">
-      <Helmet>
-        <title>{query ? `Search: ${query} | BlogVerse` : activeCategory ? `${activeCategory} | BlogVerse` : 'Explore Insights | BlogVerse'}</title>
-        <meta name="description" content="Discover the latest insights, tutorials, and stories on BlogVerse. Filter by category or search for specific topics." />
-      </Helmet>
+      <SEO 
+        title={query ? `Search: ${query}` : activeCategory ? `Explore ${activeCategory}` : 'Discover Technology Trends & Stories'}
+        description={`Discover the latest technology trends, ${activeCategory || 'innovations'}, and expert app reviews on BlogVerse. Search through hundreds of high-quality articles.`}
+      />
       <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20">
         {/* Search bar */}
         <div className="max-w-3xl mx-auto mb-16">

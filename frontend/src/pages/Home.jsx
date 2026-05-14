@@ -52,8 +52,8 @@ export default function Home() {
   return (
     <div className="min-h-screen pt-32 pb-20">
       <SEO 
-        title="AI-Powered Digital Storytelling" 
-        description="Welcome to BlogVerse, the future of digital storytelling. Explore high-end, AI-enhanced blogs and join a community of elite creators."
+        title="AI-Powered Blog Platform" 
+        description="Explore BlogVerse for the latest technology trends, innovations, and digital advancements. A premium AI-powered platform for startup stories, app reviews, and industry updates."
       />
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative px-8 sm:px-12 lg:px-20 mb-32">

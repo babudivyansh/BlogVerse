@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HiOutlineShieldCheck, HiOutlineDatabase, HiOutlineGlobe, HiOutlineLockClosed } from 'react-icons/hi';
+import SEO from '../../components/common/SEO';
 
 export default function PrivacyPolicy() {
   const sections = [
@@ -27,6 +28,7 @@ export default function PrivacyPolicy() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      <SEO title="Privacy Manifesto" description="Read our commitment to protecting your digital footprint and creative data in the BlogVerse." />
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-20">
           <h1 className="text-5xl sm:text-7xl font-black text-surface-800 dark:text-white font-heading tracking-tight mb-6">
