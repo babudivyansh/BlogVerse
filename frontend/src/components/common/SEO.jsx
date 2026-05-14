@@ -44,6 +44,7 @@ const SEO = ({
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": siteName,
+    "alternateName": ["blogverse", "Blogverse"],
     "url": baseUrl,
     "potentialAction": {
       "@type": "SearchAction",

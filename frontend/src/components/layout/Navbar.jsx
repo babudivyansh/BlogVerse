@@ -46,7 +46,7 @@ export default function Navbar() {
         <div className="flex items-center gap-12">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
-            <img src="/logo.png" alt="Blogverse" className="h-48 w-auto object-contain -my-16" />
+            <img src="/logo.png" alt="BlogVerse" className="h-48 w-auto object-contain -my-16" />
           </Link>
 
           {/* Desktop nav */}
@@ -175,7 +175,7 @@ export default function Navbar() {
           >
             <div className="p-8 space-y-4">
               <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform">
-                <img src="/logo.png" alt="Blogverse" className="h-32 w-auto object-contain -my-10" />
+                <img src="/logo.png" alt="BlogVerse" className="h-32 w-auto object-contain -my-10" />
               </Link>
               {navLinks.map(link => (
                 <Link key={link.to} to={link.to} onClick={() => setMobileOpen(false)}
