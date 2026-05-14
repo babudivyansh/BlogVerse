@@ -111,6 +111,7 @@ export default function CreateBlog() {
         setSummary(data.summary);
         setCategory(data.category);
         setTags(data.tags.join(', '));
+        if (data.cover_image) setCoverImage(data.cover_image);
         toast.success('Blog generated successfully!', { id: 'aigen' });
       } else if (action === 'cover') {
         if (!title.trim()) return toast.error('Add a title first so AI knows what to paint');

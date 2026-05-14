@@ -1,6 +1,6 @@
 """Blog CRUD endpoints with search, pagination, likes, and categories."""
 
-import math
+import logging
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -18,6 +18,8 @@ from app.schemas.blog import (
 from app.services.ai_service import ai_service
 from app.services.image_service import image_generation_service
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/blogs", tags=["Blogs"])
 
 
@@ -32,16 +34,20 @@ async def generate_cover(
     current_user: User = Depends(get_verified_user),
 ):
     """Generate an AI cover image for a blog post."""
-    # 1. Generate artistic prompt using Gemini
-    visual_prompt = await ai_service.generate_visual_prompt(data.title, data.content)
-    
-    # 2. Generate image and upload to Cloudinary
-    image_url = await image_generation_service.generate_and_upload(visual_prompt)
-    
-    if not image_url:
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate image")
+    try:
+        # 1. Generate artistic prompt using Gemini
+        visual_prompt = await ai_service.generate_visual_prompt(data.title, data.content)
         
-    return {"url": image_url, "prompt": visual_prompt}
+        # 2. Generate image and upload to Cloudinary
+        image_url = await image_generation_service.generate_and_upload(visual_prompt)
+        
+        if not image_url:
+            raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to generate image")
+            
+        return {"url": image_url, "prompt": visual_prompt}
+    except Exception as e:
+        logger.error(f"Error in generate_cover: {e}")
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e))
 
 
 def _estimate_read_time(content: str) -> int:
