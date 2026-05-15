@@ -7,6 +7,7 @@ verification link to the console so the app still works in development.
 import smtplib
 import uuid
 import resend
+from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
