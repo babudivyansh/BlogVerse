@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { HiOutlineUsers, HiOutlineDocumentText, HiOutlineEye, HiOutlineHeart, HiOutlineTrash, HiOutlineStar, HiOutlineBan } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { getAdminStats, getAdminUsers, getAdminBlogs, deleteUser, adminDeleteBlog, toggleFeatured, toggleBlockUser } from '../services/api';
+import { getAdminStats, getAdminUsers, getAdminBlogs, deleteUser, adminDeleteBlog, toggleFeatured, toggleBlockUser, getSubscribers, deleteSubscriber } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import SEO from '../components/common/SEO';
@@ -15,6 +15,7 @@ export default function Admin() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('overview');
 
@@ -25,10 +26,11 @@ export default function Admin() {
 
   const loadData = async () => {
     try {
-      const [sRes, uRes, bRes] = await Promise.all([getAdminStats(), getAdminUsers(), getAdminBlogs()]);
+      const [sRes, uRes, bRes, subRes] = await Promise.all([getAdminStats(), getAdminUsers(), getAdminBlogs(), getSubscribers()]);
       setStats(sRes.data);
       setUsers(uRes.data);
       setBlogs(bRes.data);
+      setSubscribers(subRes.data);
     } catch { toast.error('Failed to load admin data'); }
     setLoading(false);
   };
@@ -67,6 +69,15 @@ export default function Admin() {
     } catch { toast.error('Failed'); }
   };
 
+  const handleDeleteSubscriber = async (id) => {
+    if (!confirm('Remove this subscriber?')) return;
+    try {
+      await deleteSubscriber(id);
+      setSubscribers(prev => prev.filter(s => s.id !== id));
+      toast.success('Subscriber removed');
+    } catch { toast.error('Failed to remove subscriber'); }
+  };
+
   if (loading) return <Loading />;
 
   const statCards = [
@@ -99,7 +110,7 @@ export default function Admin() {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
-          {['overview', 'users', 'blogs'].map(t => (
+          {['overview', 'users', 'blogs', 'subscribers'].map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${tab === t ? 'bg-primary-500 text-white' : 'glass-card text-surface-600 dark:text-surface-300'}`}>
               {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -202,6 +213,40 @@ export default function Admin() {
                       </td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Subscribers Table */}
+        {tab === 'subscribers' && (
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-surface-200 dark:border-surface-700">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-surface-500 uppercase">Email Address</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-surface-500 uppercase">Subscribed On</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-surface-500 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
+                  {subscribers.length > 0 ? subscribers.map(s => (
+                    <tr key={s.id} className="hover:bg-surface-50 dark:hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-surface-900 dark:text-white">{s.email}</td>
+                      <td className="px-4 py-3 text-sm text-surface-500">{s.created_at ? format(new Date(s.created_at), 'MMM d, yyyy') : ''}</td>
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => handleDeleteSubscriber(s.id)} className="p-1.5 rounded-lg text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                          <HiOutlineTrash className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="3" className="px-4 py-10 text-center text-surface-400 font-medium">No subscribers yet.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
