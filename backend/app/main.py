@@ -53,7 +53,8 @@ app.include_router(admin.router, prefix=prefix)
 app.include_router(ai.router, prefix=prefix)
 app.include_router(upload.router, prefix=prefix)
 app.include_router(newsletter.router, prefix=prefix)
-app.include_router(seo.router, prefix="/api")  # Sitemap at /api/sitemap.xml
+app.include_router(seo.router, prefix=prefix)  # Accessible at /api/sitemap.xml
+app.include_router(seo.router)                 # Accessible at /sitemap.xml
 
 
 @app.get("/")

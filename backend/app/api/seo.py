@@ -10,7 +10,7 @@ router = APIRouter(tags=["SEO"])
 @router.get("/sitemap.xml")
 def get_sitemap(db: Session = Depends(get_db)):
     """Generate a dynamic XML sitemap."""
-    base_url = "https://blogverse.info"
+    base_url = settings.FRONTEND_URL.rstrip('/')
     
     # Fetch all published blogs
     blogs = db.query(Blog).filter(Blog.status == "published").all()
