@@ -54,7 +54,7 @@ def send_verification_email(to_email: str, token: str) -> None:
         try:
             resend.api_key = settings.RESEND_API_KEY
             params = {
-                "from": f"{settings.APP_NAME} <onboarding@resend.dev>",
+                "from": f"{settings.APP_NAME} <hello@blogverse.info>",
                 "to": [to_email],
                 "subject": f"Verify your {settings.APP_NAME} account",
                 "html": f"""
@@ -140,7 +140,7 @@ def send_welcome_email(to_email: str) -> None:
         try:
             resend.api_key = settings.RESEND_API_KEY
             resend.Emails.send({
-                "from": f"{settings.APP_NAME} <onboarding@resend.dev>",
+                "from": f"{settings.APP_NAME} <hello@blogverse.info>",
                 "to": [to_email],
                 "subject": subject,
                 "html": html
@@ -185,7 +185,7 @@ def send_blog_broadcast(subscribers: list, blog_title: str, blog_slug: str, blog
         for email in subscribers:
             try:
                 resend.Emails.send({
-                    "from": f"{settings.APP_NAME} <onboarding@resend.dev>",
+                    "from": f"{settings.APP_NAME} <hello@blogverse.info>",
                     "to": [email],
                     "subject": subject,
                     "html": html
