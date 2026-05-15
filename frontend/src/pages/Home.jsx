@@ -7,30 +7,15 @@ import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
 import toast from 'react-hot-toast';
 import SEO from '../components/common/SEO';
-import { getBlogs, getFeaturedBlogs, getCategories, subscribeNewsletter } from '../services/api';
+import { getBlogs, getFeaturedBlogs, getCategories } from '../services/api';
+import NewsletterSection from '../components/common/NewsletterSection';
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [latest, setLatest] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState('');
-  const [subscribing, setSubscribing] = useState(false);
 
-  const handleSubscribe = async (e) => {
-    e.preventDefault();
-    if (!email) return toast.error('Please enter your email');
-    try {
-      setSubscribing(true);
-      const res = await subscribeNewsletter(email);
-      toast.success(res.data.message || 'Successfully subscribed!');
-      setEmail('');
-    } catch (err) {
-      toast.error(err.response?.data?.detail || 'Failed to subscribe');
-    } finally {
-      setSubscribing(false);
-    }
-  };
 
   useEffect(() => {
     async function load() {
@@ -183,21 +168,7 @@ export default function Home() {
       </section>
 
       {/* ── Newsletter ───────────────────────────────────── */}
-      <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-20">
-        <div className="glassium-card glint-border p-10 sm:p-20 text-center overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-4xl sm:text-5xl font-black text-surface-800 dark:text-white mb-4 font-heading leading-tight">Elevate Your Inbox</h2>
-            <p className="text-surface-500 dark:text-surface-400 font-bold mb-12 max-w-md mx-auto">Weekly insights and stories, delivered with glass-like clarity.</p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-              <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required
-                className="flex-1 px-6 py-4 rounded-2xl glassium glint-border focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-surface-800 dark:text-white font-bold" />
-              <button type="submit" disabled={subscribing} className="btn-glassium-primary py-4 px-10">
-                {subscribing ? 'Joining...' : 'Subscribe'}
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
+      <NewsletterSection />
     </div>
   );
 }
