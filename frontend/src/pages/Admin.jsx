@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { HiOutlineUsers, HiOutlineDocumentText, HiOutlineEye, HiOutlineHeart, HiOutlineTrash, HiOutlineStar, HiOutlineBan } from 'react-icons/hi';
+import { HiOutlineUsers, HiOutlineDocumentText, HiOutlineEye, HiOutlineHeart, HiOutlineTrash, HiOutlineStar, HiOutlineBan, HiOutlineSpeakerphone } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { getAdminStats, getAdminUsers, getAdminBlogs, deleteUser, adminDeleteBlog, toggleFeatured, toggleBlockUser, getSubscribers, deleteSubscriber } from '../services/api';
+import { getAdminStats, getAdminUsers, getAdminBlogs, deleteUser, adminDeleteBlog, toggleFeatured, toggleBlockUser, getSubscribers, deleteSubscriber, sendNewsletterBroadcast } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import SEO from '../components/common/SEO';
@@ -67,6 +67,17 @@ export default function Admin() {
       setBlogs(prev => prev.map(b => b.id === id ? { ...b, is_featured: res.data.is_featured } : b));
       toast.success(res.data.is_featured ? 'Featured!' : 'Unfeatured');
     } catch { toast.error('Failed'); }
+  };
+
+  const handleBroadcast = async (blog) => {
+    if (!confirm(`Broadcast "${blog.title}" to ${subscribers.length} subscribers?`)) return;
+    try {
+      toast.loading('Sending broadcast...', { id: 'broadcast' });
+      await sendNewsletterBroadcast(blog.id);
+      toast.success('Broadcast sent!', { id: 'broadcast' });
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Failed to send broadcast', { id: 'broadcast' });
+    }
   };
 
   const handleDeleteSubscriber = async (id) => {
@@ -204,6 +215,11 @@ export default function Admin() {
                       </td>
                       <td className="px-4 py-3 text-sm text-surface-500">{b.views}</td>
                       <td className="px-4 py-3 text-right flex gap-1 justify-end">
+                        {b.status === 'published' && (
+                          <button onClick={() => handleBroadcast(b)} className="p-1.5 rounded-lg text-surface-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors" title="Broadcast to Subscribers">
+                            <HiOutlineSpeakerphone className="w-4 h-4" />
+                          </button>
+                        )}
                         <button onClick={() => handleFeature(b.id)} className="p-1.5 rounded-lg text-surface-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-500/10 transition-colors">
                           <HiOutlineStar className="w-4 h-4" />
                         </button>

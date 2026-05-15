@@ -68,6 +68,7 @@ export const toggleFeatured = (id) => api.put(`/admin/blogs/${id}/feature`);
 export const subscribeNewsletter = (email) => api.post('/newsletter/subscribe', { email });
 export const getSubscribers = () => api.get('/newsletter/subscribers');
 export const deleteSubscriber = (id) => api.delete(`/newsletter/subscribers/${id}`);
+export const sendNewsletterBroadcast = (blogId) => api.post(`/newsletter/broadcast/${blogId}`);
 
 // ── AI APIs ────────────────────────────────────────────────────
 export const aiGenerateTitle = (topic) => api.post('/ai/generate-title', { topic });
