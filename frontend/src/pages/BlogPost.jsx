@@ -18,6 +18,9 @@ import Loading from '../components/common/Loading';
 import BlogCard from '../components/blog/BlogCard';
 import SEO from '../components/common/SEO';
 import BlogSidebar from '../components/blog/BlogSidebar';
+import WebStoryViewer from '../components/stories/WebStoryViewer';
+import { getStory } from '../services/api';
+import { IoPlayCircle } from 'react-icons/io5';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -30,6 +33,7 @@ export default function BlogPost() {
   const [likesCount, setLikesCount] = useState(0);
   const [commentText, setCommentText] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -72,8 +76,17 @@ export default function BlogPost() {
   };
 
   const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied!');
+  };
+
+  const handleWatchStory = async () => {
+    if (!blog.web_story_slug) return;
+    try {
+      const { data } = await getStory(blog.web_story_slug);
+      setSelectedStory(data);
+    } catch {
+      toast.error('Failed to load story');
+    }
   };
 
   if (loading) return <Loading />;
@@ -180,7 +193,14 @@ export default function BlogPost() {
                 {liked ? <HiHeart className="w-8 h-8 text-red-500" /> : <HiOutlineHeart className="w-8 h-8 text-surface-400 group-hover:text-red-400" />}
                 <span className="text-xl font-black text-surface-800 dark:text-white">{likesCount}</span>
               </button>
-              <div className="relative">
+              <div className="flex items-center gap-4">
+                {blog.web_story_slug && (
+                  <button onClick={handleWatchStory} className="flex items-center gap-4 px-8 py-4 rounded-[1.5rem] bg-indigo-600 text-white hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-500/20">
+                    <IoPlayCircle className="w-7 h-7" />
+                    <span className="text-xl font-black">Watch Story</span>
+                  </button>
+                )}
+                <div className="relative">
                 <button onClick={() => setShareOpen(!shareOpen)} className="flex items-center gap-4 px-8 py-4 rounded-[1.5rem] glassium hover:bg-primary-50 dark:hover:bg-white/5 transition-all active:scale-95">
                   <HiOutlineShare className="w-7 h-7 text-primary-500" />
                   <span className="text-xl font-black text-surface-800 dark:text-white">Share</span>
@@ -278,6 +298,15 @@ export default function BlogPost() {
           </section>
         )}
       </div>
+
+      <AnimatePresence>
+        {selectedStory && (
+          <WebStoryViewer 
+            story={selectedStory} 
+            onClose={() => setSelectedStory(null)} 
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

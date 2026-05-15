@@ -65,6 +65,7 @@ class BlogResponse(BaseModel):
     tags: List[TagResponse] = []
     likes_count: int = 0
     is_liked: bool = False
+    web_story_slug: Optional[str] = None
 
     model_config = {"from_attributes": True}
 
@@ -85,6 +86,7 @@ class BlogCard(BaseModel):
     author: BlogAuthor
     tags: List[TagResponse] = []
     likes_count: int = 0
+    web_story_slug: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

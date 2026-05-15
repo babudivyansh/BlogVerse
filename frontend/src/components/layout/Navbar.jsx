@@ -38,6 +38,7 @@ export default function Navbar() {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/search', label: 'Blogs' },
+    { to: '/stories', label: 'Stories' },
   ];
 
   return (

@@ -3,7 +3,7 @@
 import logging
 import math
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
@@ -18,6 +18,7 @@ from app.schemas.blog import (
 )
 from app.services.ai_service import ai_service
 from app.services.image_service import image_generation_service
+from app.services.story_service import story_service
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,8 @@ def _unique_slug(db: Session, title: str, exclude_id: int | None = None) -> str:
 def _blog_to_card(blog: Blog, db: Session) -> dict:
     """Convert a Blog ORM object to BlogCard-compatible dict."""
     likes_count = db.query(func.count(BlogLike.id)).filter(BlogLike.blog_id == blog.id).scalar()
-    return {**blog.__dict__, "likes_count": likes_count}
+    web_story_slug = blog.web_story.slug if hasattr(blog, 'web_story') and blog.web_story else None
+    return {**blog.__dict__, "likes_count": likes_count, "web_story_slug": web_story_slug}
 
 
 def _blog_to_response(blog: Blog, db: Session, user_id: int | None = None) -> dict:
@@ -101,7 +103,8 @@ def _blog_to_response(blog: Blog, db: Session, user_id: int | None = None) -> di
         is_liked = db.query(BlogLike).filter(
             BlogLike.blog_id == blog.id, BlogLike.user_id == user_id
         ).first() is not None
-    return {**blog.__dict__, "likes_count": likes_count, "is_liked": is_liked}
+    web_story_slug = blog.web_story.slug if hasattr(blog, 'web_story') and blog.web_story else None
+    return {**blog.__dict__, "likes_count": likes_count, "is_liked": is_liked, "web_story_slug": web_story_slug}
 
 
 # ── List / Search ────────────────────────────────────────────────
@@ -209,6 +212,7 @@ def get_blog(identifier: str, db: Session = Depends(get_db)):
 def create_blog(
     data: BlogCreate,
     db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_verified_user),
 ):
     """Create a new blog post."""
@@ -228,6 +232,8 @@ def create_blog(
     db.add(blog)
     db.commit()
     db.refresh(blog)
+    if blog.status == "published":
+        background_tasks.add_task(story_service.create_from_blog, db, blog.id)
     return BlogResponse(**_blog_to_response(blog, db, current_user.id))
 
 
@@ -238,6 +244,7 @@ def update_blog(
     blog_id: int,
     data: BlogUpdate,
     db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_verified_user),
 ):
     """Update an existing blog (author only)."""
@@ -259,6 +266,8 @@ def update_blog(
         setattr(blog, key, val)
     db.commit()
     db.refresh(blog)
+    if blog.status == "published":
+        background_tasks.add_task(story_service.create_from_blog, db, blog.id)
     return BlogResponse(**_blog_to_response(blog, db, current_user.id))
 
 

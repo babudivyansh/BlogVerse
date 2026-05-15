@@ -45,6 +45,11 @@ export const toggleLike = (id) => api.post(`/blogs/${id}/like`);
 export const getCategories = () => api.get('/blogs/categories');
 export const getTags = () => api.get('/blogs/tags');
 
+// ── Web Story APIs ─────────────────────────────────────────────
+export const getStories = (params) => api.get('/stories', { params });
+export const getStory = (slug) => api.get(`/stories/${slug}`);
+export const generateStory = (blogId) => api.post(`/stories/generate/${blogId}`);
+
 // ── Comment APIs ───────────────────────────────────────────────
 export const getComments = (blogId) => api.get(`/blogs/${blogId}/comments`);
 export const createComment = (blogId, data) => api.post(`/blogs/${blogId}/comments`, data);

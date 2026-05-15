@@ -165,6 +165,35 @@ class AIService:
         
         return await self._chat(system_prompt, user_prompt)
 
+    async def generate_story_content(self, title: str, content: str) -> list[dict]:
+        """Convert a blog post into a 5-7 slide visual story."""
+        if not self.is_configured:
+            # Mock data for offline mode
+            return [
+                {"title": title, "text": "Slide 1 content", "visual_prompt": "Artistic prompt 1"},
+                {"title": "Key Point", "text": "Slide 2 content", "visual_prompt": "Artistic prompt 2"},
+            ]
+
+        system_prompt = (
+            "You are a visual storyteller. "
+            "Convert the provided blog post into a 6-slide visual 'Web Story'. "
+            "You must respond ONLY with a valid JSON list of 6 objects. "
+            "Each object must have: "
+            "'title' (string, max 5 words), "
+            "'text' (string, max 20 words, key takeaway), "
+            "'visual_prompt' (string, highly detailed artistic prompt for an image generator representing the slide's content)."
+        )
+        user_prompt = f"Blog Title: {title}\nBlog Content: {content[:4000]}"
+
+        text = await self._chat(system_prompt, user_prompt, response_mime_type="application/json")
+        try:
+            return json.loads(text)
+        except Exception as e:
+            logger.error(f"Error parsing story AI output: {e}")
+            return [
+                {"title": title, "text": "Failed to generate story content.", "visual_prompt": "Error illustration"}
+            ]
+
     async def conversational_chat(self, messages: list[dict]) -> str:
         """Handle multi-turn conversational chat."""
         print(f"DEBUG: conversational_chat called. is_configured: {self.is_configured}")
