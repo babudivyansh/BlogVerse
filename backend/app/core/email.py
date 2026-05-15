@@ -108,6 +108,7 @@ def _send_via_smtp(to_email: str, subject: str, html_content: str) -> bool:
     msg.attach(MIMEText(html_content, "html"))
     
     try:
+        print(f"[DEBUG] Attempting SMTP fallback for {to_email} via {settings.SMTP_HOST}...")
         with smtplib.SMTP(settings.SMTP_HOST, int(settings.SMTP_PORT), timeout=10) as server:
             if settings.SMTP_USE_TLS:
                 server.starttls()
@@ -115,7 +116,7 @@ def _send_via_smtp(to_email: str, subject: str, html_content: str) -> bool:
             server.send_message(msg)
         return True
     except Exception as exc:
-        print(f"[EMAIL] SMTP fallback failed: {exc}")
+        print(f"[EMAIL] SMTP fallback failed for {to_email}: {exc}")
         return False
 
 
