@@ -22,6 +22,7 @@ import ContactUs from './pages/legal/ContactUs';
 import Chatbot from './components/common/Chatbot';
 import ScrollToTop from './components/common/ScrollToTop';
 import StoriesGallery from './pages/StoriesGallery';
+import CreateStory from './pages/CreateStory';
 
 export default function App() {
   return (
@@ -53,6 +54,7 @@ export default function App() {
                     <Route path="/blog/:slug" element={<BlogPost />} />
                     <Route path="/stories" element={<StoriesGallery />} />
                     <Route path="/stories/:slug" element={<StoriesGallery />} />
+                    <Route path="/create-story" element={<CreateStory />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/dashboard" element={<Dashboard />} />

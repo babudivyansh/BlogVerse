@@ -7,27 +7,33 @@ import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
 import toast from 'react-hot-toast';
 import SEO from '../components/common/SEO';
-import { getBlogs, getFeaturedBlogs, getCategories } from '../services/api';
+import { getBlogs, getFeaturedBlogs, getCategories, getStories, formatImageUrl } from '../services/api';
 import NewsletterSection from '../components/common/NewsletterSection';
+import WebStoryViewer from '../components/stories/WebStoryViewer';
+import { AnimatePresence } from 'framer-motion';
+import { IoPlayCircle } from 'react-icons/io5';
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
   const [latest, setLatest] = useState([]);
+  const [stories, setStories] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [activeStory, setActiveStory] = useState(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [featRes, latestRes, catRes] = await Promise.allSettled([
+        const [featRes, latestRes, catRes, storiesRes] = await Promise.allSettled([
           getFeaturedBlogs(),
           getBlogs({ page: 1, limit: 9 }),
           getCategories(),
+          getStories({ limit: 10 })
         ]);
-        if (featRes.status === 'fulfilled') setFeatured(featRes.value.data);
-        if (latestRes.status === 'fulfilled') setLatest(latestRes.value.data.items);
-        if (catRes.status === 'fulfilled') setCategories(catRes.value.data);
+        if (featRes.status === 'fulfilled') setFeatured(featRes.value.data || []);
+        if (latestRes.status === 'fulfilled') setLatest(latestRes.value.data?.items || []);
+        if (catRes.status === 'fulfilled') setCategories(catRes.value.data || []);
+        if (storiesRes.status === 'fulfilled') setStories(storiesRes.value.data || []);
       } catch (e) { console.error(e); }
       setLoading(false);
     }
@@ -38,8 +44,19 @@ export default function Home() {
     <div className="min-h-screen pt-32 pb-20">
       <SEO 
         title="AI-Powered Blog Platform" 
-        description="Explore BlogVerse for the latest technology trends, innovations, and digital advancements. A premium AI-powered platform for startup stories, app reviews, and industry updates."
+        description="Explore BlogVerse for the latest technology trends, innovations, and digital advancements."
       />
+      
+      {/* Web Story Viewer Portal */}
+      <AnimatePresence>
+        {activeStory && (
+          <WebStoryViewer 
+            story={activeStory} 
+            onClose={() => setActiveStory(null)} 
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative px-8 sm:px-12 lg:px-20 mb-32">
         <div className="max-w-[1600px] mx-auto text-center">
@@ -84,7 +101,7 @@ export default function Home() {
 
       {/* ── Featured Blogs ───────────────────────────────── */}
       {featured.length > 0 && (
-        <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-20">
+        <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-20 border-b border-surface-100 dark:border-white/5">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h2 className="text-3xl font-black text-surface-800 dark:text-white font-heading">Editor's Choice</h2>
@@ -99,17 +116,16 @@ export default function Home() {
 
       {/* ── Categories ───────────────────────────────────── */}
       {categories.length > 0 && (
-        <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-24">
+        <section className="max-w-[1300px] mx-auto px-8 sm:px-12 lg:px-20 py-24 bg-surface-50 dark:bg-white/2 rounded-[3rem] my-20">
           <div className="relative">
             <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
               <div>
                 <h2 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Explore by Category</h2>
                 <p className="text-surface-500 font-bold uppercase tracking-widest text-xs mt-3">Dive deep into specific insights</p>
               </div>
-              <div className="h-[2px] flex-1 bg-gradient-to-r from-primary-500/20 to-transparent mb-2 hidden md:block" />
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
               {categories.map((cat, i) => (
                 <motion.div
                   key={cat.name}
@@ -119,13 +135,10 @@ export default function Home() {
                   viewport={{ once: true }}
                 >
                   <Link to={`/search?category=${cat.name}`}
-                    className="group relative block p-8 glassium-card glint-border rounded-[2rem] overflow-hidden hover:scale-105 transition-all duration-500 hover:shadow-2xl hover:shadow-primary-500/10"
+                    className="group relative block p-8 glassium-card glint-border rounded-[2rem] overflow-hidden hover:scale-105 transition-all duration-500 shadow-sm hover:shadow-xl"
                   >
                     <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary-500/10 rounded-full blur-2xl group-hover:bg-primary-500/20 transition-all duration-500" />
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 rounded-2xl bg-white/50 dark:bg-white/10 flex items-center justify-center mb-6 group-hover:bg-primary-500 group-hover:text-white transition-all duration-500 shadow-sm">
-                        <HiOutlineSparkles className="w-6 h-6" />
-                      </div>
+                    <div className="relative z-10 text-center">
                       <h3 className="text-xl font-black text-surface-800 dark:text-white mb-1 group-hover:text-primary-500 transition-colors">{cat.name}</h3>
                       <p className="text-xs font-black text-surface-400 uppercase tracking-widest">{cat.count} Stories</p>
                     </div>
@@ -133,6 +146,58 @@ export default function Home() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Visual Tales (Stories) ────────────────────────── */}
+      {stories.length > 0 && (
+        <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-24 overflow-hidden">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
+            <div className="text-center md:text-left">
+              <h2 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Visual Tales</h2>
+              <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
+                <span className="w-12 h-[2px] bg-primary-500" />
+                <p className="text-surface-500 font-bold uppercase tracking-wider text-xs">Immersive narratives in vertical format</p>
+              </div>
+            </div>
+            <Link to="/stories" className="premium-link text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 uppercase tracking-[0.2em] transition-colors duration-300">
+              View All Stories
+            </Link>
+          </div>
+
+          <div className="flex gap-8 overflow-x-auto pb-10 scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
+            {stories.map((story, i) => (
+              <motion.div
+                key={story.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => setActiveStory(story)}
+                className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[9/16] rounded-[2.5rem] overflow-hidden glassium-card glint-border group cursor-pointer shadow-2xl snap-start"
+              >
+                <img 
+                  src={formatImageUrl(story.cover_image)} 
+                  alt={story.title} 
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100">
+                   <div className="w-16 h-16 bg-white/10 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/20 text-white">
+                     <IoPlayCircle size={32} />
+                   </div>
+                </div>
+
+                <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-primary-400 mb-2">{story.blog_category || 'Tale'}</span>
+                  <h3 className="text-lg font-black text-white leading-tight font-heading group-hover:text-primary-400 transition-colors line-clamp-2">
+                    {story.title}
+                  </h3>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
       )}
@@ -147,7 +212,7 @@ export default function Home() {
               <p className="text-surface-500 font-bold uppercase tracking-wider text-xs">Fresh thoughts from our community</p>
             </div>
           </div>
-          <Link to="/search" className="btn-glassium-secondary py-3 px-8 text-xs hover:bg-primary-500 hover:text-white">
+          <Link to="/search" className="premium-link text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 uppercase tracking-[0.2em] transition-colors duration-300">
             View All Blogs
           </Link>
         </div>

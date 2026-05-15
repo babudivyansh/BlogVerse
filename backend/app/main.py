@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+import cloudinary
+import cloudinary.uploader
 
 from app.core.config import settings
 from app.core.database import Base, engine
@@ -14,6 +16,15 @@ import app.models  # noqa: F401
 
 # ── Create tables ────────────────────────────────────────────────
 Base.metadata.create_all(bind=engine)
+
+# ── Cloudinary Configuration ─────────────────────────────────────
+if all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
+    cloudinary.config(
+        cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+        api_key=settings.CLOUDINARY_API_KEY,
+        api_secret=settings.CLOUDINARY_API_SECRET,
+        secure=True
+    )
 
 # ── App instance ─────────────────────────────────────────────────
 app = FastAPI(

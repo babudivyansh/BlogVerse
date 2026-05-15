@@ -7,6 +7,10 @@ from app.models.blog import Blog
 from app.models.web_story import WebStory, StoryPage
 from app.services.ai_service import ai_service
 from app.services.image_service import image_generation_service
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.schemas.web_story import WebStoryCreate
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +29,11 @@ class StoryService:
         logger.info(f"Generating {len(slides)} images for the story...")
         
         async def _gen_page(slide_data, index):
-            img_url = await image_generation_service.generate_and_upload(slide_data["visual_prompt"])
+            img_url = await image_generation_service.generate_and_upload(
+                slide_data["visual_prompt"], 
+                width=720, 
+                height=1280
+            )
             return StoryPage(
                 title=slide_data["title"],
                 text=slide_data["text"],
@@ -66,5 +74,69 @@ class StoryService:
         db.commit()
         db.refresh(story)
         return story
+
+    def create_manual(self, db: Session, data: "WebStoryCreate", author_id: int) -> WebStory:
+        """Create a web story manually from provided data."""
+        # Ensure slug uniqueness
+        base_slug = slugify(data.title)
+        slug = f"story-{base_slug}"
+        
+        pages = [
+            StoryPage(
+                title=p.title,
+                text=p.text,
+                image_url=p.image_url,
+                order_index=p.order_index
+            ) for p in data.pages
+        ]
+        
+        story = WebStory(
+            blog_id=data.blog_id,
+            author_id=author_id,
+            title=data.title,
+            slug=slug,
+            status=data.status,
+            pages=pages
+        )
+        
+        db.add(story)
+        db.commit()
+        db.refresh(story)
+        return story
+
+    def update(self, db: Session, story_id: int, data: "WebStoryCreate", user_id: int) -> WebStory:
+        """Update an existing web story."""
+        story = db.query(WebStory).filter(WebStory.id == story_id, WebStory.author_id == user_id).first()
+        if not story:
+            raise Exception("Story not found or unauthorized")
+
+        # Update basic info
+        story.title = data.title
+        story.slug = f"story-{slugify(data.title)}"
+        story.status = data.status
+        
+        # Replace pages
+        db.query(StoryPage).filter(StoryPage.story_id == story.id).delete()
+        story.pages = [
+            StoryPage(
+                title=p.title,
+                text=p.text,
+                image_url=p.image_url,
+                order_index=p.order_index
+            ) for p in data.pages
+        ]
+        
+        db.commit()
+        db.refresh(story)
+        return story
+
+    def delete(self, db: Session, story_id: int, user_id: int):
+        """Delete a web story."""
+        story = db.query(WebStory).filter(WebStory.id == story_id, WebStory.author_id == user_id).first()
+        if not story:
+            raise Exception("Story not found or unauthorized")
+        
+        db.delete(story)
+        db.commit()
 
 story_service = StoryService()

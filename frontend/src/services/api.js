@@ -47,8 +47,14 @@ export const getTags = () => api.get('/blogs/tags');
 
 // ── Web Story APIs ─────────────────────────────────────────────
 export const getStories = (params) => api.get('/stories', { params });
+export const getMyStories = () => api.get('/stories/me');
 export const getStory = (slug) => api.get(`/stories/${slug}`);
+export const getStoryById = (id) => api.get(`/stories/id/${id}`);
 export const generateStory = (blogId) => api.post(`/stories/generate/${blogId}`);
+export const suggestStoryContent = (blogId) => api.post(`/stories/suggest/${blogId}`);
+export const createStory = (data) => api.post('/stories', data);
+export const updateStory = (id, data) => api.put(`/stories/${id}`, data);
+export const deleteStory = (id) => api.delete(`/stories/${id}`);
 
 // ── Comment APIs ───────────────────────────────────────────────
 export const getComments = (blogId) => api.get(`/blogs/${blogId}/comments`);
@@ -82,7 +88,7 @@ export const aiSuggestTags = (content) => api.post('/ai/suggest-tags', { content
 export const aiImproveContent = (content) => api.post('/ai/improve-content', { content });
 export const aiGenerateBlog = (data) => api.post('/ai/generate-blog', data);
 export const aiChat = (messages) => api.post('/ai/chat', { messages });
-export const aiGenerateCover = (data) => api.post('/blogs/generate-cover', data);
+export const aiGenerateCover = (data) => api.post('/ai/generate-image', data);
 
 // ── Upload API ─────────────────────────────────────────────────
 export const uploadImage = (file) => {

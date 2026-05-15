@@ -1,5 +1,6 @@
 """AI-powered content generation endpoints using OpenAI."""
 
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from app.core.security import get_verified_user
@@ -15,6 +16,13 @@ class ContentInput(BaseModel):
 
 class TopicInput(BaseModel):
     topic: str
+
+class ImageGenerationInput(BaseModel):
+    title: Optional[str] = None
+    summary: Optional[str] = None
+    prompt: Optional[str] = None
+    width: int = 1280
+    height: int = 720
 
 
 @router.post("/generate-title")
@@ -77,3 +85,18 @@ async def chat_endpoint(data: ChatInput):
     msgs = [{"role": m.role, "content": m.content} for m in data.messages]
     reply = await ai_service.conversational_chat(msgs)
     return {"reply": reply}
+
+@router.post("/generate-image")
+async def generate_image_endpoint(data: ImageGenerationInput, _=Depends(get_verified_user)):
+    """Generate an image based on title, summary, or a specific prompt."""
+    if data.prompt:
+        visual_prompt = data.prompt
+    else:
+        visual_prompt = await ai_service.generate_visual_prompt(data.title or "", data.summary or "")
+    
+    url = await image_generation_service.generate_and_upload(
+        visual_prompt, 
+        width=data.width, 
+        height=data.height
+    )
+    return {"url": url}

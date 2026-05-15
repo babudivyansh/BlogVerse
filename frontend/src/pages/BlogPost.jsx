@@ -221,6 +221,7 @@ export default function BlogPost() {
             </div>
           </div>
         </div>
+      </div>
 
         {/* Comments Section */}
         <section className="mt-24 mb-32">

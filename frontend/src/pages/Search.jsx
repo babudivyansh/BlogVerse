@@ -76,7 +76,7 @@ export default function Search() {
       <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20">
         {/* Search bar */}
         <div className="max-w-3xl mx-auto mb-16">
-          <h1 className="text-5xl font-black text-center text-surface-800 dark:text-white mb-10 font-heading tracking-tight">Discover Stories</h1>
+          <h1 className="text-5xl font-black text-center text-surface-800 dark:text-white mb-10 font-heading tracking-tight">Discover <span className="text-primary-500">Insights</span></h1>
           <form onSubmit={handleSearch} className="relative">
             <HiOutlineSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary-500" />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="What are you curious about?"

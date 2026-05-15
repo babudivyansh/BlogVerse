@@ -211,8 +211,8 @@ def get_blog(identifier: str, db: Session = Depends(get_db)):
 @router.post("", response_model=BlogResponse, status_code=status.HTTP_201_CREATED)
 def create_blog(
     data: BlogCreate,
-    db: Session = Depends(get_db),
     background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_verified_user),
 ):
     """Create a new blog post."""
@@ -243,8 +243,8 @@ def create_blog(
 def update_blog(
     blog_id: int,
     data: BlogUpdate,
-    db: Session = Depends(get_db),
     background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_verified_user),
 ):
     """Update an existing blog (author only)."""

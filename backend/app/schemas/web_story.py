@@ -20,12 +20,12 @@ class WebStoryBase(BaseModel):
     status: str = "published"
 
 class WebStoryCreate(WebStoryBase):
-    blog_id: int
+    blog_id: Optional[int] = None
     pages: List[StoryPageCreate]
 
 class WebStoryResponse(WebStoryBase):
     id: int
-    blog_id: int
+    blog_id: Optional[int] = None
     author_id: int
     slug: str
     created_at: datetime

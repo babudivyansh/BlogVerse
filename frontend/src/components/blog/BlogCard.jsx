@@ -25,9 +25,22 @@ export default function BlogCard({ blog, index = 0 }) {
               <div className="w-full h-full bg-gradient-to-br from-primary-400 to-primary-600 opacity-80" />
             )}
             {blog.category && (
-              <span className="absolute top-4 left-4 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white bg-primary-500 rounded-full shadow-lg">
+              <span className="absolute top-4 left-4 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white bg-primary-500 rounded-full shadow-lg z-10">
                 {blog.category}
               </span>
+            )}
+            {blog.web_story_slug && (
+              <div className="absolute top-4 right-4 z-10">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-10 h-10 bg-black/30 backdrop-blur-md rounded-xl flex items-center justify-center text-white border border-white/20 shadow-xl"
+                >
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </motion.div>
+              </div>
             )}
           </div>
 

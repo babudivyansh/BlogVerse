@@ -59,6 +59,10 @@
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50%      { transform: scale(1.2); opacity: 0.8; }
 }
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
 
 /* ── Base styles ───────────────────────────────────────────────── */
 html {
@@ -215,7 +219,17 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(30, 41, 59, 0.6);
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
 }
-
+ 
+/* ── Premium Link Animation ───────────────────────────────────── */
+.premium-link {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+.premium-link:hover {
+  transform: translateY(-2px);
+}
+ 
 /* ── Typography & Content ───────────────────────────────────────── */
 @utility text-headline-xl { font-size: 3rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; font-family: var(--font-heading); }
 @utility text-headline-lg { font-size: 2rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; font-family: var(--font-heading); }

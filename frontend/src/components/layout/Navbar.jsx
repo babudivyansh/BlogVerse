@@ -129,6 +129,10 @@ export default function Navbar() {
                         className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
                         Write Blog
                       </Link>
+                      <Link to="/create-story" onClick={() => setProfileOpen(false)}
+                        className="flex items-center px-4 py-3 text-sm font-bold text-surface-600 dark:text-surface-200 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">
+                        Create Web Story
+                      </Link>
                       {user.is_admin && (
                         <Link to="/admin" onClick={() => setProfileOpen(false)}
                           className="flex items-center px-4 py-3 text-sm font-black text-primary-500 hover:bg-primary-50 dark:hover:bg-white/5 rounded-2xl transition-all">

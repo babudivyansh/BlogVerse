@@ -20,11 +20,6 @@ def _upload_to_cloudinary(file_bytes: bytes, filename: str) -> str | None:
     try:
         import cloudinary
         import cloudinary.uploader
-        cloudinary.config(
-            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-            api_key=settings.CLOUDINARY_API_KEY,
-            api_secret=settings.CLOUDINARY_API_SECRET,
-        )
         result = cloudinary.uploader.upload(file_bytes, folder="blogverse", public_id=filename)
         return result.get("secure_url")
     except Exception as exc:

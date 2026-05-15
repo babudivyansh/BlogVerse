@@ -1,13 +1,13 @@
 from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from app.core.database import Base
 
 class WebStory(Base):
     __tablename__ = "web_stories"
 
     id = Column(Integer, primary_key=True, index=True)
-    blog_id = Column(Integer, ForeignKey("blogs.id", ondelete="CASCADE"), nullable=False, unique=True)
+    blog_id = Column(Integer, ForeignKey("blogs.id", ondelete="CASCADE"), nullable=True)
     author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title = Column(String(300), nullable=False)
     slug = Column(String(350), unique=True, index=True, nullable=False)
@@ -15,7 +15,7 @@ class WebStory(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
-    blog = relationship("Blog", backref="web_story", uselist=False)
+    blog = relationship("Blog", backref=backref("web_story", uselist=False))
     author = relationship("User", backref="web_stories")
     pages = relationship("StoryPage", back_populates="story", cascade="all, delete-orphan", order_by="StoryPage.order_index")
 
