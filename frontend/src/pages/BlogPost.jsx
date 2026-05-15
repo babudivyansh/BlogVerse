@@ -17,6 +17,7 @@ import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 import BlogCard from '../components/blog/BlogCard';
 import SEO from '../components/common/SEO';
+import BlogSidebar from '../components/blog/BlogSidebar';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -92,7 +93,10 @@ export default function BlogPost() {
         publishDate={blog.created_at}
         slug={blog.slug}
       />
-      <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Main Content */}
+          <article className="lg:col-span-8">
         <div className="glassium-card glint-border overflow-hidden shadow-2xl">
           {/* Header Image */}
           {blog.cover_image && (
@@ -110,49 +114,26 @@ export default function BlogPost() {
                   {blog.category}
                 </Link>
               )}
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-surface-800 dark:text-white leading-[1] mb-10 font-heading tracking-tight">{blog.title}</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-surface-800 dark:text-white leading-[1.1] mb-10 font-heading tracking-tight">{blog.title}</h1>
 
-              <div className="flex items-center justify-center flex-wrap gap-8 text-sm">
-                <Link to={`/profile/${blog.author?.username}`} className="flex items-center gap-4 group">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-black shadow-xl group-hover:scale-110 transition-transform overflow-hidden">
+              <div className="flex items-center flex-wrap gap-8 text-sm">
+                <div className="flex items-center gap-4">
+                  <Link to={`/profile/${blog.author?.username}`} className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-black shadow-lg overflow-hidden lg:hidden">
                     {blog.author?.avatar_url ? (
-                      <img 
-                        src={formatImageUrl(blog.author.avatar_url)} 
-                        alt={blog.author.username} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerText = blog.author?.username?.[0]?.toUpperCase();
-                        }}
-                      />
+                      <img src={formatImageUrl(blog.author.avatar_url)} alt="" className="w-full h-full object-cover" />
                     ) : (
                       blog.author?.username?.[0]?.toUpperCase()
                     )}
+                  </Link>
+                  <div>
+                    <p className="font-black text-surface-800 dark:text-white text-lg leading-none mb-1">
+                      By <Link to={`/profile/${blog.author?.username}`} className="text-primary-500 hover:underline">{blog.author?.full_name || blog.author?.username}</Link>
+                    </p>
+                    <p className="text-xs font-bold text-surface-400 uppercase tracking-widest">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
                   </div>
-                  <div className="text-left">
-                    <p className="font-black text-surface-800 dark:text-white text-lg leading-none mb-1">{blog.author?.full_name || blog.author?.username}</p>
-                    <p className="text-xs font-bold text-surface-400 uppercase tracking-widest mb-2">{blog.created_at ? format(new Date(blog.created_at), 'MMMM d, yyyy') : ''}</p>
-                    
-                    {/* Author Socials */}
-                    {blog.author?.social_links && (
-                      <div className="flex gap-2">
-                        {Object.entries(blog.author.social_links).map(([key, url]) => {
-                          if (!url) return null;
-                          const icons = { instagram: FaInstagram, twitter: FaXTwitter, facebook: FaFacebook, threads: FaThreads, github: FaGithub, linkedin: FaLinkedin, website: FaGlobe };
-                          const Icon = icons[key] || FaGlobe;
-                          return (
-                            <a key={key} href={url} target="_blank" rel="noreferrer" 
-                              className="text-surface-400 hover:text-primary-500 transition-colors">
-                              <Icon className="w-3.5 h-3.5" />
-                            </a>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-                <div className="h-10 w-[1px] bg-surface-200 dark:bg-white/10 hidden sm:block"></div>
-                <div className="flex items-center gap-8 text-surface-500 font-bold uppercase tracking-widest text-[10px]">
+                </div>
+                <div className="h-8 w-[1px] bg-surface-200 dark:bg-white/10 hidden sm:block"></div>
+                <div className="flex items-center gap-6 text-surface-500 font-bold uppercase tracking-widest text-[10px]">
                   <span className="flex items-center gap-2"><HiOutlineClock className="w-5 h-5 text-primary-500" /> {blog.read_time} min read</span>
                   <span className="flex items-center gap-2"><HiOutlineEye className="w-5 h-5 text-primary-500" /> {blog.views} views</span>
                 </div>
@@ -275,13 +256,20 @@ export default function BlogPost() {
               </div>
             )}
           </div>
-        </section>
+            </section>
+          </article>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-4">
+            <BlogSidebar author={blog.author} />
+          </div>
+        </div>
 
         {/* Related Posts */}
         {related.length > 0 && (
-          <section className="mb-32">
+          <section className="mb-32 mt-12">
             <div className="flex items-center justify-between mb-12">
-              <h3 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Continue Your Journey</h3>
+              <h2 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Continue Your Journey</h2>
               <Link to="/search" className="btn-glassium-secondary py-2 px-6 text-xs font-black">View All</Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -289,7 +277,7 @@ export default function BlogPost() {
             </div>
           </section>
         )}
-      </article>
+      </div>
     </motion.div>
   );
 }

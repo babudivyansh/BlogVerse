@@ -20,11 +20,13 @@ import Terms from './pages/legal/Terms';
 import HelpCenter from './pages/legal/HelpCenter';
 import ContactUs from './pages/legal/ContactUs';
 import Chatbot from './components/common/Chatbot';
+import ScrollToTop from './components/common/ScrollToTop';
 
 export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <ThemeProvider>
           <AuthProvider>
             <div className="min-h-screen flex flex-col relative transition-colors duration-500">

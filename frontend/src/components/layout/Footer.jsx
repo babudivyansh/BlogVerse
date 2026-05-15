@@ -16,6 +16,7 @@ export default function Footer() {
 
         <div className="flex flex-wrap justify-center gap-10">
           {[
+            { label: 'Blogs', to: '/search' },
             { label: 'Privacy Policy', to: '/privacy' },
             { label: 'Terms of Service', to: '/terms' },
             { label: 'Help Center', to: '/help' },

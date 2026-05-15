@@ -37,7 +37,7 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/', label: 'Home' },
-    { to: '/search', label: 'Explore' },
+    { to: '/search', label: 'Blogs' },
   ];
 
   return (

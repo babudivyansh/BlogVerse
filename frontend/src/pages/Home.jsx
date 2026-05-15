@@ -74,7 +74,7 @@ export default function Home() {
                 Start Creating <HiOutlineArrowRight className="w-5 h-5 ml-2 inline" />
               </Link>
               <Link to="/search" className="btn-glassium-secondary text-lg px-10">
-                Explore Stories
+                View All Blogs
               </Link>
             </div>
           </motion.div>
@@ -163,7 +163,7 @@ export default function Home() {
             </div>
           </div>
           <Link to="/search" className="btn-glassium-secondary py-3 px-8 text-xs hover:bg-primary-500 hover:text-white">
-            View All Stories
+            View All Blogs
           </Link>
         </div>
         {loading ? <Loading /> : (
