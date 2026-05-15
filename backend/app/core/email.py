@@ -220,24 +220,40 @@ def send_verification_success_email(to_email: str) -> None:
 
 
 def send_login_notification_email(to_email: str, full_name: str) -> None:
-    """Send a security notification email after a successful login."""
+    """Send a premium security notification email after a successful login."""
     subject = f"New Login Detected on {settings.APP_NAME} 🛡️"
     html = f"""
-    <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:40px;border:1px solid #eee;border-radius:24px;background:#ffffff;">
-        <h2 style="color:#111827;margin:0;font-size:22px;">Hi {full_name},</h2>
-        <p style="color:#4b5563;font-size:16px;line-height:1.6;margin-top:20px;">
-            This is a quick security notification to let you know that a new login was just recorded for your {settings.APP_NAME} account.
-        </p>
-        <div style="background:#fff7ed;border-left:4px solid #f97316;padding:20px;margin:30px 0;border-radius:8px;">
-            <p style="color:#9a3412;font-size:14px;margin:0;">
-                <b>If this was you:</b> You can safely ignore this email. No further action is required.
+    <div style="font-family:sans-serif;max-width:520px;margin:20px auto;padding:0;border:1px solid #eee;border-radius:24px;overflow:hidden;background:#ffffff;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+        <div style="background:#f8fafc;padding:30px;text-align:center;border-bottom:1px solid #f1f5f9;">
+            <div style="background:#e0e7ff;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-center;margin:0 auto 15px;">
+                <span style="font-size:24px;line-height:48px;display:block;width:100%;text-align:center;">🛡️</span>
+            </div>
+            <h1 style="color:#1e293b;margin:0;font-size:22px;letter-spacing:-0.01em;">Security Notification</h1>
+        </div>
+        <div style="padding:40px 35px;">
+            <h2 style="color:#1e293b;margin:0 0 15px;font-size:18px;">Hi {full_name},</h2>
+            <p style="color:#64748b;font-size:15px;line-height:1.7;margin-top:0;">
+                Your {settings.APP_NAME} account was just signed into. We're sending this to ensure it was you.
+            </p>
+            <div style="background:#f1f5f9;padding:20px;border-radius:16px;margin:30px 0;">
+                <p style="color:#475569;font-size:13px;margin:0;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Login Details</p>
+                <p style="color:#1e293b;font-size:15px;margin:10px 0 0;">
+                    <b>Time:</b> {datetime.now().strftime('%B %d, %Y at %I:%M %p')} UTC<br>
+                    <b>Account:</b> {to_email}
+                </p>
+            </div>
+            <p style="color:#64748b;font-size:14px;line-height:1.6;">
+                If this was you, you can safely ignore this message. If you don't recognize this activity, please secure your account immediately:
+            </p>
+            <div style="text-align:center;margin-top:30px;">
+                <a href="{settings.FRONTEND_URL}/auth?tab=login" style="background:#4f46e5;color:white;padding:14px 30px;text-decoration:none;border-radius:10px;font-weight:bold;display:inline-block;font-size:14px;">Secure My Account</a>
+            </div>
+        </div>
+        <div style="background:#f8fafc;padding:25px;text-align:center;border-top:1px solid #f1f5f9;">
+            <p style="font-size:11px;color:#94a3b8;margin:0;">
+                Security is our priority. Sent by the {settings.APP_NAME} Team.
             </p>
         </div>
-        <p style="color:#4b5563;font-size:16px;line-height:1.6;">
-            <b>If this wasn't you:</b> Please reset your password immediately to keep your account secure.
-        </p>
-        <hr style="border:none;border-top:1px solid #f3f4f6;margin:30px 0;">
-        <p style="font-size:12px;color:#9ca3af;text-align:center;">Sent with 💜 from the {settings.APP_NAME} Team</p>
     </div>
     """
     if settings.RESEND_API_KEY:
