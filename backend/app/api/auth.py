@@ -4,7 +4,10 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.email import generate_verification_token, send_verification_email, send_verification_success_email
+from app.core.email import (
+    generate_verification_token, send_verification_email, 
+    send_verification_success_email, send_login_notification_email
+)
 from app.core.security import (
     create_access_token, get_current_user, hash_password, verify_password,
 )
@@ -41,7 +44,7 @@ def signup(data: UserCreate, background_tasks: BackgroundTasks, db: Session = De
 
 
 @router.post("/login", response_model=Token)
-def login(data: UserLogin, db: Session = Depends(get_db)):
+def login(data: UserLogin, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Authenticate and return a JWT access token."""
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.hashed_password):
@@ -54,6 +57,10 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
         )
 
     access_token = create_access_token(data={"sub": str(user.id)})
+    
+    # Send login notification in background
+    background_tasks.add_task(send_login_notification_email, user.email, user.full_name or user.username)
+    
     return Token(access_token=access_token)
 
 

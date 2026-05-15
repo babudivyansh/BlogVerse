@@ -219,6 +219,45 @@ def send_verification_success_email(to_email: str) -> None:
     _send_via_smtp(to_email, subject, html)
 
 
+def send_login_notification_email(to_email: str, full_name: str) -> None:
+    """Send a security notification email after a successful login."""
+    subject = f"New Login Detected on {settings.APP_NAME} 🛡️"
+    html = f"""
+    <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:40px;border:1px solid #eee;border-radius:24px;background:#ffffff;">
+        <h2 style="color:#111827;margin:0;font-size:22px;">Hi {full_name},</h2>
+        <p style="color:#4b5563;font-size:16px;line-height:1.6;margin-top:20px;">
+            This is a quick security notification to let you know that a new login was just recorded for your {settings.APP_NAME} account.
+        </p>
+        <div style="background:#fff7ed;border-left:4px solid #f97316;padding:20px;margin:30px 0;border-radius:8px;">
+            <p style="color:#9a3412;font-size:14px;margin:0;">
+                <b>If this was you:</b> You can safely ignore this email. No further action is required.
+            </p>
+        </div>
+        <p style="color:#4b5563;font-size:16px;line-height:1.6;">
+            <b>If this wasn't you:</b> Please reset your password immediately to keep your account secure.
+        </p>
+        <hr style="border:none;border-top:1px solid #f3f4f6;margin:30px 0;">
+        <p style="font-size:12px;color:#9ca3af;text-align:center;">Sent with 💜 from the {settings.APP_NAME} Team</p>
+    </div>
+    """
+    if settings.RESEND_API_KEY:
+        try:
+            resend.api_key = settings.RESEND_API_KEY
+            resend.Emails.send({
+                "from": f"{settings.APP_NAME} <hello@blogverse.info>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html
+            })
+            print(f"[EMAIL] Login notification sent via Resend to {to_email}")
+            return
+        except Exception as e:
+            print(f"[EMAIL] Resend login notification failed: {e}")
+
+    # Fallback to SMTP
+    _send_via_smtp(to_email, subject, html)
+
+
 def send_blog_broadcast(subscribers: list, blog_title: str, blog_slug: str, blog_summary: str) -> None:
     """Send a new blog post broadcast to all subscribers."""
     blog_url = f"{settings.FRONTEND_URL}/blog/{blog_slug}"
