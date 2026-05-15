@@ -1,5 +1,6 @@
 import pytest
 from app.models.user import User
+from app.core.security import hash_password
 
 def test_signup_success(client, db_session):
     response = client.post(
@@ -109,3 +110,25 @@ def test_verify_email(client, db_session):
 def test_verify_email_invalid_token(client):
     response = client.post("/api/auth/verify-email", json={"token": "invalid-token"})
     assert response.status_code == 400
+
+def test_login_unverified_fails(client, db_session):
+    # Create unverified user
+    user = User(
+        username="unverified_login",
+        email="unverified_login@example.com",
+        hashed_password=hash_password("password123"),
+        full_name="Unverified User",
+        is_verified=False
+    )
+    db_session.add(user)
+    db_session.commit()
+    
+    response = client.post(
+        "/api/auth/login",
+        json={
+            "email": "unverified_login@example.com",
+            "password": "password123"
+        }
+    )
+    assert response.status_code == 403
+    assert "verify your email" in response.json()["detail"].lower()

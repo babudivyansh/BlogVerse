@@ -4,7 +4,10 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.email import generate_verification_token, send_verification_email
+from app.core.email import (
+    generate_verification_token, send_verification_email, 
+    send_verification_success_email, send_login_notification_email
+)
 from app.core.security import (
     create_access_token, get_current_user, hash_password, verify_password,
 )
@@ -30,45 +33,53 @@ def signup(data: UserCreate, background_tasks: BackgroundTasks, db: Session = De
         hashed_password=hash_password(data.password),
         full_name=data.full_name,
         verification_token=token,
-        is_verified=True,  # TEMPORARY: Auto-verify user to bypass SMTP block
+        is_verified=False,  # Require verification
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    # TEMPORARY: Disabled email verification
-    # background_tasks.add_task(send_verification_email, user.email, token)
+    background_tasks.add_task(send_verification_email, user.email, token)
     return user
 
 
 @router.post("/login", response_model=Token)
-def login(data: UserLogin, db: Session = Depends(get_db)):
+def login(data: UserLogin, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """Authenticate and return a JWT access token."""
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.hashed_password):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
     
-    # TEMPORARY: Disabled email verification check
-    # if not user.is_verified:
-    #     raise HTTPException(
-    #         status.HTTP_403_FORBIDDEN, 
-    #         "Please verify your email address before logging in. Check your inbox for a verification link."
-    #     )
+    if not user.is_verified:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, 
+            "Please verify your email address before logging in. Check your inbox for a verification link."
+        )
 
     access_token = create_access_token(data={"sub": str(user.id)})
+    
+    # Send login notification in background
+    background_tasks.add_task(send_login_notification_email, user.email, user.full_name or user.username)
+    
     return Token(access_token=access_token)
 
 
 @router.post("/verify-email")
-def verify_email(data: VerifyEmail, db: Session = Depends(get_db)):
-    """Verify a user's email using the token sent during signup."""
+def verify_email(data: VerifyEmail, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """Verify a user's email and send a confirmation email."""
     user = db.query(User).filter(User.verification_token == data.token).first()
     if not user:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid verification token")
+    
+    user_email = user.email
     user.is_verified = True
     user.verification_token = None
     db.commit()
-    return {"message": "Email verified successfully"}
+    
+    # Send success confirmation in background
+    background_tasks.add_task(send_verification_success_email, user_email)
+    
+    return {"message": "Email verified successfully. You can now log in!"}
 
 
 @router.get("/me", response_model=UserResponse)

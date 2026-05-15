@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineCheckCircle, HiOutlineExclamationCircle, HiOutlineMailOpen } from 'react-icons/hi';
@@ -10,15 +10,20 @@ export default function VerifyEmail() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('verifying'); // verifying, success, error
   const [message, setMessage] = useState('');
+  const hasRun = useRef(false);
 
   const token = searchParams.get('token');
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setMessage('No verification token found in the URL.');
+    if (!token || hasRun.current) {
+      if (!token) {
+        setStatus('error');
+        setMessage('No verification token found in the URL.');
+      }
       return;
     }
+    
+    hasRun.current = true;
 
     const verifyToken = async () => {
       try {
