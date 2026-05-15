@@ -31,6 +31,12 @@ services:
         sync: false
       - key: SMTP_FROM_EMAIL
         value: blogversebusiness@gmail.com
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://blogverse.info
+      - key: DEBUG
+        value: "False"
 
   # ── Frontend Static Site (React/Vite) ──────────────────────────
   - type: web
