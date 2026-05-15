@@ -77,3 +77,18 @@ def test_broadcast_draft_fails(client, admin_headers, db_session, admin_user):
     response = client.post(f"/api/newsletter/broadcast/{blog.id}", headers=admin_headers)
     assert response.status_code == 400
     assert "Only published blogs" in response.json()["detail"]
+
+def test_delete_subscriber_admin(client, admin_headers, db_session):
+    # Add a subscriber
+    sub = Subscriber(email="remove@ex.com")
+    db_session.add(sub)
+    db_session.commit()
+    db_session.refresh(sub)
+    
+    response = client.delete(f"/api/newsletter/subscribers/{sub.id}", headers=admin_headers)
+    assert response.status_code == 200
+    assert response.json()["message"] == "Subscriber removed"
+    
+    # Verify removal
+    exists = db_session.query(Subscriber).filter_by(id=sub.id).first()
+    assert exists is None
