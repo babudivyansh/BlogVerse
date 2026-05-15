@@ -45,12 +45,9 @@ services:
           name: blogverse-api
           property: host
     routes:
-      - type: rewrite
+      - type: redirect
         source: /sitemap.xml
         destination: https://blogverse-api.onrender.com/api/sitemap.xml
-      - type: rewrite
-        source: /api/*
-        destination: https://blogverse-api.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html
