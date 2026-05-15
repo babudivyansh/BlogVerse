@@ -56,13 +56,22 @@ def send_verification_email(to_email: str, token: str) -> None:
             params = {
                 "from": f"{settings.APP_NAME} <hello@blogverse.info>",
                 "to": [to_email],
-                "subject": f"Verify your {settings.APP_NAME} account",
+                "subject": f"Welcome to {settings.APP_NAME}! ✨ Please verify your account",
                 "html": f"""
-                <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:20px;border:1px solid #eee;border-radius:10px;">
-                    <h2 style="color:#4f46e5;">Welcome to {settings.APP_NAME}!</h2>
-                    <p>Please verify your email address to get started:</p>
-                    <a href="{verify_url}" style="background:#4f46e5;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;display:inline-block;margin:10px 0;">Verify Email</a>
-                    <p style="font-size:12px;color:#666;">If the button doesn't work, copy this link: {verify_url}</p>
+                <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:40px;border:1px solid #eee;border-radius:20px;background:#ffffff;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+                    <div style="text-align:center;margin-bottom:30px;">
+                        <h1 style="color:#4f46e5;margin:0;font-size:28px;">Welcome Home! 🚀</h1>
+                        <p style="color:#666;font-size:16px;">We're thrilled to have you join our community.</p>
+                    </div>
+                    <div style="background:#f9fafb;padding:30px;border-radius:15px;margin-bottom:30px;">
+                        <p style="font-size:16px;color:#333;line-height:1.6;margin-top:0;">You're just one step away from unlocking the full {settings.APP_NAME} experience. Please verify your email address by clicking the button below:</p>
+                        <div style="text-align:center;margin:30px 0;">
+                            <a href="{verify_url}" style="background:#4f46e5;color:white;padding:15px 35px;text-decoration:none;border-radius:10px;font-weight:bold;display:inline-block;font-size:16px;">Verify My Account</a>
+                        </div>
+                        <p style="font-size:14px;color:#999;text-align:center;margin-bottom:0;">Link not working? Copy this into your browser:<br><span style="color:#4f46e5;">{verify_url}</span></p>
+                    </div>
+                    <hr style="border:none;border-top:1px solid #eee;margin:30px 0;">
+                    <p style="font-size:12px;color:#999;text-align:center;line-height:1.5;">This email was sent to {to_email} because you signed up for {settings.APP_NAME}. If you didn't do this, you can safely ignore this email.</p>
                 </div>
                 """
             }
@@ -121,18 +130,36 @@ def _send_via_smtp(to_email: str, subject: str, html_content: str) -> bool:
 
 
 def send_welcome_email(to_email: str) -> None:
-    """Send a welcome email to a new newsletter subscriber."""
-    subject = f"Welcome to the {settings.APP_NAME} Newsletter! ✨"
+    """Send a premium welcome email to a new newsletter subscriber."""
+    subject = f"Welcome to the {settings.APP_NAME} Family! 🚀"
     html = f"""
-    <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:30px;border:1px solid #eee;border-radius:15px;background:#fcfcfc;">
-        <h1 style="color:#4f46e5;margin-bottom:10px;">Welcome Aboard!</h1>
-        <p style="font-size:16px;color:#333;line-height:1.6;">Thanks for subscribing to the <b>{settings.APP_NAME}</b> newsletter. You're now part of a community that values clarity and depth in digital storytelling.</p>
-        <p style="font-size:16px;color:#333;line-height:1.6;">Expect weekly insights, tech trends, and the best of our community directly in your inbox.</p>
-        <div style="margin:30px 0;text-align:center;">
-            <a href="{settings.FRONTEND_URL}" style="background:#4f46e5;color:white;padding:12px 30px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Explore the Blog</a>
+    <div style="font-family:sans-serif;max-width:600px;margin:20px auto;padding:0;border:1px solid #eee;border-radius:24px;overflow:hidden;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+        <div style="background:linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);padding:50px 40px;text-align:center;">
+            <h1 style="color:white;margin:0;font-size:32px;letter-spacing:-0.025em;">You're in! ✨</h1>
+            <p style="color:rgba(255,255,255,0.9);font-size:18px;margin-top:10px;">Welcome to the {settings.APP_NAME} Newsletter</p>
         </div>
-        <hr style="border:none;border-top:1px solid #eee;margin:30px 0;">
-        <p style="font-size:12px;color:#999;text-align:center;">You're receiving this because you signed up at {settings.FRONTEND_URL}. <br> No spam, just pure value.</p>
+        <div style="padding:40px;background:white;">
+            <p style="font-size:16px;color:#374151;line-height:1.7;margin-top:0;">
+                Hello there! We're thrilled to have you with us. You've just joined a community of curious minds dedicated to exploring the future of digital storytelling.
+            </p>
+            <div style="background:#f9fafb;padding:25px;border-radius:16px;margin:30px 0;">
+                <h3 style="color:#111827;margin-top:0;font-size:18px;">What's next?</h3>
+                <ul style="color:#4b5563;font-size:15px;padding-left:20px;margin-bottom:0;">
+                    <li style="margin-bottom:10px;">Weekly deep-dives into tech and design</li>
+                    <li style="margin-bottom:10px;">Early access to featured stories</li>
+                    <li style="margin-bottom:10px;">Exclusive community insights</li>
+                </ul>
+            </div>
+            <div style="text-align:center;">
+                <a href="{settings.FRONTEND_URL}" style="background:#4f46e5;color:white;padding:16px 40px;text-decoration:none;border-radius:12px;font-weight:bold;display:inline-block;font-size:16px;box-shadow:0 10px 15px -3px rgba(79, 70, 229, 0.3);">Explore the Feed</a>
+            </div>
+        </div>
+        <div style="background:#f3f4f6;padding:30px;text-align:center;">
+            <p style="font-size:12px;color:#9ca3af;margin:0;">
+                You're receiving this because you subscribed at {settings.FRONTEND_URL}.<br>
+                Stay curious. Stay inspired.
+            </p>
+        </div>
     </div>
     """
 
@@ -145,16 +172,51 @@ def send_welcome_email(to_email: str) -> None:
                 "subject": subject,
                 "html": html
             })
-            print(f"[EMAIL] Welcome email sent via Resend to {to_email}")
+            print(f"[EMAIL] Enhanced Welcome email sent via Resend to {to_email}")
             return
         except Exception as e:
             print(f"[EMAIL] Resend welcome failed: {e}")
 
     # Fallback to SMTP
     if _send_via_smtp(to_email, subject, html):
-        print(f"[EMAIL] Welcome email sent via SMTP to {to_email}")
+        print(f"[EMAIL] Enhanced Welcome email sent via SMTP to {to_email}")
     else:
-        print(f"[DEV] Welcome email (not sent) for {to_email}")
+        print(f"[DEV] Enhanced Welcome email (not sent) for {to_email}")
+
+
+def send_verification_success_email(to_email: str) -> None:
+    """Send a congratulatory email after successful verification."""
+    subject = f"Account Verified! Welcome to {settings.APP_NAME} 🎊"
+    html = f"""
+    <div style="font-family:sans-serif;max-width:500px;margin:20px auto;padding:40px;border:1px solid #eee;border-radius:24px;text-align:center;background:#ffffff;">
+        <div style="font-size:60px;margin-bottom:20px;">✅</div>
+        <h1 style="color:#111827;margin:0;font-size:26px;">Verification Complete!</h1>
+        <p style="color:#6b7280;font-size:16px;line-height:1.6;margin-top:15px;">
+            Your account is now fully active. You can now publish stories, leave comments, and engage with the community.
+        </p>
+        <div style="margin:35px 0;">
+            <a href="{settings.FRONTEND_URL}/auth?tab=login" style="background:#4f46e5;color:white;padding:14px 35px;text-decoration:none;border-radius:12px;font-weight:bold;display:inline-block;">Log In Now</a>
+        </div>
+        <hr style="border:none;border-top:1px solid #f3f4f6;margin:30px 0;">
+        <p style="font-size:13px;color:#9ca3af;">See you on the other side!</p>
+    </div>
+    """
+    if settings.RESEND_API_KEY:
+        try:
+            resend.api_key = settings.RESEND_API_KEY
+            resend.Emails.send({
+                "from": f"{settings.APP_NAME} <hello@blogverse.info>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html
+            })
+            print(f"[EMAIL] Verification success email sent via Resend to {to_email}")
+            return
+        except Exception as e:
+            print(f"[EMAIL] Resend verification success failed: {e}")
+
+    # Fallback to SMTP
+    _send_via_smtp(to_email, subject, html)
 
 
 def send_blog_broadcast(subscribers: list, blog_title: str, blog_slug: str, blog_summary: str) -> None:

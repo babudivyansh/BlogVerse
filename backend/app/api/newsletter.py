@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Response
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.subscriber import Subscriber
 from app.models.user import User
+from app.core.security import hash_password
 from app.models.blog import Blog
 from app.core.security import get_current_user
 from app.core.email import send_welcome_email, send_blog_broadcast
@@ -14,10 +15,11 @@ class SubscribeRequest(BaseModel):
     email: EmailStr
 
 @router.post("/subscribe", status_code=status.HTTP_201_CREATED)
-def subscribe_to_newsletter(req: SubscribeRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+def subscribe_to_newsletter(req: SubscribeRequest, background_tasks: BackgroundTasks, response: Response, db: Session = Depends(get_db)):
     """Subscribe to the newsletter and send a welcome email."""
     existing = db.query(Subscriber).filter(Subscriber.email == req.email).first()
     if existing:
+        response.status_code = status.HTTP_200_OK
         return {"message": "You are already subscribed!"}
     
     new_sub = Subscriber(email=req.email)
@@ -27,7 +29,7 @@ def subscribe_to_newsletter(req: SubscribeRequest, background_tasks: BackgroundT
     # Trigger welcome email in background
     background_tasks.add_task(send_welcome_email, req.email)
     
-    return {"message": "Successfully subscribed to the newsletter!"}
+    return {"message": "Welcome to the family! 🚀 Your journey to better insights starts now. Check your inbox for a special greeting!"}
 
 @router.get("/subscribers")
 def get_subscribers(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

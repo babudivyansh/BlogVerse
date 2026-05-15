@@ -26,9 +26,9 @@ describe('Navbar Component', () => {
 
     renderWithRouter(<Navbar />);
     
-    expect(screen.getByAltText('Blogverse')).toBeInTheDocument();
+    expect(screen.getByAltText('BlogVerse')).toBeInTheDocument();
     expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Explore')).toBeInTheDocument();
+    expect(screen.getByText('Blogs')).toBeInTheDocument();
   });
 
   it('shows login/signup buttons when not logged in', () => {
