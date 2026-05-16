@@ -7,7 +7,7 @@ import BlogCard from '../components/blog/BlogCard';
 import Loading from '../components/common/Loading';
 import toast from 'react-hot-toast';
 import SEO from '../components/common/SEO';
-import { getBlogs, getFeaturedBlogs, getCategories, getStories, formatImageUrl } from '../services/api';
+import { getBlogs, getFeaturedBlogs, getCategories, getStories, getStory, formatImageUrl } from '../services/api';
 import NewsletterSection from '../components/common/NewsletterSection';
 import WebStoryViewer from '../components/stories/WebStoryViewer';
 import { AnimatePresence } from 'framer-motion';
