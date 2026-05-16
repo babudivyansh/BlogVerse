@@ -155,10 +155,10 @@ class AIService:
         }
 
     async def generate_section_content(self, topic: str, section: dict, tone: str, context: str = "") -> str:
-        """Write a precisely calibrated 350-360 word section."""
+        """Write a precisely calibrated 300 word section."""
         system_prompt = (
             "You are a world-class Subject Matter Expert and Senior Content Writer. "
-            "Write a highly detailed, engaging section that is EXACTLY 350 to 360 words long. "
+            "Write a highly detailed, engaging section that is EXACTLY 300 words long. "
             "Provide deep technical analysis and real-world examples. "
             "Do not summarize; maintain consistent depth throughout. "
             "Use Markdown formatting. Return ONLY the content."
@@ -167,11 +167,11 @@ class AIService:
         return await self._chat(system_prompt, user_prompt)
 
     async def generate_blog_outline(self, topic: str, tone: str) -> list[dict]:
-        """Generate a massive 10-section outline for a definitive guide."""
+        """Generate a comprehensive 5-section outline."""
         system_prompt = (
             "You are a Chief Research Officer and Master Content Architect. "
-            "Create a comprehensive, EXACTLY 10-section outline for a definitive guide. "
-            "Return ONLY a valid JSON list of 10 objects. "
+            "Create a comprehensive, EXACTLY 5-section outline for a definitive guide. "
+            "Return ONLY a valid JSON list of 5 objects. "
             "Each object must have: 'heading' (string), 'description' (string), and 'type' (string). "
             "Ensure you include sections for: Historical Context, Current Trends, Technical Deep-Dive, and Future Predictions."
         )
