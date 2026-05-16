@@ -58,6 +58,7 @@ export const getStory = (slug) => api.get(`/stories/${slug}`);
 export const getStoryById = (id) => api.get(`/stories/id/${id}`);
 export const generateStory = (blogId) => api.post(`/stories/generate/${blogId}`);
 export const suggestStoryContent = (blogId) => api.post(`/stories/suggest/${blogId}`);
+export const suggestManualStoryContent = (topic) => api.post(`/stories/suggest-manual?topic=${encodeURIComponent(topic)}`);
 export const createStory = (data) => api.post('/stories', data);
 export const updateStory = (id, data) => api.put(`/stories/${id}`, data);
 export const deleteStory = (id) => api.delete(`/stories/${id}`);

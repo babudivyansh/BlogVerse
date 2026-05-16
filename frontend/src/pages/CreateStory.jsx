@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineSparkles, HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph, HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlineSave } from 'react-icons/hi';
 import toast from 'react-hot-toast';
-import { getBlogs, suggestStoryContent, createStory, updateStory, getStoryById, formatImageUrl, aiGenerateCover } from '../services/api';
+import { getBlogs, suggestStoryContent, suggestManualStoryContent, createStory, updateStory, getStoryById, formatImageUrl, aiGenerateCover, uploadImage } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/common/Loading';
 
@@ -23,6 +23,8 @@ const CreateStory = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [aiTopic, setAiTopic] = useState('');
+  const [showAIPanel, setShowAIPanel] = useState(false);
   const fileInputRef = React.useRef(null);
 
   useEffect(() => {
@@ -103,6 +105,33 @@ const CreateStory = () => {
       toast.success('AI suggestions loaded!');
     } catch (err) {
       toast.error('Failed to get suggestions');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleManualAISuggest = async () => {
+    if (!aiTopic.trim()) {
+      toast.error('Enter a topic for the AI first');
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const { data } = await suggestManualStoryContent(aiTopic);
+      const suggestedPages = data.map((slide, i) => ({
+        title: slide.title,
+        text: slide.text,
+        image_url: '', 
+        visual_prompt: slide.visual_prompt,
+        order_index: i
+      }));
+      setPages(suggestedPages);
+      if (!title) setTitle(aiTopic);
+      setCurrentPage(0);
+      setShowAIPanel(false);
+      toast.success('AI has drafted your story!');
+    } catch (err) {
+      toast.error('Failed to generate story content');
     } finally {
       setIsGenerating(false);
     }
@@ -269,13 +298,20 @@ const CreateStory = () => {
                   >
                     Save Draft
                   </button>
-                  {creationMode === 'blog' && (
+                  {creationMode === 'blog' ? (
                     <button 
                       onClick={handleAISuggest}
                       disabled={isGenerating}
                       className="flex items-center px-6 py-2.5 bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all disabled:opacity-50"
                     >
                       <HiOutlineSparkles className="mr-2" /> {isGenerating ? 'Synthesizing...' : 'AI Suggest Content'}
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowAIPanel(!showAIPanel)}
+                      className={`flex items-center px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${showAIPanel ? 'bg-indigo-600 text-white' : 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20'}`}
+                    >
+                      <HiOutlineSparkles className="mr-2" /> AI Assistant
                     </button>
                   )}
                   <button 
@@ -287,7 +323,59 @@ const CreateStory = () => {
                 </div>
               </div>
 
-              <div className="glassium-card glint-border overflow-hidden">
+              </div>
+ 
+              {/* AI Assistant Panel */}
+              <AnimatePresence>
+                {showAIPanel && creationMode === 'scratch' && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-6"
+                  >
+                    <div className="glassium-card glint-border p-8 bg-indigo-600/5 border-indigo-500/20">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                          <HiOutlineSparkles size={20} />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-black text-surface-800 dark:text-white font-heading">AI Story Architect</h3>
+                          <p className="text-[10px] font-bold text-surface-500 uppercase tracking-widest">Generate a complete visual narrative from a single topic</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <input 
+                          type="text"
+                          value={aiTopic}
+                          onChange={(e) => setAiTopic(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleManualAISuggest()}
+                          placeholder="e.g., The Future of Sustainable Architecture in Space"
+                          className="flex-1 glass-input rounded-2xl p-4 font-bold text-surface-800 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        />
+                        <button 
+                          onClick={handleManualAISuggest}
+                          disabled={isGenerating}
+                          className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 disabled:opacity-50 flex items-center justify-center gap-3"
+                        >
+                          {isGenerating ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              <span>Thinking...</span>
+                            </>
+                          ) : (
+                            <span>Generate Story</span>
+                          )}
+                        </button>
+                      </div>
+                      <p className="mt-4 text-[10px] font-medium text-surface-400 italic">This will replace your current slides with a professionally drafted 6-slide story.</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+               <div className="glassium-card glint-border overflow-hidden">
                 <div className="p-10 space-y-8">
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 mb-3 block">Tale Title</label>

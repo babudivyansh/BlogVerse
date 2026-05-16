@@ -194,6 +194,38 @@ class AIService:
                 {"title": title, "text": "Failed to generate story content.", "visual_prompt": "Error illustration"}
             ]
 
+    async def generate_story_from_topic(self, topic: str) -> list[dict]:
+        """Generate a 6-slide visual story from a single topic or prompt."""
+        if not self.is_configured:
+            return [
+                {"title": topic, "text": "Exploring the world of " + topic, "visual_prompt": "Cinematic wide shot related to " + topic},
+                {"title": "The Beginning", "text": "Where it all started and why it matters today.", "visual_prompt": "Abstract digital art of origins"},
+                {"title": "Key Insight", "text": "A deep dive into the most important aspect of " + topic, "visual_prompt": "Hyper-realistic close up detail"},
+                {"title": "The Impact", "text": "How this affects the world and the people in it.", "visual_prompt": "Epic landscape showing scale"},
+                {"title": "Future View", "text": "What's next for " + topic + " in the coming years.", "visual_prompt": "Futuristic cyberpunk aesthetic"},
+                {"title": "Summary", "text": "The final takeaway for our visual journey.", "visual_prompt": "Peaceful sunset ending scene"},
+            ]
+
+        system_prompt = (
+            "You are a visual storyteller. "
+            "Generate a 6-slide visual 'Web Story' based on the provided topic. "
+            "You must respond ONLY with a valid JSON list of 6 objects. "
+            "Each object must have: "
+            "'title' (string, max 5 words), "
+            "'text' (string, max 20 words, key takeaway), "
+            "'visual_prompt' (string, highly detailed artistic prompt for an image generator representing the slide's content)."
+        )
+        user_prompt = f"Create a visual story about: {topic}"
+
+        text = await self._chat(system_prompt, user_prompt, response_mime_type="application/json")
+        try:
+            return json.loads(text)
+        except Exception as e:
+            logger.error(f"Error parsing story AI output: {e}")
+            return [
+                {"title": topic, "text": "Failed to generate story content.", "visual_prompt": "Error illustration"}
+            ]
+
     async def conversational_chat(self, messages: list[dict]) -> str:
         """Handle multi-turn conversational chat."""
         print(f"DEBUG: conversational_chat called. is_configured: {self.is_configured}")
