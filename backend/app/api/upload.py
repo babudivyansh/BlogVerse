@@ -20,10 +20,24 @@ def _upload_to_cloudinary(file_bytes: bytes, filename: str) -> str | None:
     try:
         import cloudinary
         import cloudinary.uploader
-        result = cloudinary.uploader.upload(file_bytes, folder="blogverse", public_id=filename)
-        return result.get("secure_url")
+        
+        # Cloudinary public_id should typically not include the extension
+        pid = filename.rsplit('.', 1)[0] if '.' in filename else filename
+        
+        result = cloudinary.uploader.upload(
+            file_bytes, 
+            folder="blogverse", 
+            public_id=pid,
+            resource_type="auto"
+        )
+        url = result.get("secure_url")
+        if url:
+            print(f"[CLOUDINARY] Upload success: {url}")
+        return url
     except Exception as exc:
-        print(f"[CLOUDINARY] Upload failed: {exc}")
+        print(f"[CLOUDINARY] Upload failed: {str(exc)}")
+        import logging
+        logging.error(f"Cloudinary upload error: {exc}")
         return None
 
 
