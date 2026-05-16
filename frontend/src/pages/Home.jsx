@@ -40,6 +40,15 @@ export default function Home() {
     load();
   }, []);
 
+  const handleOpenStory = async (story) => {
+    try {
+      const { data } = await getStory(story.slug);
+      setActiveStory(data);
+    } catch {
+      toast.error('Failed to load story details');
+    }
+  };
+
   return (
     <div className="min-h-screen pt-32 pb-20">
       <SEO 
@@ -174,7 +183,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                onClick={() => setActiveStory(story)}
+                onClick={() => handleOpenStory(story)}
                 className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[9/16] rounded-[2.5rem] overflow-hidden glassium-card glint-border group cursor-pointer shadow-2xl snap-start"
               >
                 <img 
