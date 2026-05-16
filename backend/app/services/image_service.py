@@ -53,10 +53,8 @@ class ImageGenerationService:
         #         logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
         #         
         #         # Aspect ratio mapping
-        #         # Imagen supports "1:1", "4:3", "3:4", "16:9", "9:16"
         #         ar = "16:9" if width > height else "1:1"
         #         
-        #         # The generate_images call is synchronous, so we run it in a thread to avoid blocking
         #         def _gen():
         #             return self.client.models.generate_images(
         #                 model='imagen-4.0-generate-001',
@@ -69,7 +67,6 @@ class ImageGenerationService:
         #             )
         #
         #         response = await asyncio.to_thread(_gen)
-        #         
         #         if response.generated_images:
         #             image_bytes = response.generated_images[0].image.image_bytes
         #     except Exception as e:
@@ -85,13 +82,16 @@ class ImageGenerationService:
                 seed = uuid.uuid4().int % 100000
                 image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&seed={seed}&nologo=true"
                 
-                logger.info("Fetching fallback image via Pollinations.ai...")
-                async with httpx.AsyncClient(timeout=30.0) as client:
+                logger.info(f"Fetching fallback image via Pollinations.ai: {image_url[:80]}...")
+                async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
                     response = await client.get(image_url)
                     if response.status_code == 200:
                         image_bytes = response.content
+                        logger.info(f"Successfully fetched image from Pollinations ({len(image_bytes)} bytes)")
+                    else:
+                        logger.error(f"Pollinations returned status {response.status_code}")
             except Exception as e:
-                logger.error(f"Pollinations fallback also failed: {e}")
+                logger.error(f"Pollinations fallback error ({type(e).__name__}): {e}")
 
         if not image_bytes:
             logger.error("All image generation methods failed.")
@@ -104,7 +104,6 @@ class ImageGenerationService:
                 folder = "blogverse"
                 pid = f"ai_{uuid.uuid4().hex}"
                 
-                # We pass credentials directly to ensure the signature is calculated with the correct secret
                 result = cloudinary.uploader.upload(
                     file_obj, 
                     folder=folder, 
@@ -118,8 +117,7 @@ class ImageGenerationService:
                 if secure_url:
                     return secure_url
             except Exception as cloud_err:
-                # If Cloudinary fails (e.g. invalid credentials), we fall back to local storage
-                logger.warning(f"Cloudinary upload failed (likely invalid credentials): {cloud_err}")
+                logger.warning(f"Cloudinary upload failed: {cloud_err}")
 
         # 4. Final Fallback: Local Storage
         try:
