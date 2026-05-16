@@ -47,6 +47,6 @@ This plan outlines the strategy to transform the BlogVerse AI engine from genera
 ---
 
 ## 4. Next Steps
-1. [ ] Update `ai.py` with the new Senior Editor prompt.
-2. [ ] Implement the multi-stage generation logic in the backend.
-3. [ ] Update the Frontend UI to support long-form reading features.
+1. [x] Update `ai.py` with the new Senior Editor prompt.
+2. [x] Implement the multi-stage generation logic in the backend.
+3. [x] Update the Frontend UI to support long-form reading features.
