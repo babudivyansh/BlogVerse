@@ -53,7 +53,7 @@ services:
     routes:
       - type: redirect
         source: /sitemap.xml
-        destination: https://blogverse-api.onrender.com/api/sitemap.xml
+        destination: https://blogverse-api.onrender.com/sitemap.xml
       - type: rewrite
         source: /*
         destination: /index.html
