@@ -186,10 +186,20 @@ export default function Home() {
                 onClick={() => handleOpenStory(story)}
                 className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[9/16] rounded-[2.5rem] overflow-hidden glassium-card glint-border group cursor-pointer shadow-2xl snap-start"
               >
-                <img 
-                  src={formatImageUrl(story.cover_image)} 
-                  alt={story.title} 
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                {story.cover_image ? (
+                  <img 
+                    src={formatImageUrl(story.cover_image)} 
+                    alt={story.title} 
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
+                  style={{ display: story.cover_image ? 'none' : 'block' }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 

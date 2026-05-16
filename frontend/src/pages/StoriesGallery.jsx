@@ -206,10 +206,20 @@ const StoriesGallery = () => {
                       className="relative flex-shrink-0 w-[280px] md:w-[320px] aspect-[9/16] rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl snap-start"
                       onClick={() => openStory(story.slug)}
                     >
-                      <img 
-                        src={formatImageUrl(story.cover_image)} 
-                        alt={story.title} 
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                      {story.cover_image ? (
+                        <img 
+                          src={formatImageUrl(story.cover_image)} 
+                          alt={story.title} 
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'block';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
+                        style={{ display: story.cover_image ? 'none' : 'block' }}
                       />
                       {/* Cinematic Overlays */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
@@ -261,10 +271,20 @@ const StoriesGallery = () => {
                     className="group cursor-pointer"
                   >
                     <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-xl mb-6 ring-1 ring-white/10 transition-all duration-500">
-                      <img 
-                        src={formatImageUrl(story.cover_image)} 
-                        alt={story.title} 
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                      {story.cover_image ? (
+                        <img 
+                          src={formatImageUrl(story.cover_image)} 
+                          alt={story.title} 
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'block';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
+                        style={{ display: story.cover_image ? 'none' : 'block' }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-0 group-hover:scale-100">
