@@ -47,35 +47,35 @@ class ImageGenerationService:
         """
         image_bytes = None
 
-        # 1. Primary: Gemini Imagen (via new google-genai SDK)
-        if self._is_configured and self.client:
-            try:
-                logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
-                
-                # Aspect ratio mapping
-                # Imagen supports "1:1", "4:3", "3:4", "16:9", "9:16"
-                ar = "16:9" if width > height else "1:1"
-                
-                # The generate_images call is synchronous, so we run it in a thread to avoid blocking
-                def _gen():
-                    return self.client.models.generate_images(
-                        model='imagen-4.0-generate-001',
-                        prompt=prompt,
-                        config=genai.types.GenerateImagesConfig(
-                            number_of_images=1,
-                            aspect_ratio=ar,
-                            output_mime_type='image/png'
-                        )
-                    )
+        # 1. Primary: Gemini Imagen (DISABLED BY USER REQUEST)
+        # if self._is_configured and self.client:
+        #     try:
+        #         logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
+        #         
+        #         # Aspect ratio mapping
+        #         # Imagen supports "1:1", "4:3", "3:4", "16:9", "9:16"
+        #         ar = "16:9" if width > height else "1:1"
+        #         
+        #         # The generate_images call is synchronous, so we run it in a thread to avoid blocking
+        #         def _gen():
+        #             return self.client.models.generate_images(
+        #                 model='imagen-4.0-generate-001',
+        #                 prompt=prompt,
+        #                 config=genai.types.GenerateImagesConfig(
+        #                     number_of_images=1,
+        #                     aspect_ratio=ar,
+        #                     output_mime_type='image/png'
+        #                 )
+        #             )
+        #
+        #         response = await asyncio.to_thread(_gen)
+        #         
+        #         if response.generated_images:
+        #             image_bytes = response.generated_images[0].image.image_bytes
+        #     except Exception as e:
+        #         logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
 
-                response = await asyncio.to_thread(_gen)
-                
-                if response.generated_images:
-                    image_bytes = response.generated_images[0].image.image_bytes
-            except Exception as e:
-                logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
-
-        # 2. Fallback 1: Pollinations.ai
+        # 2. Fallback 1: Pollinations.ai (Free)
         if not image_bytes:
             try:
                 import urllib.parse
