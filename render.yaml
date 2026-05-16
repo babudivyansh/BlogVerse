@@ -51,9 +51,6 @@ services:
           name: blogverse-api
           property: host
     routes:
-      - type: redirect
-        source: /sitemap.xml
-        destination: https://blogverse-api-ssvc.onrender.com/sitemap.xml
       - type: rewrite
         source: /*
         destination: /index.html
