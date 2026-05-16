@@ -10,47 +10,48 @@ if (baseUrl && !baseUrl.startsWith('http')) {
 const SITEMAP_URL = `${baseUrl}/sitemap.xml`;
 
 async function generateSitemap() {
-  try {
-    console.log(`[SITEMAP] Fetching from ${SITEMAP_URL}...`);
-    const response = await fetch(SITEMAP_URL);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  const maxRetries = 5;
+  const retryDelay = 5000; // 5 seconds
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`[SITEMAP] Attempt ${attempt}: Fetching from ${SITEMAP_URL}...`);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+      
+      const response = await fetch(SITEMAP_URL, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+          throw new Error(`HTTP status: ${response.status}`);
+      }
+      
+      const xml = await response.text();
+      
+      // Basic validation to ensure it's a full sitemap, not just the fallback
+      if (xml.includes('<loc>') && xml.split('<url>').length > 5) {
+        const publicDir = path.resolve('public');
+        if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
+        
+        const publicPath = path.join(publicDir, 'sitemap.xml');
+        fs.writeFileSync(publicPath, xml);
+        console.log(`[SITEMAP] Successfully saved FULL sitemap (${xml.split('<url>').length - 1} URLs)`);
+        return; // Success!
+      } else {
+        throw new Error('Fetched XML seems incomplete.');
+      }
+      
+    } catch (error) {
+      console.error(`[SITEMAP] Attempt ${attempt} failed:`, error.message);
+      if (attempt < maxRetries) {
+        console.log(`[SITEMAP] Retrying in ${retryDelay/1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
     }
-    
-    const xml = await response.text();
-    
-    // Ensure public directory exists
-    const publicDir = path.resolve('public');
-    if (!fs.existsSync(publicDir)) {
-        fs.mkdirSync(publicDir, { recursive: true });
-    }
-    
-    const publicPath = path.join(publicDir, 'sitemap.xml');
-    fs.writeFileSync(publicPath, xml);
-    console.log(`[SITEMAP] Successfully saved to ${publicPath}`);
-    
-  } catch (error) {
-    console.error('[SITEMAP] Error:', error.message);
-    
-    // Fallback: Create a minimal sitemap if the backend is down during build
-    const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://blogverse.info/</loc>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://blogverse.info/stories</loc>
-    <priority>0.9</priority>
-  </url>
-</urlset>`;
-    
-    const publicDir = path.resolve('public');
-    if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
-    fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), fallbackXml);
-    console.log('[SITEMAP] Created fallback sitemap.');
   }
+  
+  console.error('[SITEMAP] All attempts failed. Keeping fallback/existing sitemap.');
 }
 
 generateSitemap();
