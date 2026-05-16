@@ -123,6 +123,16 @@ async def suggest_story_content(
     slides = await ai_service.generate_story_content(blog.title, blog.content)
     return slides
 
+@router.post("/suggest-manual")
+async def generate_manual_story_content(
+    topic: str = Query(..., description="The topic to generate a story about"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_verified_user)
+):
+    """Generate AI suggested slides from a topic."""
+    slides = await ai_service.generate_story_from_topic(topic)
+    return slides
+
 @router.put("/{story_id}", response_model=WebStoryResponse)
 def update_story(
     story_id: int,
