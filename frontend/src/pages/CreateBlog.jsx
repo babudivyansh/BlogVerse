@@ -24,6 +24,7 @@ export default function CreateBlog() {
   const [status, setStatus] = useState('draft');
   const [saving, setSaving] = useState(false);
   const [aiLoading, setAiLoading] = useState('');
+  const [selectedTone, setSelectedTone] = useState('professional');
 
   useEffect(() => {
     if (!authLoading && !user) { navigate('/auth'); return; }
@@ -102,9 +103,8 @@ export default function CreateBlog() {
       } else if (action === 'full-blog') {
         const blogTopic = title || window.prompt('Enter a topic to generate a full blog post:');
         if (!blogTopic) { setAiLoading(''); return toast.error('Topic is required'); }
-        const tone = window.prompt('Enter tone (e.g. professional, casual, funny):', 'professional') || 'professional';
-        toast.loading('Generating full blog... this may take a minute!', { id: 'aigen' });
-        const res = await aiGenerateBlog({ topic: blogTopic, tone });
+        toast.loading('Generating massive blog... this may take a minute!', { id: 'aigen' });
+        const res = await aiGenerateBlog({ topic: blogTopic, tone: selectedTone });
         const data = res.data;
         setTitle(data.title);
         setContent(data.content);
@@ -210,6 +210,23 @@ export default function CreateBlog() {
                   <HiOutlineLightningBolt className="w-6 h-6 animate-pulse" /> AI Muse
                 </h3>
                 <span className="text-[10px] font-black uppercase tracking-widest text-primary-500/60">Powered by Gemini</span>
+              </div>
+
+              {/* Tone Selection */}
+              <div className="mb-6 grid grid-cols-3 gap-2">
+                {['analytical', 'narrative', 'technical'].map((vibe) => (
+                  <button
+                    key={vibe}
+                    onClick={() => setSelectedTone(vibe)}
+                    className={`py-3 rounded-xl border-2 transition-all font-black text-[9px] uppercase tracking-widest ${
+                      selectedTone === vibe
+                        ? 'border-primary-500 bg-primary-500/10 text-primary-500 shadow-lg shadow-primary-500/10'
+                        : 'border-transparent glassium text-surface-400 hover:border-white/10'
+                    }`}
+                  >
+                    {vibe}
+                  </button>
+                ))}
               </div>
 
               <button onClick={() => handleAI('full-blog')} disabled={!!aiLoading}

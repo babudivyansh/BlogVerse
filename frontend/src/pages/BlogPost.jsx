@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -34,6 +34,30 @@ export default function BlogPost() {
   const [commentText, setCommentText] = useState('');
   const [shareOpen, setShareOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // Generate Table of Contents from markdown content
+  const toc = useMemo(() => {
+    if (!blog?.content) return [];
+    const lines = blog.content.split('\n');
+    const headings = [];
+    lines.forEach(line => {
+      const match = line.match(/^(#{2,3})\s+(.+)$/);
+      if (match) {
+        headings.push({
+          level: match[1].length,
+          text: match[2],
+          id: match[2].toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        });
+      }
+    });
+    return headings;
+  }, [blog?.content]);
 
   useEffect(() => {
     async function load() {
@@ -97,6 +121,11 @@ export default function BlogPost() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen pt-40 pb-20">
+      {/* Reading Progress Bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1.5 bg-primary-500 origin-left z-[100] shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+        style={{ scaleX }}
+      />
       <SEO 
         title={blog.title}
         description={blog.summary || blog.content.substring(0, 160)}
@@ -169,6 +198,26 @@ export default function BlogPost() {
                     ) : (
                       <code className="glassium text-primary-600 dark:text-primary-400 px-2 py-1 rounded-lg font-black text-sm" {...props}>{children}</code>
                     );
+                  },
+                  blockquote({ children }) {
+                    return (
+                      <div className="my-12 p-8 rounded-[2.5rem] glassium border-l-8 border-primary-500 glint-border relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                          <HiOutlineClock className="w-12 h-12 text-primary-500" />
+                        </div>
+                        <div className="relative z-10 italic font-black text-xl text-surface-800 dark:text-white leading-relaxed">
+                          {children}
+                        </div>
+                      </div>
+                    );
+                  },
+                  h2({ children }) {
+                    const id = String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    return <h2 id={id} className="text-3xl sm:text-4xl font-black mt-16 mb-8 scroll-mt-32">{children}</h2>;
+                  },
+                  h3({ children }) {
+                    const id = String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    return <h3 id={id} className="text-2xl sm:text-3xl font-black mt-12 mb-6 scroll-mt-32">{children}</h3>;
                   }
                 }}>
                 {blog.content}
@@ -280,8 +329,27 @@ export default function BlogPost() {
             </section>
           </article>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-4">
+          {/* Sidebar & TOC */}
+          <div className="lg:col-span-4 space-y-12">
+            {/* Floating Table of Contents */}
+            {toc.length > 0 && (
+              <div className="sticky top-32 glassium-card glint-border p-8 hidden lg:block">
+                <h4 className="text-xs font-black uppercase tracking-[0.2em] text-surface-400 mb-8 border-b border-surface-100 dark:border-white/5 pb-4">Navigation</h4>
+                <nav className="space-y-4">
+                  {toc.map((item, idx) => (
+                    <a
+                      key={idx}
+                      href={`#${item.id}`}
+                      className={`block font-bold transition-all hover:text-primary-500 text-sm ${
+                        item.level === 3 ? 'ml-4 text-surface-400 text-xs' : 'text-surface-600 dark:text-surface-300'
+                      }`}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            )}
             <BlogSidebar author={blog.author} />
           </div>
         </div>
