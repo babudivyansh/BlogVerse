@@ -155,25 +155,25 @@ class AIService:
         }
 
     async def generate_section_content(self, topic: str, section: dict, tone: str, context: str = "") -> str:
-        """Write a massive 500-700 word section based on an outline point."""
+        """Write a precisely calibrated 350-360 word section."""
         system_prompt = (
             "You are a world-class Subject Matter Expert and Senior Content Writer. "
-            "Write a massive, incredibly detailed, and engaging section (500-700 words). "
-            "Provide deep technical analysis, expert-level insights, and real-world examples. "
-            "Do not summarize; provide exhaustive detail. "
+            "Write a highly detailed, engaging section that is EXACTLY 350 to 360 words long. "
+            "Provide deep technical analysis and real-world examples. "
+            "Do not summarize; maintain consistent depth throughout. "
             "Use Markdown formatting. Return ONLY the content."
         )
         user_prompt = f"Topic: {topic}\nSection: {section['heading']}\nDescription: {section['description']}\nTone: {tone}\nContext: {context}"
         return await self._chat(system_prompt, user_prompt)
 
     async def generate_blog_outline(self, topic: str, tone: str) -> list[dict]:
-        """Generate a massive 10-12 section outline for an industry-leading guide."""
+        """Generate a massive 10-section outline for a definitive guide."""
         system_prompt = (
             "You are a Chief Research Officer and Master Content Architect. "
-            "Create a massive, 10-12 section outline for a definitive industry guide. "
-            "Return ONLY a valid JSON list of objects. "
-            "Each object must have: 'heading' (string), 'description' (string, detailed requirements), and 'type' (string). "
-            "Ensure you include sections for: Historical Context, Current Global Trends, In-depth Technical Analysis, Myths vs. Reality, and a 10-Year Future Prediction."
+            "Create a comprehensive, EXACTLY 10-section outline for a definitive guide. "
+            "Return ONLY a valid JSON list of 10 objects. "
+            "Each object must have: 'heading' (string), 'description' (string), and 'type' (string). "
+            "Ensure you include sections for: Historical Context, Current Trends, Technical Deep-Dive, and Future Predictions."
         )
         user_prompt = f"Create a massive, authoritative outline for a definitive guide about '{topic}' with a {tone} tone."
         text = await self._chat(system_prompt, user_prompt, response_mime_type="application/json")
