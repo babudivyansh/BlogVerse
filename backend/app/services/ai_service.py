@@ -116,7 +116,7 @@ class AIService:
         )
 
     async def generate_full_blog(self, topic: str, tone: str = "professional") -> dict:
-        """Generate a full blog post including title, content, summary, and tags."""
+        """Generate a massive, multi-stage blog post for maximum depth."""
         if not self.is_configured:
             return {
                 "title": f"The Ultimate Guide to {topic}",
@@ -124,29 +124,63 @@ class AIService:
                 "summary": f"A comprehensive guide to {topic}.",
                 "tags": [topic.lower(), "guide", "tutorial"]
             }
+
+        logger.info(f"[AI] Starting multi-stage generation for topic: {topic}")
         
+        # 1. Generate Outline
+        outline = await self.generate_blog_outline(topic, tone)
+        
+        # 2. Generate each section individually
+        full_content = []
+        context = ""
+        
+        for section in outline:
+            logger.info(f"[AI] Generating section: {section['heading']}")
+            section_text = await self.generate_section_content(topic, section, tone, context)
+            heading_md = f"## {section['heading']}" if section.get('type') != 'intro' else f"# {topic}"
+            full_content.append(f"{heading_md}\n\n{section_text}")
+            context += section_text[-500:] # Keep small context for flow
+            
+        merged_content = "\n\n".join(full_content)
+        
+        # 3. Generate Summary and Tags based on the full content
+        summary = await self.generate_summary(merged_content)
+        tags = await self.suggest_tags(merged_content)
+        
+        return {
+            "title": outline[0]['heading'] if (outline and len(outline) > 0) else f"Deep Dive into {topic}",
+            "content": merged_content,
+            "summary": summary,
+            "tags": tags
+        }
+
+    async def generate_section_content(self, topic: str, section: dict, tone: str, context: str = "") -> str:
+        """Write a massive 500-700 word section based on an outline point."""
         system_prompt = (
-            "You are an expert blog writer. "
-            "You must respond ONLY with a valid JSON object. "
-            "The JSON object must have exactly these keys: "
-            "'title' (string), "
-            "'content' (string, containing the full blog post in Markdown format), "
-            "'summary' (string, 2-3 sentences), "
-            "'tags' (list of strings, 5-8 relevant tags)."
+            "You are a world-class Subject Matter Expert and Senior Content Writer. "
+            "Write a massive, incredibly detailed, and engaging section (500-700 words). "
+            "Provide deep technical analysis, expert-level insights, and real-world examples. "
+            "Do not summarize; provide exhaustive detail. "
+            "Use Markdown formatting. Return ONLY the content."
         )
-        user_prompt = f"Write a comprehensive and engaging blog post about '{topic}'. The tone should be {tone}."
-        
-        # Requesting "application/json" forces Gemini to output valid JSON
+        user_prompt = f"Topic: {topic}\nSection: {section['heading']}\nDescription: {section['description']}\nTone: {tone}\nContext: {context}"
+        return await self._chat(system_prompt, user_prompt)
+
+    async def generate_blog_outline(self, topic: str, tone: str) -> list[dict]:
+        """Generate a massive 10-12 section outline for an industry-leading guide."""
+        system_prompt = (
+            "You are a Chief Research Officer and Master Content Architect. "
+            "Create a massive, 10-12 section outline for a definitive industry guide. "
+            "Return ONLY a valid JSON list of objects. "
+            "Each object must have: 'heading' (string), 'description' (string, detailed requirements), and 'type' (string). "
+            "Ensure you include sections for: Historical Context, Current Global Trends, In-depth Technical Analysis, Myths vs. Reality, and a 10-Year Future Prediction."
+        )
+        user_prompt = f"Create a massive, authoritative outline for a definitive guide about '{topic}' with a {tone} tone."
         text = await self._chat(system_prompt, user_prompt, response_mime_type="application/json")
         try:
             return json.loads(text)
         except Exception:
-            return {
-                "title": f"Error parsing AI output for {topic}",
-                "content": text,
-                "summary": "AI generated content but failed to parse into JSON fields.",
-                "tags": ["error"]
-            }
+            return []
 
     async def generate_visual_prompt(self, title: str, content: str) -> str:
         """Generate a detailed artistic prompt for image generation."""
