@@ -323,8 +323,7 @@ const CreateStory = () => {
                 </div>
               </div>
 
-              </div>
- 
+
               {/* AI Assistant Panel */}
               <AnimatePresence>
                 {showAIPanel && creationMode === 'scratch' && (
