@@ -183,19 +183,20 @@ class AIService:
             return []
 
     async def generate_visual_prompt(self, title: str, content: str) -> str:
-        """Generate a detailed artistic prompt for image generation."""
+        """Generate an elite, cinematic artistic prompt for Imagen 4."""
         if not self.is_configured:
             return f"Digital art related to {title}, cinematic lighting, high detail."
 
         system_prompt = (
-            "You are a professional art director. "
-            "Create a highly detailed, single-paragraph artistic prompt for an AI image generator (like Stable Diffusion or Midjourney). "
-            "The image should be a stunning, cinematic cover for a blog post. "
-            "Describe the composition, lighting, style, and color palette. "
-            "Do NOT include technical jargon about the generator, just descriptive art instructions. "
-            "Keep it under 100 words."
+            "You are an Elite Art Director for a top-tier design agency. "
+            "Your task is to write a single, powerful paragraph that will guide a world-class AI image generator (Imagen 4). "
+            "Focus on: Cinematic lighting (e.g., volumetric, Rembrandt, or high-key), composition (e.g., rule of thirds, extreme close-up, or wide-angle), "
+            "texture, and a sophisticated color palette (e.g., monochromatic with a splash of neon, or earth tones with gold accents). "
+            "Describe a stunning, abstract or symbolic representation of the blog's theme. "
+            "Avoid technical jargon; use evocative, artistic language. "
+            "Keep the prompt under 120 words for maximum impact."
         )
-        user_prompt = f"Blog Title: {title}\nBlog Content: {content[:1000]}"
+        user_prompt = f"Blog Title: {title}\nBlog Context: {content[:2000]}"
         
         return await self._chat(system_prompt, user_prompt)
 

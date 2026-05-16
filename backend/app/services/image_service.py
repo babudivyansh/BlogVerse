@@ -1,18 +1,29 @@
 import logging
 import asyncio
-import httpx
 import uuid
-import urllib.parse
 import io
 import cloudinary
 import cloudinary.uploader
+import google.generativeai as genai
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 class ImageGenerationService:
     def __init__(self):
-        pass
+        self._is_configured = False
+        self._configure()
+
+    def _configure(self):
+        """Configure Gemini SDK for image generation."""
+        api_key = settings.GEMINI_API_KEY
+        if api_key:
+            try:
+                genai.configure(api_key=api_key)
+                self._is_configured = True
+                logger.info("Gemini Image Service configured.")
+            except Exception as e:
+                logger.error(f"Gemini Image configuration failed: {e}")
 
     def _save_locally(self, file_bytes: bytes) -> str:
         """Save file to local uploads directory as a fallback."""
@@ -30,76 +41,66 @@ class ImageGenerationService:
 
     async def generate_and_upload(self, prompt: str, width: int = 1280, height: int = 720) -> str:
         """
-        Generate an image using Pollinations.ai and upload it to Cloudinary.
-        Falls back to local storage if Cloudinary fails.
+        Generate an image using Gemini Imagen 4 (Primary) or Pollinations (Fallback).
         """
-        try:
-            # 1. Generate Image from Pollinations.ai
-            # Use a more robust prompt cleaning
-            clean_prompt = prompt.replace("\n", " ").strip()
-            encoded_prompt = urllib.parse.quote(clean_prompt)
-            seed = uuid.uuid4().int % 100000
-            
-            image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&seed={seed}&nologo=true"
-            
-            logger.info(f"Fetching generated image ({width}x{height}) via free pollinations.ai for prompt: {clean_prompt[:50]}...")
-            
-            image_bytes = None
-            max_retries = 3
-            for attempt in range(max_retries):
-                try:
-                    async with httpx.AsyncClient(timeout=60.0) as client:
-                        response = await client.get(image_url)
-                        if response.status_code == 200:
-                            image_bytes = response.content
-                            break
-                        elif (response.status_code == 500 or response.status_code == 402) and "Queue full" in response.text:
-                            logger.warning(f"Pollinations queue full (attempt {attempt + 1}/{max_retries}). Retrying in 5s...")
-                            await asyncio.sleep(5)
-                        else:
-                            logger.error(f"Failed to fetch image: {response.status_code} - {response.text[:200]}")
-                            break
-                except Exception as req_err:
-                    logger.error(f"Request error (attempt {attempt + 1}/{max_retries}): {req_err}")
-                    await asyncio.sleep(2)
+        image_bytes = None
 
-            if not image_bytes:
-                logger.error("Could not fetch image after retries or due to error.")
-                return None
+        # 1. Primary: Gemini Imagen 4
+        if self._is_configured:
+            try:
+                logger.info(f"Generating Imagen 4 ({width}x{height}) for prompt: {prompt[:50]}...")
+                model = genai.GenerativeModel('imagen-4.0-generate-001')
+                response = await asyncio.to_thread(
+                    model.generate_images,
+                    prompt=prompt,
+                    number_of_images=1,
+                    aspect_ratio="16:9" if width > height else "1:1"
+                )
+                if response.images:
+                    image_bytes = response.images[0]._image_bytes
+            except Exception as e:
+                logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
 
-            # 2. Try Cloudinary Upload
-            if all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
-                logger.info("Attempting Cloudinary upload...")
-                try:
-                    file_obj = io.BytesIO(image_bytes)
-                    # Combine folder and ID into public_id for better signature stability
-                    folder = "blogverse"
-                    pid = f"ai_{uuid.uuid4().hex}"
-                    
-                    result = cloudinary.uploader.upload(
-                        file_obj,
-                        folder=folder,
-                        public_id=pid,
-                        resource_type="auto"
-                    )
-                    
-                    secure_url = result.get("secure_url")
-                    if secure_url:
-                        logger.info(f"Successfully uploaded to Cloudinary: {secure_url}")
-                        return secure_url
-                except Exception as cloud_err:
-                    logger.warning(f"Cloudinary failed: {cloud_err}")
+        # 2. Fallback 1: Pollinations.ai
+        if not image_bytes:
+            try:
+                import urllib.parse
+                import httpx
+                clean_prompt = prompt.replace("\n", " ").strip()
+                encoded_prompt = urllib.parse.quote(clean_prompt)
+                seed = uuid.uuid4().int % 100000
+                image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&seed={seed}&nologo=true"
+                
+                logger.info("Fetching fallback image via Pollinations.ai...")
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.get(image_url)
+                    if response.status_code == 200:
+                        image_bytes = response.content
+            except Exception as e:
+                logger.error(f"Pollinations fallback also failed: {e}")
 
-            # 3. Fallback to Local Storage
-            local_url = self._save_locally(image_bytes)
-            if local_url:
-                logger.info(f"Successfully saved locally: {local_url}")
-                return local_url
-
+        if not image_bytes:
+            logger.error("All image generation methods failed.")
             return None
 
+        # 3. Try Cloudinary Upload
+        if all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
+            try:
+                file_obj = io.BytesIO(image_bytes)
+                folder = "blogverse"
+                pid = f"ai_{uuid.uuid4().hex}"
+                result = cloudinary.uploader.upload(file_obj, folder=folder, public_id=pid, resource_type="auto")
+                secure_url = result.get("secure_url")
+                if secure_url:
+                    return secure_url
+            except Exception as cloud_err:
+                logger.warning(f"Cloudinary failed: {cloud_err}")
+
+        # 4. Final Fallback: Local Storage
+        try:
+            return self._save_locally(image_bytes)
         except Exception as e:
-            logger.error(f"Error in generate_and_upload: {e}", exc_info=True)
+            logger.error(f"Final fallback failed: {e}")
             return None
 
 image_generation_service = ImageGenerationService()
