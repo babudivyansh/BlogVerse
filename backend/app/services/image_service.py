@@ -83,7 +83,8 @@ class ImageGenerationService:
                 image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&seed={seed}&nologo=true"
                 
                 logger.info(f"Fetching fallback image via Pollinations.ai: {image_url[:80]}...")
-                async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+                # Increase timeout to 60s as Pollinations can be slow
+                async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
                     response = await client.get(image_url)
                     if response.status_code == 200:
                         image_bytes = response.content
