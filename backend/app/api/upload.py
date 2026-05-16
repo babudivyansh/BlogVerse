@@ -21,6 +21,14 @@ def _upload_to_cloudinary(file_bytes: bytes, filename: str) -> str | None:
         import cloudinary
         import cloudinary.uploader
         
+        # Explicitly configure to ensure clean credentials are used
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_CLOUD_NAME_CLEAN,
+            api_key=settings.CLOUDINARY_API_KEY_CLEAN,
+            api_secret=settings.CLOUDINARY_API_SECRET_CLEAN,
+            secure=True
+        )
+        
         # Cloudinary public_id should typically not include the extension
         pid = filename.rsplit('.', 1)[0] if '.' in filename else filename
         
