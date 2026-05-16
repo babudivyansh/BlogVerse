@@ -4,7 +4,7 @@ import uuid
 import io
 import cloudinary
 import cloudinary.uploader
-import google.generativeai as genai
+from google import genai
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -12,16 +12,18 @@ logger = logging.getLogger(__name__)
 class ImageGenerationService:
     def __init__(self):
         self._is_configured = False
+        self.client = None
         self._configure()
 
     def _configure(self):
-        """Configure Gemini SDK for image generation."""
+        """Configure Gemini SDK for image generation using the new google-genai SDK."""
         api_key = settings.GEMINI_API_KEY
         if api_key:
             try:
-                genai.configure(api_key=api_key)
+                # Use the new google-genai Client (required for stable Imagen 3/4 access)
+                self.client = genai.Client(api_key=api_key, http_options={'api_version': 'v1beta'})
                 self._is_configured = True
-                logger.info("Gemini Image Service configured.")
+                logger.info("Gemini Image Service (google-genai) configured.")
             except Exception as e:
                 logger.error(f"Gemini Image configuration failed: {e}")
 
@@ -45,19 +47,31 @@ class ImageGenerationService:
         """
         image_bytes = None
 
-        # 1. Primary: Gemini Imagen 4
-        if self._is_configured:
+        # 1. Primary: Gemini Imagen (via new google-genai SDK)
+        if self._is_configured and self.client:
             try:
-                logger.info(f"Generating Imagen 4 ({width}x{height}) for prompt: {prompt[:50]}...")
-                model = genai.GenerativeModel('imagen-4.0-generate-001')
-                response = await asyncio.to_thread(
-                    model.generate_images,
-                    prompt=prompt,
-                    number_of_images=1,
-                    aspect_ratio="16:9" if width > height else "1:1"
-                )
-                if response.images:
-                    image_bytes = response.images[0]._image_bytes
+                logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
+                
+                # Aspect ratio mapping
+                # Imagen supports "1:1", "4:3", "3:4", "16:9", "9:16"
+                ar = "16:9" if width > height else "1:1"
+                
+                # The generate_images call is synchronous, so we run it in a thread to avoid blocking
+                def _gen():
+                    return self.client.models.generate_images(
+                        model='imagen-4.0-generate-001',
+                        prompt=prompt,
+                        config=genai.types.GenerateImagesConfig(
+                            number_of_images=1,
+                            aspect_ratio=ar,
+                            output_mime_type='image/png'
+                        )
+                    )
+
+                response = await asyncio.to_thread(_gen)
+                
+                if response.generated_images:
+                    image_bytes = response.generated_images[0].image.image_bytes
             except Exception as e:
                 logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
 
@@ -89,18 +103,29 @@ class ImageGenerationService:
                 file_obj = io.BytesIO(image_bytes)
                 folder = "blogverse"
                 pid = f"ai_{uuid.uuid4().hex}"
-                result = cloudinary.uploader.upload(file_obj, folder=folder, public_id=pid, resource_type="auto")
+                
+                # We pass credentials directly to ensure the signature is calculated with the correct secret
+                result = cloudinary.uploader.upload(
+                    file_obj, 
+                    folder=folder, 
+                    public_id=pid, 
+                    resource_type="auto",
+                    cloud_name=settings.CLOUDINARY_CLOUD_NAME_CLEAN,
+                    api_key=settings.CLOUDINARY_API_KEY_CLEAN,
+                    api_secret=settings.CLOUDINARY_API_SECRET_CLEAN
+                )
                 secure_url = result.get("secure_url")
                 if secure_url:
                     return secure_url
             except Exception as cloud_err:
-                logger.warning(f"Cloudinary failed: {cloud_err}")
+                # If Cloudinary fails (e.g. invalid credentials), we fall back to local storage
+                logger.warning(f"Cloudinary upload failed (likely invalid credentials): {cloud_err}")
 
         # 4. Final Fallback: Local Storage
         try:
             return self._save_locally(image_bytes)
         except Exception as e:
-            logger.error(f"Final fallback failed: {e}")
+            logger.error(f"Final fallback to local storage failed: {e}")
             return None
 
 image_generation_service = ImageGenerationService()
