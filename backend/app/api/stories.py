@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.database import get_db
 from app.core.security import get_current_user, get_verified_user, get_optional_user
@@ -26,7 +26,7 @@ def list_stories(
     db: Session = Depends(get_db)
 ):
     """List all web stories with optional filtering."""
-    query = db.query(WebStory).join(Blog).filter(WebStory.status == "published")
+    query = db.query(WebStory).outerjoin(Blog).options(joinedload(WebStory.pages)).filter(WebStory.status == "published")
     
     if search:
         query = query.filter(WebStory.title.ilike(f"%{search}%"))
@@ -59,6 +59,7 @@ def list_my_stories(
     """List stories created by the current user."""
     stories = (
         db.query(WebStory)
+        .options(joinedload(WebStory.pages))
         .filter(WebStory.author_id == current_user.id)
         .order_by(WebStory.created_at.desc())
         .all()

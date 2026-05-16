@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoClose, IoChevronBack, IoChevronForward } from 'react-icons/io5';
+import { formatImageUrl } from '../../services/api';
 
 const WebStoryViewer = ({ story, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -72,7 +73,7 @@ const WebStoryViewer = ({ story, onClose }) => {
       <div className="absolute inset-0 z-0">
         <motion.img 
           key={`bg-${currentIndex}`}
-          src={currentPage.image_url} 
+          src={formatImageUrl(currentPage.image_url)} 
           className="w-full h-full object-cover scale-150 blur-[100px] opacity-30"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.3 }}
@@ -130,7 +131,7 @@ const WebStoryViewer = ({ story, onClose }) => {
                 transition={{ duration: 6, ease: "linear" }}
               >
                 <img 
-                  src={currentPage.image_url} 
+                  src={formatImageUrl(currentPage.image_url)} 
                   alt={currentPage.title} 
                   className="w-full h-full object-cover"
                 />
