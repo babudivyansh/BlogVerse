@@ -20,7 +20,13 @@ export const formatImageUrl = (url) => {
   if (url.startsWith('http')) return url;
   
   // For local uploads, prepend the server URL
-  const serverURL = baseURL.replace('/api', '');
+  let serverURL = baseURL.replace('/api', '');
+  
+  // If serverURL is relative (starts with /), make it absolute using current origin
+  if (serverURL.startsWith('/')) {
+    serverURL = `${window.location.origin}${serverURL === '/' ? '' : serverURL}`;
+  }
+  
   // Remove duplicate slashes if any
   const cleanBase = serverURL.endsWith('/') ? serverURL.slice(0, -1) : serverURL;
   const cleanPath = url.startsWith('/') ? url : `/${url}`;
