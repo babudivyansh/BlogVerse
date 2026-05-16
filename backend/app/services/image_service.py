@@ -47,30 +47,33 @@ class ImageGenerationService:
         """
         image_bytes = None
 
-        # 1. Primary: Gemini Imagen (DISABLED BY USER REQUEST)
-        # if self._is_configured and self.client:
-        #     try:
-        #         logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
-        #         
-        #         # Aspect ratio mapping
-        #         ar = "16:9" if width > height else "1:1"
-        #         
-        #         def _gen():
-        #             return self.client.models.generate_images(
-        #                 model='imagen-4.0-generate-001',
-        #                 prompt=prompt,
-        #                 config=genai.types.GenerateImagesConfig(
-        #                     number_of_images=1,
-        #                     aspect_ratio=ar,
-        #                     output_mime_type='image/png'
-        #                 )
-        #             )
-        #
-        #         response = await asyncio.to_thread(_gen)
-        #         if response.generated_images:
-        #             image_bytes = response.generated_images[0].image.image_bytes
-        #     except Exception as e:
-        #         logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
+        # 1. Primary: Gemini Imagen (Imagen 4.0)
+        if self._is_configured and self.client:
+            try:
+                logger.info(f"Generating Gemini Image ({width}x{height}) for prompt: {prompt[:50]}...")
+                
+                # Aspect ratio mapping
+                ar = "16:9" if width > height else "1:1"
+                
+                # The generate_images call is synchronous, so we run it in a thread to avoid blocking
+                def _gen():
+                    return self.client.models.generate_images(
+                        model='imagen-4.0-generate-001',
+                        prompt=prompt,
+                        config=genai.types.GenerateImagesConfig(
+                            number_of_images=1,
+                            aspect_ratio=ar,
+                            output_mime_type='image/png'
+                        )
+                    )
+
+                response = await asyncio.to_thread(_gen)
+                
+                if response.generated_images:
+                    image_bytes = response.generated_images[0].image.image_bytes
+                    logger.info("Successfully generated image via Gemini Imagen 4.0")
+            except Exception as e:
+                logger.warning(f"Gemini Image generation failed, trying Pollinations fallback: {e}")
 
         # 2. Fallback 1: Pollinations.ai (Free)
         if not image_bytes:
@@ -83,7 +86,7 @@ class ImageGenerationService:
                 image_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&seed={seed}&nologo=true"
                 
                 logger.info(f"Fetching fallback image via Pollinations.ai: {image_url[:80]}...")
-                # Increase timeout to 60s as Pollinations can be slow
+                # Timeout is 60s as Pollinations can be slow
                 async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
                     response = await client.get(image_url)
                     if response.status_code == 200:
@@ -105,6 +108,7 @@ class ImageGenerationService:
                 folder = "blogverse"
                 pid = f"ai_{uuid.uuid4().hex}"
                 
+                # We pass credentials directly to ensure the signature is calculated with the correct secret
                 result = cloudinary.uploader.upload(
                     file_obj, 
                     folder=folder, 
@@ -118,6 +122,7 @@ class ImageGenerationService:
                 if secure_url:
                     return secure_url
             except Exception as cloud_err:
+                # If Cloudinary fails (e.g. invalid credentials), we fall back to local storage
                 logger.warning(f"Cloudinary upload failed: {cloud_err}")
 
         # 4. Final Fallback: Local Storage
