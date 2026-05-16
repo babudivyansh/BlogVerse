@@ -74,11 +74,13 @@ class ImageGenerationService:
                     file_obj = io.BytesIO(image_bytes)
                     # Combine folder and ID into public_id for better signature stability
                     folder = "blogverse/stories" if height > width else "blogverse/covers"
-                    public_id = f"{folder}/ai_{uuid.uuid4().hex}"
+                    pid = f"ai_{uuid.uuid4().hex}"
                     
                     result = cloudinary.uploader.upload(
                         file_obj,
-                        public_id=public_id
+                        folder=folder,
+                        public_id=pid,
+                        resource_type="auto"
                     )
                     
                     secure_url = result.get("secure_url")

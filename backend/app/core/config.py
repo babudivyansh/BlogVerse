@@ -49,6 +49,18 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
     MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5 MB
 
+    @property
+    def CLOUDINARY_CLOUD_NAME_CLEAN(self):
+        return self.CLOUDINARY_CLOUD_NAME.strip() if self.CLOUDINARY_CLOUD_NAME else ""
+
+    @property
+    def CLOUDINARY_API_KEY_CLEAN(self):
+        return self.CLOUDINARY_API_KEY.strip() if self.CLOUDINARY_API_KEY else ""
+
+    @property
+    def CLOUDINARY_API_SECRET_CLEAN(self):
+        return self.CLOUDINARY_API_SECRET.strip() if self.CLOUDINARY_API_SECRET else ""
+
     model_config = {
         "env_file": str(BASE_DIR / ".env"),
         "extra": "ignore"
