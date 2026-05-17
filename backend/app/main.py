@@ -9,7 +9,7 @@ import cloudinary.uploader
 
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.api import auth, blogs, comments, users, admin, ai, upload, newsletter, stories
+from app.api import auth, blogs, comments, users, admin, ai, upload, newsletter, stories, seo
 
 # Import models so they are registered with Base.metadata
 import app.models  # noqa: F401
@@ -65,8 +65,10 @@ app.include_router(ai.router, prefix=prefix)
 app.include_router(upload.router, prefix=prefix)
 app.include_router(newsletter.router, prefix=prefix)
 app.include_router(stories.router, prefix=prefix)
-
+app.include_router(seo.router, prefix=prefix)  # Accessible at /api/sitemap.xml
+app.include_router(seo.router)                 # Accessible at /sitemap.xml
 
 @app.get("/")
 def root():
     return {"app": settings.APP_NAME, "version": settings.APP_VERSION, "docs": "/api/docs"}
+
