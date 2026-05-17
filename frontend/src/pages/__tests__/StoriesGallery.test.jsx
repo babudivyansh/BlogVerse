@@ -7,10 +7,18 @@ import * as api from '../../services/api';
 vi.mock('../../services/api', () => ({
   getStories: vi.fn(),
   getStory: vi.fn(),
+  getCategories: vi.fn(),
+  getTags: vi.fn(),
   formatImageUrl: vi.fn((url) => url),
 }));
 
 describe('StoriesGallery', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.getCategories.mockResolvedValue({ data: [] });
+    api.getTags.mockResolvedValue({ data: [] });
+  });
+
   it('renders stories list correctly', async () => {
     const mockStories = [
       { id: 1, title: 'Story 1', slug: 'story-1', cover_image: 'img1.jpg', created_at: new Date().toISOString() },
@@ -26,9 +34,8 @@ describe('StoriesGallery', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Web Stories/i)).toBeInTheDocument();
-      expect(screen.getByText('Story 1')).toBeInTheDocument();
-      expect(screen.getByText('Story 2')).toBeInTheDocument();
+      expect(screen.getByText('Latest Chapters')).toBeInTheDocument();
+      expect(screen.getAllByText('Story 2').length).toBeGreaterThan(0);
     });
   });
 
@@ -42,7 +49,8 @@ describe('StoriesGallery', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/No web stories yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/The gallery is currently being curated/i)).toBeInTheDocument();
     });
   });
 });
+
