@@ -1,12 +1,145 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getStories, getStory, formatImageUrl, getCategories, getTags } from '../services/api';
 import WebStoryViewer from '../components/stories/WebStoryViewer';
-import { IoPlayCircle, IoChevronForward } from 'react-icons/io5';
+import { IoPlayCircle, IoChevronForward, IoChevronBack } from 'react-icons/io5';
 import { HiOutlineSearch } from 'react-icons/hi';
 import Loading from '../components/common/Loading';
 import SEO from '../components/common/SEO';
+
+const PremiereShelf = ({ stories, openStory }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 10);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener('scroll', checkScroll);
+    return () => el.removeEventListener('scroll', checkScroll);
+  }, [stories]);
+
+  const scroll = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const scrollAmount = 340; // slightly more than one card width
+    el.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="mb-20">
+      <div className="flex items-center justify-between mb-8 px-2">
+        <h3 className="text-2xl font-black text-surface-800 dark:text-white tracking-tight flex items-center gap-4 font-heading">
+          <div className="w-12 h-1 bg-primary-500 rounded-full" />
+          Premiere Collection
+        </h3>
+        <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={() => scroll('left')}
+            disabled={!canScrollLeft}
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: canScrollLeft ? 'pointer' : 'default',
+              background: canScrollLeft ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'rgba(100,100,120,0.15)',
+              color: canScrollLeft ? '#fff' : 'rgba(100,100,120,0.4)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: canScrollLeft ? '0 4px 15px rgba(99,102,241,0.4)' : 'none',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <IoChevronBack className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => scroll('right')}
+            disabled={!canScrollRight}
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: canScrollRight ? 'pointer' : 'default',
+              background: canScrollRight ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'rgba(100,100,120,0.15)',
+              color: canScrollRight ? '#fff' : 'rgba(100,100,120,0.4)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: canScrollRight ? '0 4px 15px rgba(99,102,241,0.4)' : 'none',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <IoChevronForward className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex gap-8 overflow-x-auto pb-8 scrollbar-hide px-2 -mx-2 snap-x snap-mandatory" style={{ scrollBehavior: 'smooth' }}>
+        {stories.map((story, i) => (
+          <motion.div
+            key={story.id}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="relative flex-shrink-0 w-[280px] md:w-[320px] aspect-[9/16] rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl snap-start"
+            onClick={() => openStory(story.slug)}
+          >
+            {story.cover_image ? (
+              <img 
+                src={formatImageUrl(story.cover_image)} 
+                alt={story.title} 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+            ) : null}
+            <div 
+              className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
+              style={{ display: story.cover_image ? 'none' : 'block' }}
+            />
+            {/* Cinematic Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100">
+               <div className="w-20 h-20 bg-white/10 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/20 text-white">
+                 <IoPlayCircle size={40} />
+               </div>
+            </div>
+            
+            <div className="absolute inset-0 flex flex-col justify-end p-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                   <span className="px-3 py-1 bg-primary-500 text-white text-[8px] font-black uppercase tracking-[0.3em] rounded-lg shadow-xl">Story</span>
+                   <span className="text-white/60 text-[8px] font-black uppercase tracking-[0.4em]">Cinematic</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-black text-white mb-2 font-heading tracking-tight leading-[1.2] group-hover:text-primary-400 transition-colors duration-300">
+                  {story.title}
+                </h2>
+                <div className="flex items-center gap-3 text-white/40 group-hover:text-primary-400 transition-colors">
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em]">Watch Now</span>
+                  <IoChevronForward className="w-3 h-3" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const StoriesGallery = () => {
   const { slug } = useParams();
@@ -185,69 +318,7 @@ const StoriesGallery = () => {
           <div className="space-y-20">
             {/* Premiere Collection (Horizontal Scrolling Shelf) */}
             {!activeCategory && !activeTag && !query && page === 1 && (
-              <div className="mb-20">
-                <div className="flex items-center justify-between mb-8 px-2">
-                  <h3 className="text-2xl font-black text-surface-800 dark:text-white tracking-tight flex items-center gap-4 font-heading">
-                    <div className="w-12 h-1 bg-primary-500 rounded-full" />
-                    Premiere Collection
-                  </h3>
-                  <div className="hidden md:flex gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-surface-400">
-                    Scroll To Explore <IoChevronForward className="w-4 h-4 text-primary-500" />
-                  </div>
-                </div>
-
-                <div className="flex gap-8 overflow-x-auto pb-8 scrollbar-hide px-2 -mx-2 snap-x snap-mandatory">
-                  {stories.slice(0, 5).map((story, i) => (
-                    <motion.div
-                      key={story.id}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="relative flex-shrink-0 w-[280px] md:w-[320px] aspect-[9/16] rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl snap-start"
-                      onClick={() => openStory(story.slug)}
-                    >
-                      {story.cover_image ? (
-                        <img 
-                          src={formatImageUrl(story.cover_image)} 
-                          alt={story.title} 
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'block';
-                          }}
-                        />
-                      ) : null}
-                      <div 
-                        className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
-                        style={{ display: story.cover_image ? 'none' : 'block' }}
-                      />
-                      {/* Cinematic Overlays */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100">
-                         <div className="w-20 h-20 bg-white/10 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/20 text-white">
-                           <IoPlayCircle size={40} />
-                         </div>
-                      </div>
-                      
-                      <div className="absolute inset-0 flex flex-col justify-end p-8">
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                             <span className="px-3 py-1 bg-primary-500 text-white text-[8px] font-black uppercase tracking-[0.3em] rounded-lg shadow-xl">Story</span>
-                             <span className="text-white/60 text-[8px] font-black uppercase tracking-[0.4em]">Cinematic</span>
-                          </div>
-                          <h2 className="text-xl md:text-2xl font-black text-white mb-2 font-heading tracking-tight leading-[1.2] group-hover:text-primary-400 transition-colors duration-300">
-                            {story.title}
-                          </h2>
-                          <div className="flex items-center gap-3 text-white/40 group-hover:text-primary-400 transition-colors">
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Watch Now</span>
-                            <IoChevronForward className="w-3 h-3" />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+              <PremiereShelf stories={stories.slice(0, 5)} openStory={openStory} />
             )}
 
             {/* Other Tales Grid */}

@@ -28,7 +28,6 @@ export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
-        <ScrollToTop />
         <ThemeProvider>
           <AuthProvider>
             <div className="min-h-screen flex flex-col relative transition-colors duration-500">
@@ -69,6 +68,7 @@ export default function App() {
                   </Routes>
                 </AnimatePresence>
               </main>
+              <ScrollToTop />
               <Chatbot />
               <Footer />
             </div>

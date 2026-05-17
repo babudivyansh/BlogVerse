@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -11,7 +11,121 @@ import { getBlogs, getFeaturedBlogs, getCategories, getStories, getStory, format
 import NewsletterSection from '../components/common/NewsletterSection';
 import WebStoryViewer from '../components/stories/WebStoryViewer';
 import { AnimatePresence } from 'framer-motion';
-import { IoPlayCircle } from 'react-icons/io5';
+import { IoPlayCircle, IoChevronForward, IoChevronBack } from 'react-icons/io5';
+
+const HomeStoriesShelf = ({ stories, handleOpenStory }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 10);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener('scroll', checkScroll);
+    return () => el.removeEventListener('scroll', checkScroll);
+  }, [stories]);
+
+  const scroll = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const scrollAmount = 300;
+    el.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+  };
+
+  const arrowStyle = (enabled) => ({
+    width: '42px',
+    height: '42px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: enabled ? 'pointer' : 'default',
+    background: enabled ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'rgba(100,100,120,0.15)',
+    color: enabled ? '#fff' : 'rgba(100,100,120,0.4)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    boxShadow: enabled ? '0 4px 15px rgba(99,102,241,0.4)' : 'none',
+    transition: 'all 0.3s ease',
+  });
+
+  return (
+    <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-24 overflow-hidden">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
+        <div className="text-center md:text-left">
+          <h2 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Visual Tales</h2>
+          <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
+            <span className="w-12 h-[2px] bg-primary-500" />
+            <p className="text-surface-500 font-bold uppercase tracking-wider text-xs">Immersive narratives in vertical format</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
+            <button onClick={() => scroll('left')} disabled={!canScrollLeft} style={arrowStyle(canScrollLeft)}>
+              <IoChevronBack className="w-5 h-5" />
+            </button>
+            <button onClick={() => scroll('right')} disabled={!canScrollRight} style={arrowStyle(canScrollRight)}>
+              <IoChevronForward className="w-5 h-5" />
+            </button>
+          </div>
+          <Link to="/stories" className="premium-link text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 uppercase tracking-[0.2em] transition-colors duration-300">
+            View All Stories
+          </Link>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex gap-8 overflow-x-auto pb-10 scrollbar-hide snap-x snap-mandatory -mx-4 px-4" style={{ scrollBehavior: 'smooth' }}>
+        {stories.map((story, i) => (
+          <motion.div
+            key={story.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 }}
+            onClick={() => handleOpenStory(story)}
+            className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[9/16] rounded-[2.5rem] overflow-hidden glassium-card glint-border group cursor-pointer shadow-2xl snap-start"
+          >
+            {story.cover_image ? (
+              <img 
+                src={formatImageUrl(story.cover_image)} 
+                alt={story.title} 
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'block';
+                }}
+              />
+            ) : null}
+            <div 
+              className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
+              style={{ display: story.cover_image ? 'none' : 'block' }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100">
+               <div className="w-16 h-16 bg-white/10 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/20 text-white">
+                 <IoPlayCircle size={32} />
+               </div>
+            </div>
+
+            <div className="absolute inset-0 p-6 flex flex-col justify-end">
+              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-primary-400 mb-2">{story.blog_category || 'Tale'}</span>
+              <h3 className="text-lg font-black text-white leading-tight font-heading group-hover:text-primary-400 transition-colors line-clamp-2">
+                {story.title}
+              </h3>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
@@ -161,64 +275,7 @@ export default function Home() {
 
       {/* ── Visual Tales (Stories) ────────────────────────── */}
       {stories.length > 0 && (
-        <section className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-20 py-24 overflow-hidden">
-          <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
-            <div className="text-center md:text-left">
-              <h2 className="text-4xl font-black text-surface-800 dark:text-white font-heading tracking-tight">Visual Tales</h2>
-              <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
-                <span className="w-12 h-[2px] bg-primary-500" />
-                <p className="text-surface-500 font-bold uppercase tracking-wider text-xs">Immersive narratives in vertical format</p>
-              </div>
-            </div>
-            <Link to="/stories" className="premium-link text-sm font-black text-surface-600 dark:text-surface-400 hover:text-primary-500 uppercase tracking-[0.2em] transition-colors duration-300">
-              View All Stories
-            </Link>
-          </div>
-
-          <div className="flex gap-8 overflow-x-auto pb-10 scrollbar-hide snap-x snap-mandatory -mx-4 px-4">
-            {stories.map((story, i) => (
-              <motion.div
-                key={story.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                onClick={() => handleOpenStory(story)}
-                className="relative flex-shrink-0 w-[240px] md:w-[280px] aspect-[9/16] rounded-[2.5rem] overflow-hidden glassium-card glint-border group cursor-pointer shadow-2xl snap-start"
-              >
-                {story.cover_image ? (
-                  <img 
-                    src={formatImageUrl(story.cover_image)} 
-                    alt={story.title} 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
-                  />
-                ) : null}
-                <div 
-                  className="absolute inset-0 bg-gradient-to-br from-surface-800 to-surface-950"
-                  style={{ display: story.cover_image ? 'none' : 'block' }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-0 group-hover:scale-100">
-                   <div className="w-16 h-16 bg-white/10 backdrop-blur-3xl rounded-full flex items-center justify-center border border-white/20 text-white">
-                     <IoPlayCircle size={32} />
-                   </div>
-                </div>
-
-                <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-primary-400 mb-2">{story.blog_category || 'Tale'}</span>
-                  <h3 className="text-lg font-black text-white leading-tight font-heading group-hover:text-primary-400 transition-colors line-clamp-2">
-                    {story.title}
-                  </h3>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+        <HomeStoriesShelf stories={stories} handleOpenStory={handleOpenStory} />
       )}
 
       {/* ── Latest Blogs ─────────────────────────────────── */}

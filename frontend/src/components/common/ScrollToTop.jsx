@@ -5,21 +5,12 @@ import { FaArrowUp } from 'react-icons/fa';
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Show button when page is scrolled down
   const toggleVisibility = () => {
-    if (window.scrollY > 400) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
+    setIsVisible(window.scrollY > 400);
   };
 
-  // Set the top scroll position
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -31,28 +22,35 @@ const ScrollToTop = () => {
     <AnimatePresence>
       {isVisible && (
         <motion.button
-          initial={{ opacity: 0, scale: 0.8, y: 50 }}
+          key="scroll-to-top"
+          initial={{ opacity: 0, scale: 0.5, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 50 }}
+          exit={{ opacity: 0, scale: 0.5, y: 30 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 w-12 h-12 rounded-2xl flex items-center justify-center z-[100] cursor-pointer group"
           aria-label="Scroll to top"
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.15, y: -2 }}
           whileTap={{ scale: 0.9 }}
           style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(16px)',
+            position: 'fixed',
+            bottom: '2rem',
+            left: '2rem',
+            width: '48px',
+            height: '48px',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            cursor: 'pointer',
+            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.5), 0 0 40px rgba(139, 92, 246, 0.15)',
             border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2)',
+            color: '#fff',
+            fontSize: '18px',
           }}
         >
-          {/* Animated Gradient Background on Hover */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
-          <FaArrowUp className="text-white text-lg relative z-10 group-hover:-translate-y-1 transition-transform duration-300" />
-          
-          {/* Subtle Glow Effect */}
-          <div className="absolute -inset-1 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+          <FaArrowUp />
         </motion.button>
       )}
     </AnimatePresence>
