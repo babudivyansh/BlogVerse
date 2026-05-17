@@ -128,6 +128,6 @@ async def test_blog_publication_triggers_story(client, auth_headers):
 
 # ── Delete Story ─────────────────────────────────────────────────
 
-def test_delete_story(client, admin_headers, test_story):
-    response = client.delete(f"/api/stories/{test_story.id}", headers=admin_headers)
-    assert response.status_code in [200, 204]
+def test_delete_story(client, auth_headers, test_story):
+    response = client.delete(f"/api/stories/{test_story.id}", headers=auth_headers)
+    assert response.status_code == 200
