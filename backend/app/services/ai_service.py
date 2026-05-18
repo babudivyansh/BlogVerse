@@ -239,7 +239,9 @@ class AIService:
             "Each object must have: "
             "'title' (string, max 5 words), "
             "'text' (string, max 20 words, key takeaway), "
-            "'visual_prompt' (string, highly detailed artistic prompt for an image generator representing the slide's content)."
+            "'visual_prompt' (string, 30-50 words, specific and concrete image description "
+            "that directly shows the slide's subject — include specific objects, settings, "
+            "colors, and style. Never use abstract or symbolic language)."
         )
         user_prompt = f"Blog Title: {title}\nBlog Content: {content[:4000]}"
 
@@ -271,7 +273,9 @@ class AIService:
             "Each object must have: "
             "'title' (string, max 5 words), "
             "'text' (string, max 20 words, key takeaway), "
-            "'visual_prompt' (string, highly detailed artistic prompt for an image generator representing the slide's content)."
+            "'visual_prompt' (string, 30-50 words, specific and concrete image description "
+            "that directly shows the slide's subject — include specific objects, settings, "
+            "colors, and style. Never use abstract or symbolic language)."
         )
         user_prompt = f"Create a visual story about: {topic}"
 

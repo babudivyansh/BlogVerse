@@ -59,22 +59,32 @@ class ImageGenerationService:
             logger.error(f"Local save failed: {e}")
             return None
 
-    def _enhance_prompt_for_blog(self, prompt: str) -> str:
-        """Enhance the prompt with quality modifiers for better blog cover images.
+    def _enhance_prompt(self, prompt: str, width: int = 1280, height: int = 720) -> str:
+        """Enhance the prompt with quality modifiers for better image generation.
         
-        Adds style and quality keywords to ensure the generated image
-        looks professional and suitable as a blog cover.
+        Adds style and quality keywords appropriate for the image dimensions.
+        Portrait images (stories) get different modifiers than landscape (blog covers).
         """
         # Don't double-enhance if prompt already has quality keywords
         quality_keywords = ["photorealistic", "high quality", "professional", "4k", "detailed"]
         if any(kw in prompt.lower() for kw in quality_keywords):
             return prompt
 
-        enhancement = (
-            f"{prompt}. "
-            f"Professional blog cover image style, high quality, sharp details, "
-            f"clean composition, modern design, 16:9 aspect ratio."
-        )
+        # Determine orientation and add appropriate modifiers
+        if height > width:
+            # Portrait (stories/slides) — 9:16 or similar
+            enhancement = (
+                f"{prompt}. "
+                f"Vertical composition, high quality, vibrant colors, "
+                f"sharp details, modern visual style, portrait orientation."
+            )
+        else:
+            # Landscape (blog covers) — 16:9 or similar
+            enhancement = (
+                f"{prompt}. "
+                f"Professional blog cover image style, high quality, sharp details, "
+                f"clean composition, modern design, wide format."
+            )
         return enhancement
 
     async def _generate_with_gemini_flash(self, prompt: str) -> bytes | None:
@@ -129,7 +139,10 @@ class ImageGenerationService:
             import urllib.parse
             import httpx
 
+            # Pollinations has URL length limits — truncate prompt to ~300 chars
             clean_prompt = prompt.replace("\n", " ").strip()
+            if len(clean_prompt) > 300:
+                clean_prompt = clean_prompt[:300]
             encoded_prompt = urllib.parse.quote(clean_prompt)
             seed = uuid.uuid4().int % 100000
             image_url = (
@@ -139,14 +152,14 @@ class ImageGenerationService:
 
             logger.info(f"[Pollinations] Fetching image: {image_url[:100]}...")
 
-            async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+            async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as client:
                 response = await client.get(image_url)
-                if response.status_code == 200:
+                if response.status_code == 200 and len(response.content) > 1000:
                     image_bytes = response.content
                     logger.info(f"[Pollinations] Success! ({len(image_bytes)} bytes)")
                     return image_bytes
                 else:
-                    logger.error(f"[Pollinations] HTTP {response.status_code}")
+                    logger.error(f"[Pollinations] HTTP {response.status_code}, content size: {len(response.content)}")
                     return None
 
         except Exception as e:
@@ -168,8 +181,8 @@ class ImageGenerationService:
         1. Cloudinary (if configured)
         2. Local /uploads/ directory
         """
-        # Enhance prompt for better blog cover quality
-        enhanced_prompt = self._enhance_prompt_for_blog(prompt)
+        # Enhance prompt for better image quality (orientation-aware)
+        enhanced_prompt = self._enhance_prompt(prompt, width, height)
         logger.info(f"[Image Gen] Enhanced prompt: {enhanced_prompt[:100]}...")
 
         image_bytes = None

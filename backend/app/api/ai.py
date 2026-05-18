@@ -88,9 +88,10 @@ async def chat_endpoint(data: ChatInput):
 
 @router.post("/generate-image")
 async def generate_image_endpoint(data: ImageGenerationInput, _=Depends(get_verified_user)):
-    """Generate a blog-relevant cover image based on title, summary, or a specific prompt."""
+    """Generate a content-relevant image based on title, summary, or a specific prompt."""
     if data.prompt:
-        visual_prompt = data.prompt
+        # Truncate overly long prompts (image generators have limits)
+        visual_prompt = data.prompt[:500]
     else:
         # Combine title and summary for maximum context
         context = ""
