@@ -59,6 +59,24 @@ class ImageGenerationService:
             logger.error(f"Local save failed: {e}")
             return None
 
+    def _enhance_prompt_for_blog(self, prompt: str) -> str:
+        """Enhance the prompt with quality modifiers for better blog cover images.
+        
+        Adds style and quality keywords to ensure the generated image
+        looks professional and suitable as a blog cover.
+        """
+        # Don't double-enhance if prompt already has quality keywords
+        quality_keywords = ["photorealistic", "high quality", "professional", "4k", "detailed"]
+        if any(kw in prompt.lower() for kw in quality_keywords):
+            return prompt
+
+        enhancement = (
+            f"{prompt}. "
+            f"Professional blog cover image style, high quality, sharp details, "
+            f"clean composition, modern design, 16:9 aspect ratio."
+        )
+        return enhancement
+
     async def _generate_with_gemini_flash(self, prompt: str) -> bytes | None:
         """
         PRIMARY: Generate image using Gemini 2.5 Flash with native image output.
@@ -71,7 +89,7 @@ class ImageGenerationService:
 
         try:
             model_name = settings.GEMINI_IMAGE_MODEL
-            logger.info(f"[Gemini Flash Image] Generating with model={model_name}, prompt: {prompt[:60]}...")
+            logger.info(f"[Gemini Flash Image] Generating with model={model_name}, prompt: {prompt[:80]}...")
 
             def _gen():
                 response = self.client.models.generate_content(
@@ -116,10 +134,10 @@ class ImageGenerationService:
             seed = uuid.uuid4().int % 100000
             image_url = (
                 f"https://image.pollinations.ai/prompt/{encoded_prompt}"
-                f"?width={width}&height={height}&seed={seed}&nologo=true"
+                f"?width={width}&height={height}&seed={seed}&nologo=true&model=flux"
             )
 
-            logger.info(f"[Pollinations] Fetching image: {image_url[:80]}...")
+            logger.info(f"[Pollinations] Fetching image: {image_url[:100]}...")
 
             async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
                 response = await client.get(image_url)
@@ -139,6 +157,9 @@ class ImageGenerationService:
         """
         Generate an image using the cascading provider chain and upload it.
         
+        The prompt is enhanced with blog-appropriate quality modifiers
+        before being sent to the image generator.
+        
         Provider priority:
         1. Gemini 2.5 Flash Image (FREE tier, uses existing API key)
         2. Pollinations.ai (free, no key needed)
@@ -147,14 +168,18 @@ class ImageGenerationService:
         1. Cloudinary (if configured)
         2. Local /uploads/ directory
         """
+        # Enhance prompt for better blog cover quality
+        enhanced_prompt = self._enhance_prompt_for_blog(prompt)
+        logger.info(f"[Image Gen] Enhanced prompt: {enhanced_prompt[:100]}...")
+
         image_bytes = None
 
         # ── Provider 1: Gemini Flash Image (FREE) ────────────────────
-        image_bytes = await self._generate_with_gemini_flash(prompt)
+        image_bytes = await self._generate_with_gemini_flash(enhanced_prompt)
 
         # ── Provider 2: Pollinations.ai (free fallback) ──────────────
         if not image_bytes:
-            image_bytes = await self._generate_with_pollinations(prompt, width, height)
+            image_bytes = await self._generate_with_pollinations(enhanced_prompt, width, height)
 
         # ── All providers failed ─────────────────────────────────────
         if not image_bytes:
