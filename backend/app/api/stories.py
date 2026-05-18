@@ -11,6 +11,7 @@ from app.models.blog import Blog
 from app.schemas.web_story import WebStoryResponse, WebStoryCard, WebStoryCreate
 from app.services.story_service import story_service
 from app.services.ai_service import ai_service
+from app.services.indexing_service import indexing_service
 
 logger = logging.getLogger(__name__)
 
@@ -103,11 +104,16 @@ async def generate_story(
 @router.post("", response_model=WebStoryResponse)
 def create_story_manual(
     data: WebStoryCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_verified_user)
 ):
     """Create a web story manually."""
-    return story_service.create_manual(db, data, current_user.id)
+    story = story_service.create_manual(db, data, current_user.id)
+    if story.status == "published":
+        background_tasks.add_task(indexing_service.submit_story, story.slug)
+        background_tasks.add_task(indexing_service.ping_sitemap)
+    return story
 
 @router.post("/suggest/{blog_id}")
 async def suggest_story_content(

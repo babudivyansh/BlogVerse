@@ -19,6 +19,7 @@ from app.schemas.blog import (
 from app.services.ai_service import ai_service
 from app.services.image_service import image_generation_service
 from app.services.story_service import story_service
+from app.services.indexing_service import indexing_service
 
 logger = logging.getLogger(__name__)
 
@@ -234,6 +235,8 @@ def create_blog(
     db.refresh(blog)
     if blog.status == "published":
         background_tasks.add_task(story_service.create_from_blog, db, blog.id)
+        background_tasks.add_task(indexing_service.submit_blog, blog.slug)
+        background_tasks.add_task(indexing_service.ping_sitemap)
     return BlogResponse(**_blog_to_response(blog, db, current_user.id))
 
 
@@ -268,6 +271,8 @@ def update_blog(
     db.refresh(blog)
     if blog.status == "published":
         background_tasks.add_task(story_service.create_from_blog, db, blog.id)
+        background_tasks.add_task(indexing_service.submit_blog, blog.slug)
+        background_tasks.add_task(indexing_service.ping_sitemap)
     return BlogResponse(**_blog_to_response(blog, db, current_user.id))
 
 

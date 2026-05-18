@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # ── Resend (API-based email) ──────────────────────────────────
     RESEND_API_KEY: Optional[str] = None
 
+    # ── Google Indexing API (auto-submit to Google Search) ───────
+    GOOGLE_INDEXING_ENABLED: bool = False
+    GOOGLE_SERVICE_ACCOUNT_JSON: Optional[str] = None
+
     # ── File Upload ──────────────────────────────────────────────
     UPLOAD_DIR: str = "uploads"
     MAX_FILE_SIZE: int = 5 * 1024 * 1024  # 5 MB
