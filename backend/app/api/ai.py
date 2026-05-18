@@ -88,15 +88,32 @@ async def chat_endpoint(data: ChatInput):
 
 @router.post("/generate-image")
 async def generate_image_endpoint(data: ImageGenerationInput, _=Depends(get_verified_user)):
-    """Generate an image based on title, summary, or a specific prompt."""
+    """Generate a blog-relevant cover image based on title, summary, or a specific prompt."""
     if data.prompt:
         visual_prompt = data.prompt
     else:
-        visual_prompt = await ai_service.generate_visual_prompt(data.title or "", data.summary or "")
+        # Combine title and summary for maximum context
+        context = ""
+        if data.title:
+            context += data.title
+        if data.summary:
+            context += "\n\n" + data.summary
+        
+        if not context.strip():
+            raise HTTPException(400, "Provide at least a title, summary, or prompt for image generation.")
+        
+        visual_prompt = await ai_service.generate_visual_prompt(
+            data.title or "Blog Post", 
+            data.summary or data.title or ""
+        )
     
     url = await image_generation_service.generate_and_upload(
         visual_prompt, 
         width=data.width, 
         height=data.height
     )
-    return {"url": url}
+    
+    if not url:
+        raise HTTPException(503, "Image generation failed. Please try again.")
+    
+    return {"url": url, "prompt_used": visual_prompt}

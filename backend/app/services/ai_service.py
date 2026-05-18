@@ -183,21 +183,44 @@ class AIService:
             return []
 
     async def generate_visual_prompt(self, title: str, content: str) -> str:
-        """Generate an elite, cinematic artistic prompt for Imagen 4."""
+        """Generate a blog-relevant, content-aware image prompt.
+        
+        The prompt is designed to produce images that clearly represent
+        the blog's specific topic, not generic abstract art.
+        """
         if not self.is_configured:
-            return f"Digital art related to {title}, cinematic lighting, high detail."
+            # Fallback: create a descriptive prompt from the title itself
+            return (
+                f"A professional, high-quality blog cover image about '{title}'. "
+                f"Clean modern design, relevant visual elements, "
+                f"16:9 aspect ratio, photorealistic style, soft lighting."
+            )
 
         system_prompt = (
-            "You are an Elite Art Director for a top-tier design agency. "
-            "Your task is to write a single, powerful paragraph that will guide a world-class AI image generator (Imagen 4). "
-            "Focus on: Cinematic lighting (e.g., volumetric, Rembrandt, or high-key), composition (e.g., rule of thirds, extreme close-up, or wide-angle), "
-            "texture, and a sophisticated color palette (e.g., monochromatic with a splash of neon, or earth tones with gold accents). "
-            "Describe a stunning, abstract or symbolic representation of the blog's theme. "
-            "Avoid technical jargon; use evocative, artistic language. "
-            "Keep the prompt under 120 words for maximum impact."
+            "You are an expert blog cover image designer. Your job is to write a detailed "
+            "image generation prompt that will produce a cover image DIRECTLY RELEVANT to the blog's topic.\n\n"
+            "RULES:\n"
+            "1. The image MUST visually represent the blog's SPECIFIC subject matter — not abstract art.\n"
+            "2. Include concrete visual elements related to the topic (e.g., for a blog about Python programming, "
+            "show a laptop with code, Python logo elements, developer workspace).\n"
+            "3. For technology topics: show relevant tools, screens, devices, diagrams, or real-world applications.\n"
+            "4. For lifestyle/travel topics: show relevant scenes, locations, activities.\n"
+            "5. For business topics: show relevant charts, meetings, products, or professional settings.\n"
+            "6. Specify: art style (photorealistic/illustration/3D render), lighting, color palette, and composition.\n"
+            "7. Keep the prompt between 40-80 words. Be specific, not vague.\n"
+            "8. NEVER use words like 'abstract', 'symbolic', 'metaphorical', or 'conceptual'.\n"
+            "9. The image should make a viewer immediately understand what the blog is about.\n\n"
+            "Return ONLY the image prompt, nothing else."
         )
-        user_prompt = f"Blog Title: {title}\nBlog Context: {content[:2000]}"
-        
+
+        # Extract key context — use title + first meaningful chunk of content
+        context = content[:1500] if content else title
+        user_prompt = (
+            f"Blog Title: {title}\n"
+            f"Blog Content Preview: {context}\n\n"
+            f"Write an image generation prompt for a cover image that clearly represents this blog's topic."
+        )
+
         return await self._chat(system_prompt, user_prompt)
 
     async def generate_story_content(self, title: str, content: str) -> list[dict]:
