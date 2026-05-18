@@ -90,9 +90,7 @@ class StoryService:
         return story
 
     def create_manual(self, db: Session, data: "WebStoryCreate", author_id: int) -> WebStory:
-        """Create a web story manually from provided data."""
-        slug = _unique_story_slug(db, data.title)
-        
+        """Create or update a web story manually from provided data."""
         pages = [
             StoryPage(
                 title=p.title,
@@ -101,6 +99,23 @@ class StoryService:
                 order_index=p.order_index
             ) for p in data.pages
         ]
+
+        # If blog_id is provided, check if a story already exists for that blog
+        # (blog_id has a UNIQUE constraint — only one story per blog allowed)
+        if data.blog_id:
+            existing = db.query(WebStory).filter(WebStory.blog_id == data.blog_id).first()
+            if existing:
+                # Update the existing story instead of failing with IntegrityError
+                db.query(StoryPage).filter(StoryPage.story_id == existing.id).delete()
+                existing.title = data.title
+                existing.slug = _unique_story_slug(db, data.title, exclude_id=existing.id)
+                existing.status = data.status
+                existing.pages = pages
+                db.commit()
+                db.refresh(existing)
+                return existing
+
+        slug = _unique_story_slug(db, data.title)
         
         story = WebStory(
             blog_id=data.blog_id,
