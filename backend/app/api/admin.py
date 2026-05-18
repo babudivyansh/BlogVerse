@@ -104,3 +104,56 @@ def toggle_block_user(user_id: int, db: Session = Depends(get_db), admin=Depends
     db.commit()
     return {"is_blocked": user.is_blocked}
 
+
+
+
+# ── Google Indexing ──────────────────────────────────────────────
+from app.services.indexing_service import indexing_service
+from pydantic import BaseModel
+
+
+class IndexUrlRequest(BaseModel):
+    url: str
+
+
+@router.post("/index-url")
+def admin_index_url(data: IndexUrlRequest, _=Depends(get_admin_user)):
+    """Manually submit a URL to Google for indexing (admin only)."""
+    if not indexing_service.is_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Google Indexing API not configured")
+    
+    success = indexing_service.submit_url(data.url)
+    if success:
+        return {"message": f"Successfully submitted to Google: {data.url}"}
+    raise HTTPException(status.HTTP_502_BAD_GATEWAY, "Failed to submit URL to Google")
+
+
+@router.post("/index-all")
+def admin_index_all(db: Session = Depends(get_db), _=Depends(get_admin_user)):
+    """Submit all published blogs and stories to Google for indexing (admin only)."""
+    if not indexing_service.is_enabled:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Google Indexing API not configured")
+    
+    from app.models.web_story import WebStory
+    
+    blogs = db.query(Blog).filter(Blog.status == "published").all()
+    stories = db.query(WebStory).filter(WebStory.status == "published").all()
+    
+    results = {"submitted": 0, "failed": 0, "total": len(blogs) + len(stories)}
+    
+    for blog in blogs:
+        if indexing_service.submit_blog(blog.slug):
+            results["submitted"] += 1
+        else:
+            results["failed"] += 1
+
+    for story in stories:
+        if indexing_service.submit_story(story.slug):
+            results["submitted"] += 1
+        else:
+            results["failed"] += 1
+
+    # Also ping the sitemap
+    indexing_service.ping_sitemap()
+    
+    return results
