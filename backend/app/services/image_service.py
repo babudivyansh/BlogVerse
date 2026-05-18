@@ -6,15 +6,13 @@ that BlogVerse already uses for text generation.
 
 Fallback chain:
 1. Gemini 2.5 Flash Image (free, uses existing GEMINI_API_KEY)
-2. Gemini Imagen 4 (if available)
-3. Pollinations.ai (free, no API key needed)
+2. Pollinations.ai (free, no API key needed)
 """
 
 import logging
 import asyncio
 import uuid
 import io
-import base64
 import cloudinary
 import cloudinary.uploader
 from google import genai
@@ -105,48 +103,9 @@ class ImageGenerationService:
             logger.warning(f"[Gemini Flash Image] Generation failed: {e}")
             return None
 
-    async def _generate_with_imagen(self, prompt: str, width: int, height: int) -> bytes | None:
-        """
-        SECONDARY: Generate image using Gemini Imagen 4 (dedicated image model).
-        
-        This uses the generate_images API which may require a paid plan.
-        """
-        if not self._is_configured or not self.client:
-            return None
-
-        try:
-            logger.info(f"[Imagen 4] Generating ({width}x{height}) for prompt: {prompt[:50]}...")
-
-            ar = "16:9" if width > height else "9:16" if height > width else "1:1"
-
-            def _gen():
-                return self.client.models.generate_images(
-                    model="imagen-4.0-generate-001",
-                    prompt=prompt,
-                    config=types.GenerateImagesConfig(
-                        number_of_images=1,
-                        aspect_ratio=ar,
-                        output_mime_type="image/png",
-                    ),
-                )
-
-            response = await asyncio.to_thread(_gen)
-
-            if response.generated_images:
-                image_bytes = response.generated_images[0].image.image_bytes
-                logger.info("[Imagen 4] Successfully generated image.")
-                return image_bytes
-
-            logger.warning("[Imagen 4] No images in response.")
-            return None
-
-        except Exception as e:
-            logger.warning(f"[Imagen 4] Generation failed: {e}")
-            return None
-
     async def _generate_with_pollinations(self, prompt: str, width: int, height: int) -> bytes | None:
         """
-        TERTIARY FALLBACK: Generate image using Pollinations.ai (100% free, no key).
+        FALLBACK: Generate image using Pollinations.ai (100% free, no key).
         """
         try:
             import urllib.parse
@@ -182,8 +141,7 @@ class ImageGenerationService:
         
         Provider priority:
         1. Gemini 2.5 Flash Image (FREE tier, uses existing API key)
-        2. Gemini Imagen 4 (may require paid access)
-        3. Pollinations.ai (free, no key needed)
+        2. Pollinations.ai (free, no key needed)
         
         Upload priority:
         1. Cloudinary (if configured)
@@ -194,11 +152,7 @@ class ImageGenerationService:
         # ── Provider 1: Gemini Flash Image (FREE) ────────────────────
         image_bytes = await self._generate_with_gemini_flash(prompt)
 
-        # ── Provider 2: Imagen 4 (fallback) ──────────────────────────
-        if not image_bytes:
-            image_bytes = await self._generate_with_imagen(prompt, width, height)
-
-        # ── Provider 3: Pollinations.ai (free fallback) ──────────────
+        # ── Provider 2: Pollinations.ai (free fallback) ──────────────
         if not image_bytes:
             image_bytes = await self._generate_with_pollinations(prompt, width, height)
 
