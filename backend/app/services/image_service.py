@@ -147,7 +147,7 @@ class ImageGenerationService:
             seed = uuid.uuid4().int % 100000
             image_url = (
                 f"https://image.pollinations.ai/prompt/{encoded_prompt}"
-                f"?width={width}&height={height}&seed={seed}&nologo=true&model=flux"
+                f"?width={width}&height={height}&seed={seed}&nologo=true"
             )
 
             logger.info(f"[Pollinations] Fetching image: {image_url[:100]}...")

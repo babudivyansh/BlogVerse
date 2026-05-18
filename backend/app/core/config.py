@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # ── Gemini ───────────────────────────────────────────────────
     GEMINI_API_KEY: Optional[str] = None
     GEMINI_MODEL: str = "gemini-3.1-flash-lite"
-    GEMINI_IMAGE_MODEL: str = "gemini-2.5-flash-preview-image-generation"
+    GEMINI_IMAGE_MODEL: str = "gemini-2.5-flash-image"
 
     # ── Cloudinary (optional cloud image storage) ────────────────
     CLOUDINARY_CLOUD_NAME: Optional[str] = None
