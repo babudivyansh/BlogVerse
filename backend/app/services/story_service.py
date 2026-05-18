@@ -14,6 +14,22 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+
+def _unique_story_slug(db: Session, title: str, exclude_id: int | None = None) -> str:
+    """Generate a unique slug for a web story title."""
+    base = f"story-{slugify(title)}"
+    slug = base
+    counter = 1
+    while True:
+        query = db.query(WebStory).filter(WebStory.slug == slug)
+        if exclude_id:
+            query = query.filter(WebStory.id != exclude_id)
+        if not query.first():
+            return slug
+        slug = f"{base}-{counter}"
+        counter += 1
+
+
 class StoryService:
     async def create_from_blog(self, db: Session, blog_id: int) -> WebStory:
         """Generate a Web Story from a blog post."""
@@ -46,11 +62,9 @@ class StoryService:
         pages = await asyncio.gather(*tasks)
 
         # 3. Create the WebStory record
-        # Ensure slug uniqueness
-        base_slug = blog.slug
-        slug = f"story-{base_slug}"
+        slug = _unique_story_slug(db, blog.title)
         
-        # Check if story already exists
+        # Check if story already exists for this blog
         existing = db.query(WebStory).filter(WebStory.blog_id == blog_id).first()
         if existing:
             # Delete old pages and reuse the story record
@@ -77,9 +91,7 @@ class StoryService:
 
     def create_manual(self, db: Session, data: "WebStoryCreate", author_id: int) -> WebStory:
         """Create a web story manually from provided data."""
-        # Ensure slug uniqueness
-        base_slug = slugify(data.title)
-        slug = f"story-{base_slug}"
+        slug = _unique_story_slug(db, data.title)
         
         pages = [
             StoryPage(
@@ -112,7 +124,7 @@ class StoryService:
 
         # Update basic info
         story.title = data.title
-        story.slug = f"story-{slugify(data.title)}"
+        story.slug = _unique_story_slug(db, data.title, exclude_id=story.id)
         story.status = data.status
         
         # Replace pages
